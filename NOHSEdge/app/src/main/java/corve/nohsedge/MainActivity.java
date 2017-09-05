@@ -7,9 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -22,12 +25,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     private String uuid = "b39de08ded8ac21c";
-    EditText mUsername;
-    EditText mPassword;
     Button mLogin;
     TextView mCredit;
-    Button mNext;
-    TextView mWarning;
+    private static final String TAG = "MainActivity";
 
 
     public String getUuid() {
@@ -42,10 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
         //mUsername = (EditText) findViewById(R.id.usernameText);
         mLogin = (Button) findViewById(R.id.loginButton);
-        mNext = (Button) findViewById(R.id.NextButton);
         //mPassword = (EditText) findViewById(R.id.passwordText);
         mCredit = (TextView) findViewById(R.id.creditText);
-        mWarning = (TextView) findViewById(R.id.warningText);
 
         mLogin.setOnClickListener(
                 new View.OnClickListener()
@@ -55,18 +53,6 @@ public class MainActivity extends AppCompatActivity {
                         //username = mUsername.getText().toString());
                         //password = mPassword.getText().toString());
                         openLoginpage();
-
-                    }
-                }
-        );
-        mNext.setOnClickListener(
-                new View.OnClickListener()
-                {
-                    public void onClick(View view)
-                    {
-                        //username = mUsername.getText().toString());
-                        //password = mPassword.getText().toString());
-                        openHomescreen();
 
                     }
                 }
@@ -101,32 +87,42 @@ public class MainActivity extends AppCompatActivity {
         WebView mLoginPage = (WebView) findViewById(R.id.loginWebview);
         mLogin.setVisibility(View.INVISIBLE);
         mCredit.setVisibility(View.INVISIBLE);
-        //mCredit.setText("Please wait 5 seconds after clicking login, then click next");
-        mNext.setVisibility(View.VISIBLE);
         WebSettings webSettings = mLoginPage.getSettings();
-        webSettings.setJavaScriptEnabled(true);
+        mLoginPage.setWebChromeClient(new WebChromeClient() {
+            public boolean onConsoleMessage(ConsoleMessage cm) {
+                Log.d(TAG, cm.message() + " -- From line "
+                        + cm.lineNumber() + " of "
+                        + cm.sourceId() );
+                return true;
+            }
+        });
         webSettings.setDomStorageEnabled(true);
-        webSettings.setAllowFileAccessFromFileURLs(true);
-        webSettings.setAllowUniversalAccessFromFileURLs(true);
-        mLoginPage.setVisibility(View.VISIBLE);
-        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#login"); //http://sites.superfanu.com/nohsstampede/6.0.0/#login     //file:///android_asset/index.html
-        //mLoginPage.loadUrl("file:///android_asset/index.html");
-    }
-    public void openHomescreen() {
-        mLogin.setVisibility(View.INVISIBLE);
-        WebView mLoginPage = (WebView) findViewById(R.id.loginWebview);
-        //WebView mHomePage = (WebView) findViewById(R.id.HomescreenWebview);
-        mWarning.setVisibility(View.INVISIBLE);
-        mNext.setVisibility(View.INVISIBLE);
-        WebSettings webSettings = mLoginPage.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setDomStorageEnabled(true);
-        webSettings.setAllowFileAccessFromFileURLs(true);
-        webSettings.setAllowUniversalAccessFromFileURLs(true);
-        //mHomePage.setVisibility(View.VISIBLE);
-        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#homescreen");
+        mLoginPage.setWebViewClient(new WebViewClient() {
+                                        @Override
+                                        public void onPageFinished(WebView view, String url) {
+                                            super.onPageFinished(view, url);
+                                            setTitle(view.getTitle());
+                                            //do your stuff ...
+                                        }
 
+                                        @Override
+                                        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                                            if (url.startsWith("file")) {
+                                                // Keep local assets in this WebView.
+                                                return false;
+                                            }
+                                        else return true;
+                                        }
+                                    });
+        mLoginPage.clearCache(true);
+        mLoginPage.clearHistory();
+        webSettings.setJavaScriptEnabled(true);//XSS vulnerable
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+        mLoginPage.setVisibility(View.VISIBLE);
+        //mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#login"); //http://sites.superfanu.com/nohsstampede/6.0.0/#login     //file:///android_asset/index.html
+        mLoginPage.loadUrl("file:///android_asset/index.html");
     }
+
 
 
 }

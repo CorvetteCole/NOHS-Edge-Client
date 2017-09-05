@@ -2,7 +2,7 @@ var nid = 305;
 var appVersion = '6.0.0';
 //api
 var http = 'https://api.superfanu.com/6.0.0/gen/';
-var api_prefix = '';
+var api_prefix = 'http://sites.superfanu.com/nohsstampede/6.0.0';
 var tkthttp = 'https://api.superfanu.com/tkt/1.0/';
 var imghttp = 'http://media.superfanu.com/api/5.0/upload_media.php';
 var profile_pic_http = 'http://media.superfanu.com/api/5.0/upload_profile_pic.php';
@@ -17,10 +17,10 @@ var rssLink = '';
 var fbAppId = '1177017332372374';
 var fbPermissions = 'email';
 //homescreen
-var homescreenBGImg = ['img/custom/homescreen.background.568.png'];
-var homescreenBGVideo = []; //'img/custom/images/custom/depaul-zone.mp4'
-var homescreenModulesImg = 'img/custom/homescreen.modules.568.png';
-var homescreenSponsorImg = 'img/custom/homescreen.sponsor.568.png';
+var homescreenBGImg = ['http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/custom/homescreen.background.568.png'];
+var homescreenBGVideo = []; //'http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/custom/images/custom/depaul-zone.mp4'
+var homescreenModulesImg = 'http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/custom/homescreen.modules.568.png';
+var homescreenSponsorImg = 'http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/custom/homescreen.sponsor.568.png';
 var home_touch_target_action = null;
 var ssoURL = '';
 var ssoLogout = '';
@@ -31,18 +31,27 @@ var platform, uuid, platformVersion, phoneModel, ostype, isJailbroken, firstLoad
     login_key, user, loggedIn, rooturl, fbPost, fbPosting, fbReady, fbLast, isBuyingPrize,
     twPost, scoreEIDSelected, soundboardIsPlaying, soundboardSounds, taggedTicketEvents,
     taggedTicketEventsCount, canUseBeacons, beaconList, individualBeaconNotification;
+var modulesToUpdate = [{"module": "events", "elementId": "events", "css": "page-light-bg-events", "img": "win-background-light-events.png"},
+    {"module": "rewards", "elementId": "awards", "css": "page-light-bg-rewards", "img": "win-background-light-rewards.png"},
+    {"module": "leaders", "elementId": "leaderboard", "css": "page-light-bg-leaders", "img": "win-background-light-leaders.png"},
+    {"module": "news", "elementId": "news", "css": "page-light-bg-news", "img": "win-background-light-news.png"},
+    {"module": "team", "elementId": "team", "css": "page-light-bg-team", "img": "win-background-light-team.png"},
+    {"module": "account", "elementId": "profile", "css": "page-dark-bg-account", "img": "win-background-dark-account.png"},
+    {"module": "fancam", "elementId": "fancam", "css": "page-dark-bg-fancam", "img": "win-background-dark-fancam.png"},
+    {"module": "fanpoll", "elementId": "fanpoll", "css": "page-dark-bg-fanpoll", "img": "win-background-dark-fanpoll.png"},
+    {"module": "rosters", "elementId": "rosters", "css": "page-dark-bg-rosters", "img": "win-background-dark-rosters.png"},
+    {"module": "studenttickets", "elementId": "student-tickets", "css": "page-dark-bg-studenttickets", "img": "win-background-dark-studenttickets.png"}];
+
+
+$(document).on("pagebeforeshow","div[data-role=page]",function(event){
+    $(this).css("min-height", $(window).height());
+});
 
 $(document).ready( function(){
-	//set the api_prefix immediately
-	if( getVar('platform')=="Android" ) {
-		api_prefix = mobile_site_url;
-		console.log("getting local cookie storage mainactivity");
-	} else {
-		api_prefix = '';
-	}
 
-        if( getVar('uuid') != undefined ) {uuid = getVar('uuid'); console.log("UUID is" + uuid)}
-    platform = 'Web: '+$.browser.name;
+
+        if( getVar('uuid') != undefined ) {uuid = getVar('uuid');}
+    platform = 'Web: '+'chrome';
         if( getVar('platform') != undefined ) {console.log("abosut to set platfrom: " + platform); platform = getVar('platform'); console.log("abosut to get platfrom: " + platform);}
     uuid = getCookie('UUID');
     platformVersion = $.browser.version;
@@ -69,7 +78,7 @@ $(document).ready( function(){
     rooturl = document.URL;
         rooturl = rooturl.split('/');
         rooturl.pop();
-        rooturl = rooturl.join('/')+'/scripts/';
+        rooturl = rooturl.join('/')+'/http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/';
     //facebook
     fbPost = {};
     fbPosting = false;
@@ -128,7 +137,7 @@ refreshNOHSStudentID();
     } else {
 		//FB
 		fbInit();
-	
+
 		//check login
 		checkLogin();
     }
@@ -145,14 +154,14 @@ refreshNOHSStudentID();
 			}
 		}
 	});
-	
+
 	//LOADING PAGE
 	$('body').on('pageshow','#loading',function(){
 		if(loggedIn == true) {
 			$.mobile.changePage( '#homescreen' );
 		}
 	});
-	
+
 	//TUTORIAL
 	$('body').on('pageshow','#tutorial',function(){
 		$('#tutorial .tutorial-slides').slick({
@@ -166,11 +175,11 @@ refreshNOHSStudentID();
 			infinite: false,
 		}).slickGoTo(0);
 	});
-	
+
 	$('.tutorial-next').click(function() {
 		$('.tutorial-slides').slickNext();
 	});
-	
+
 	$('.login-return').click(function() {
 		if(ssoURL != false && ssoLogout != false && SPaction != false) {
 			$.mobile.changePage('#single-sign-on-login');
@@ -179,7 +188,7 @@ refreshNOHSStudentID();
 		}
 
 	});
-	
+
 	//LOGIN
 	$('body').on('pageshow','#login',function(){
 		if(loggedIn == true) {
@@ -190,7 +199,7 @@ refreshNOHSStudentID();
 			return true;
 		} else {
 			//deleteCookie('UUID');
-			$.post(api_prefix+'scripts/ajax.php', {url: http+'logout.php?nid='+nid,platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")});
+			$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'logout.php?nid='+nid,platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")});
 			loggedIn = false;
 			if( individualBeaconNotification != false) {
 				showIndividualBeaconNotfication();
@@ -231,7 +240,7 @@ refreshNOHSStudentID();
 	});
 	FB.Event.subscribe('auth.authResponseChange', function(response) {
 		if (response.status === 'connected') {
-			$('img.facebook-login-logout-btn').attr('src', 'img/fb-settings-logout-btn.png');
+			$('img.facebook-login-logout-btn').attr('src', 'http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/fb-settings-logout-btn.png');
 			if(fbLast.action == 'share') {
 				var uid = response.authResponse.userID;
 			    var accessToken = response.authResponse.accessToken;
@@ -244,18 +253,18 @@ refreshNOHSStudentID();
 				loginViaFacebook();
 			}
 		} else {
-			$('img.facebook-login-logout-btn').attr('src', 'img/fb-settings-login-btn.png');
+			$('img.facebook-login-logout-btn').attr('src', 'http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/fb-settings-login-btn.png');
 		}
 	});
 	$('body').on('click', '#login-btn',  function() {
 		var user = $('#login-username').val();
 		var pass = $('#login-password').val();
 		$('#login-btn').text('Logging in...');
-		$.post(api_prefix+'scripts/ajax.php', {url: http+'new_session.php?num=64'}, function(data) {
+		$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'new_session.php?num=64'}, function(data) {
 			console.log(data);
 			if(getVar('uuid')==undefined) {uuid = data;} else {uuid = getVar('uuid');}
 			setCookie('UUID',uuid,365);
-			$.post(api_prefix+'scripts/login.php', {url: http+'login.php?nid='+nid, user: user, pass: pass, platform: platform, uuid: getCookie("UUID"), version: platformVersion, app_version: appVersion, architecture: ostype, model: phoneModel, osname: platform, ostype: "32bit", is_jailbroken: isJailbroken}, function(data) {
+			$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/login.php', {url: http+'login.php?nid='+nid, user: user, pass: pass, platform: platform, uuid: getCookie("UUID"), version: platformVersion, app_version: appVersion, architecture: ostype, model: phoneModel, osname: platform, ostype: "32bit", is_jailbroken: isJailbroken}, function(data) {
 				console.log(data);
 				var json = jQuery.parseJSON(data);
 				if(json.response=='ok') {
@@ -266,12 +275,12 @@ refreshNOHSStudentID();
 					$.mobile.changePage( '#homescreen' );
 					if( getVar('platform')=="Android" ) {
 						window.location = "updateapid:/"+nid+"/"+user.uid;
-					} 
+					}
 					$('#login-username').val('');
 					$('#login-password').val('');
 					$('#login-btn').html('Login');
 					loggedIn = true;
-					
+
 				} else {
 					$('#login-password').val('');
 					alert(json.error);
@@ -280,11 +289,11 @@ refreshNOHSStudentID();
 			});
 		});
 	});
-	
+
 	//FORGOT PASSWORD
 	$('#forgot-password-submit-btn').click(function() {
 		$('#forgot-password-submit-btn').text('Resetting...');
-		$.post(api_prefix+'scripts/ajax.php', {url: http+'forgot_password.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), email: $('#forgotPasswordTF').val()},  function(data) {
+		$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'forgot_password.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), email: $('#forgotPasswordTF').val()},  function(data) {
 			var json = jQuery.parseJSON(data);
 			if(json.response=='ok') {
 				alert(json.msg);
@@ -296,10 +305,10 @@ refreshNOHSStudentID();
 				alert(json.msg);
 				$('#forgot-password-submit-btn').text('Recover Password');
 			}
-				
+
 		});
     });
-	
+
 	//REGISTER
 	$('body').on('pageshow','#register',function(){
 		if(loggedIn == true) {
@@ -310,7 +319,7 @@ refreshNOHSStudentID();
 			return true;
 		} else {
 			//deleteCookie('UUID');
-			$.post(api_prefix+'scripts/ajax.php', {url: http+'logout.php?nid='+nid,platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")});
+			$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'logout.php?nid='+nid,platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")});
 			loggedIn = false;
 		}
 	});
@@ -335,17 +344,17 @@ refreshNOHSStudentID();
 		var user = $('#register-username').val();
 		var pass = $('#register-password').val();
 		$('#register-btn').text('Registering...');
-		$.post(api_prefix+'scripts/ajax.php', {url: http+'new_session.php?num=64'}, function(data) {
+		$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'new_session.php?num=64'}, function(data) {
 			console.log(data);
 			if(getVar('uuid')==undefined) {uuid = data} else {uuid = getVar('uuid')};
 			setCookie('UUID',uuid,365);
-			$.post(api_prefix+'scripts/login.php', {url: http+'register.php?nid='+nid, email:email, user: user, pass: pass, platform: platform, uuid: getCookie("UUID"), version: platformVersion, app_version: appVersion, architecture: ostype, model: phoneModel, osname: platform, ostype: "32bit", is_jailbroken: isJailbroken}, function(data) {
+			$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/login.php', {url: http+'register.php?nid='+nid, email:email, user: user, pass: pass, platform: platform, uuid: getCookie("UUID"), version: platformVersion, app_version: appVersion, architecture: ostype, model: phoneModel, osname: platform, ostype: "32bit", is_jailbroken: isJailbroken}, function(data) {
 				try {
 					var json = jQuery.parseJSON( data );
 				} catch(e) {
 					alert('We\'re having trouble connecting to the network. Please try again in a moment.');
 					return false;
-				} 
+				}
 				if(json.response=='ok') {
 					//$.mobile.changePage( '#events' );
 					updateLoginKey( json.loginkey );
@@ -354,7 +363,7 @@ refreshNOHSStudentID();
 					$.event.trigger({type: "moduleRefresh"});
 					if( getVar('platform')=="Android" ) {
 						window.location = "updateapid:/"+nid+"/"+user.uid;
-					} 
+					}
 					$('#register-email').val('');
 					$('#register-username').val('');
 					$('#register-password').val('');
@@ -367,7 +376,7 @@ refreshNOHSStudentID();
 			});
 		});
 	});
-	
+
 	function shibboleth(data) {
 		ssoLoggedIn = true;
 /*
@@ -377,7 +386,7 @@ refreshNOHSStudentID();
 		$.mobile.changePage( '#homescreen' );
 		//$('#register-btn').trigger('click');
 	}
-	
+
 	//HOMESCREEN
 	$( "#homescreen" ).on( "pagecontainerload", function( event, ui ) {
 		console.log('individualBeaconNotification is: '+individualBeaconNotification);
@@ -388,13 +397,13 @@ refreshNOHSStudentID();
 	$('body').on('click','#notification-view', function() {
 	    $.mobile.changePage( '#notifications' );
 	    $('#notification-view').hide();
-	    $.post(api_prefix+'scripts/read-notifications.php', {url: http+'read_notifications.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
+	    $.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/read-notifications.php', {url: http+'read_notifications.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
 	    	console.log('read notification response: '+data);
 	    });
     });
 	$('body').on('click','.notification-fanpoll', function() {
 		var pid = $(this).attr('data-pollId');
-		$.post(api_prefix+'scripts/fanpoll.php', {url: http+'get_poll_from_id.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), pid: pid},  function(data) {
+		$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/fanpoll.php', {url: http+'get_poll_from_id.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), pid: pid},  function(data) {
 			$('#fanpoll .ui-content').html(data).find('ul').listview().listview('refresh');
 		});
 	    $.mobile.changePage('#fanpoll');
@@ -406,7 +415,7 @@ refreshNOHSStudentID();
 		    if( act[0] == 'url' ) {
 
 				//have the URL, just need to track it
-				$.post(api_prefix+'scripts/ajax.php', {url: http+'link_out.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), evurl: act[1], eid: 0}, function(data) {
+				$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'link_out.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), evurl: act[1], eid: 0}, function(data) {
 					//console.log( data );
 				});
 				if(platform == 'Android') {
@@ -416,30 +425,30 @@ refreshNOHSStudentID();
 				}
 
 		    } else if( act[0] == 'lkey' ) {
-			    
+
 				if(platform == 'Android') {
 					window.location = 'modal:'+http+'link_track.php?platform='+platform+'&uuid='+getCookie("UUID")+'&nid='+nid+'&lkey='+act[1];
 				} else {
 					window.open( http+'link_track.php?platform='+platform+'&uuid='+getCookie("UUID")+'&nid='+nid+'&lkey='+act[1] , 'Link Out', '');
 				}
-		    
+
 		    } else if( act[0] == 'event' ) {
-			    
+
 			    getEventInfo( 'event-'+act[1] );
 			    $.mobile.changePage( '#event-info' );
-			    
+
 			} else if( act[0] == 'module' ) {
-				
+
 				$.mobile.changePage( '#'+act[1] );
-				
+
 			} else if( act[0] == 'fire' ) {
-			    
+
 			    //TODO: not even sure what to do here
-			    
+
 		    }
 	    }
     });
-    
+
     //EVENTS
     $('body').on('click','h1 span.events-tab',function(e) {
 		var _b = $(this);
@@ -480,7 +489,7 @@ refreshNOHSStudentID();
 		} else {
 			$(this).attr('data-hearted', "true");
 		}
-		
+
 		var source = $(this).attr('data-source');
 		if(source == 'event-info') {
 			var eventsDisplay = $('#event-' + eventid).find('.heart-input');
@@ -491,7 +500,7 @@ refreshNOHSStudentID();
 				$(eventsDisplay).attr('data-hearted', "true");
 			}
 		}
-		$.post(api_prefix+'scripts/ajax.php', {url: http+'heart.php?nid=' + nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), hkey: 'event', hvalue: eventid}, function(data) {
+		$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'heart.php?nid=' + nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), hkey: 'event', hvalue: eventid}, function(data) {
 			var rMsg = $.parseJSON(data);
 			console.log(rMsg);
 		});
@@ -521,7 +530,7 @@ refreshNOHSStudentID();
 			var watchGeo = navigator.geolocation.watchPosition(function(position) {
 				if(position.coords.accuracy <= 500 || count==4) {
 					navigator.geolocation.clearWatch(watchGeo);
-					$.post(api_prefix+'scripts/ajax.php', {url: http+'check_in.php?nid='+nid, eventid: eventid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), latitude: position.coords.latitude, longitude: position.coords.longitude, accuracy: position.coords.accuracy}, function(data) {
+					$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'check_in.php?nid='+nid, eventid: eventid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), latitude: position.coords.latitude, longitude: position.coords.longitude, accuracy: position.coords.accuracy}, function(data) {
 						var rMsg = $.parseJSON(data);
 						console.log(rMsg);
 						getEventInfo('event-'+eventid);
@@ -572,7 +581,7 @@ refreshNOHSStudentID();
     $('body').on('click','.social-facebook', function() {
 		var fb = $(this);
 		fbLast.action = 'share';
-		
+
 		fbPost = {
 		    //method: 'feed', //v2.0
 		    method: 'feed', //v2.2
@@ -583,14 +592,14 @@ refreshNOHSStudentID();
 		    description: fb.attr('data-description').replace(/\\(.)/mg, "$1"),
 		    eventid: fb.attr('data-eid')
 		};
-		
+
 		FB.getLoginStatus(function(response) {
 			if (response.status === 'connected') {
 			    var uid = response.authResponse.userID;
 			    var accessToken = response.authResponse.accessToken;
 			    postToFB();
 			} else if (response.status === 'not_authorized') {
-			    // the user is logged in to Facebook, 
+			    // the user is logged in to Facebook,
 			    // but has not authenticated the fb app
 			    console.log('logged into facebook, but not authenticated');
 				fbLogin(function() {}, function() {});
@@ -607,7 +616,7 @@ refreshNOHSStudentID();
 		getEventInfoUsers( $(this).attr('data-eid') );
 		$.mobile.changePage( '#event-info-users' );
 	});
-    
+
     //AWARDS
     $('body').on('click','h1 span.awards-tab',function(e) {
 		var _b = $(this);
@@ -635,14 +644,14 @@ refreshNOHSStudentID();
 		$('#award-detail img.qr-icon').hide();
 		$('#award-detail img.barcode').show();
 	});
-	
+
 	$('body').on('click','.award-redeemable',function(e) {
 		var cid = $(this).attr('data-cid');
 		if( confirm("An administrator will tap Redeem for you when your award is ready. If you are not an administrator, tap Later.\nIssued: "+user.name+" (" + user.username+")") ) {
 			redeemAward( cid );
 		}
 	});
-	
+
 	//PRIZE STORE
     $('body').on('click','#refresh-prizestore',function(e) {
 		refreshPrizeStore();
@@ -658,7 +667,7 @@ refreshNOHSStudentID();
 			if(isBuyingPrize == false) {
 				if( confirm("Are you sure? Purchasing this prize will deduct "+$(this).attr('data-points-needed')+" points from your account!") ) {
 					buyPrize( pid, $(this) );
-				}	
+				}
 			}
 		}
 	});
@@ -672,9 +681,9 @@ refreshNOHSStudentID();
 			} else {
 				$(this).removeClass('redeeming');
 			}
-		}	
+		}
 	});
-	
+
 	//LEADERBOARD
 	$('body').on('click','#refresh-leaderboard',function(e) {
 		refreshLeaderboard();
@@ -682,7 +691,7 @@ refreshNOHSStudentID();
 	$('body').on('change','#leaderboard input:radio',function(e){
 	    $('#leaderboard .ui-content').html( decodeURIComponent( $(this).attr('data-html') ) ).trigger('create');
 	});
-	
+
 	//FANCAM
 	$('body').on('click', '#add-fancam', function() {
 		window.location = "checkreadstoragepermissions:/";
@@ -690,14 +699,14 @@ refreshNOHSStudentID();
     $('#upload-fancam-media').on('change', '#upload-media', function() {
 	  console.log('submitting');
 	  $('#media-progress').show();
-	   
+
 	  var formData = new FormData( $('#upload-media') );
-	  var fd = new FormData();    
+	  var fd = new FormData();
 	  fd.append( 'media', $('#upload-media')[0].files[0]/* $('#upload-profile-pic')[0][0].files[0] */ );
 	  fd.append( 'platform', platform );
 	  fd.append( 'uuid', getCookie("UUID") );
-	  	
-	  	
+
+
 	  	$.ajax({
 	        url: imghttp+'?nid='+nid,  //Server script to process data
 	        type: 'POST',
@@ -715,7 +724,7 @@ refreshNOHSStudentID();
 		        console.log('success');
 		        console.log(data);
 				refreshFanCam(nid);
-		        
+
 	        },
 	        error: function(e) {
 		        $('#media-progress').hide();
@@ -731,8 +740,8 @@ refreshNOHSStudentID();
 	        contentType: false,
 	        processData: false
 	    });
-	   
-	   
+
+
     });
     $('body').on('click','#fancam .photo-s',function(e) {
 		var ind = $(this).attr( 'data-ind' );
@@ -743,7 +752,7 @@ refreshNOHSStudentID();
 			$('#bind-'+ind+' video').trigger('play');
 		}
 	});
-	
+
 	//VENUE LIST
 	$('body').on('keyup','#venue-filter',function(e){
 	    var k = $(this).val();
@@ -769,20 +778,20 @@ refreshNOHSStudentID();
 		}
 	});
 
-	
+
 	///DYNAMIC TABS
 	$('body').on('change','#dynamic-text-tabs input:radio',function(e){
 	    $('#dtt-content').html( decodeURIComponent( $(this).attr('data-html') ) ).trigger('create');
 	});
-	
+
 	//NEWS
 	$('body').on('click','#refresh-news',function(e) {
 		refreshNews();
 	});
-	
+
 	//FANPOLL
 	$('body').on('click','tr.voteable', function() {
-		$.post(api_prefix+'scripts/fanpoll-vote.php', {url: http+'poll_vote.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), pid: $(this).parent().parent().attr('data-pid'), answer: $(this).find('h4').html()}, function(data) {
+		$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/fanpoll-vote.php', {url: http+'poll_vote.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), pid: $(this).parent().parent().attr('data-pid'), answer: $(this).find('h4').html()}, function(data) {
 			//alert(data);
 			console.log(data);
 			if(data=='ok') {
@@ -792,7 +801,7 @@ refreshNOHSStudentID();
 			}
 		});
 	});
-	
+
 	//PROFILE
 	$('body').on('click','.logoutBtn', function() {
 		if(ssoLoggedIn) {
@@ -812,24 +821,24 @@ refreshNOHSStudentID();
 			if (response.status === 'connected') {
 				//logout
 				FB.logout();
-				$('img.facebook-login-logout-btn').attr('src', 'img/fb-settings-login-btn.png');
+				$('img.facebook-login-logout-btn').attr('src', 'http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/fb-settings-login-btn.png');
 			} else {
 				//login
 				fbLast.action = null;
 				fbLogin(function() {
-					$('img.facebook-login-logout-btn').attr('src', 'img/fb-settings-logout-btn.png');
+					$('img.facebook-login-logout-btn').attr('src', 'http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/fb-settings-logout-btn.png');
 				}, function() {});
 			}
 		});
 	});
-	
+
 	$('body').on('change', '#canUseBeaconToggle', function() {
 		if(platform=='Android') {
 			window.location='updateCanUseBeacon:/'+$('#canUseBeaconToggle').is(':checked');
 			refreshBeacons();
 		}
 	});
-	
+
 	//PROFILE EDIT
 	$('body').on('click', '.upload-user-pic', function() {
 	    console.log('synthesizing click');
@@ -840,7 +849,7 @@ refreshNOHSStudentID();
 		$('#profile-edit .profile-info p').hide();
 		$('#profile-edit .profile-info progress').show();
 		var formData = new FormData( $('#upload-profile-pic') );
-		var fd = new FormData();    
+		var fd = new FormData();
 		fd.append( 'media', $('#upload-user-pic')[0].files[0] );
 		fd.append( 'platform', platform );
 		fd.append( 'uuid', getCookie("UUID") );
@@ -867,7 +876,7 @@ refreshNOHSStudentID();
 		        } else {
 			        alert( json.error );
 		        }
-		        
+
 	        },
 	        error: function(e) {
 		        $('#progress-upload-user-pic').hide();
@@ -886,7 +895,7 @@ refreshNOHSStudentID();
 		$('#update-profile-btn').text('Saving...');
 		console.log('nid: '+nid+', platform: '+platform+', uuid: '+getCookie("UUID")+', login_key: '+login_key);
 		var formElements = $('#edit-profile-form').serialize();
-		$.post(api_prefix+'scripts/update_profile.php', {url: http+'update_profile.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), formdata: formElements}, function(data) {
+		$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/update_profile.php', {url: http+'update_profile.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), formdata: formElements}, function(data) {
 			console.log(data);
 			try {
 				var json = jQuery.parseJSON( data );
@@ -894,7 +903,7 @@ refreshNOHSStudentID();
 				$('#update-profile-btn').text('Save');
 				alert("We're having trouble connecting to the network. Please try again in a moment.");
 				return false;
-			} 
+			}
 			if(json.response=='ok') {
 				if(json.message!='' && json.message != null) {
 					alert( json.message );
@@ -909,34 +918,38 @@ refreshNOHSStudentID();
 			}
 		});
 	});
-	
+
 	//MYQR CODE
 	$('body').on('pageshow','#myqr-code',function(){
 		$('#myqr-code img.qr').attr('src', tkthttp + 'my-qr?encode=' + user.email);
 	});
-	
+
 	//NOHS STUDENT ID
 	$('body').on('pageshow','#nohs-student-id',function(){
 		refreshNOHSStudentID();
 	});
-	
+
 	$('body').on('click','#refresh-sports-pass',function(){
 		refreshNOHSStudentID();
 	});
-	
+
+	$('body').on('click','img.hologram-verification',function(){
+		AnimateRotate(90);
+	});
+
 	//HELP / FEEDBACK
 	$('#send-feedback-btn').click(function(e) {
 		if( $('#feeback-text').val() == '' ) {
 			alert('You have to type something before you can send it');
 			return false;
 		}
-		$.post(api_prefix+'scripts/ajax.php', {url: http+'feedback.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), feedback_text: $('#feeback-text').val(), version: platformVersion, app_version: appVersion, ostype: ostype, phone_model: phoneModel, osname: platform, ostype: "32bit", is_jailbroken: isJailbroken},  function(data) {
+		$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'feedback.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), feedback_text: $('#feeback-text').val(), version: platformVersion, app_version: appVersion, ostype: ostype, phone_model: phoneModel, osname: platform, ostype: "32bit", is_jailbroken: isJailbroken},  function(data) {
 			try {
 				var json = jQuery.parseJSON( data );
 			} catch(e) {
 				alert("We're having trouble connecting to the network. Please try again in a moment.");
 				return false;
-			} 
+			}
 			if(json.response=='ok') {
 				if(json.message!='' && json.message != null) {
 					alert( json.message );
@@ -947,16 +960,16 @@ refreshNOHSStudentID();
 			}
 		});
 	});
-	
+
 	function refreshFAQ() {
-        $.post(api_prefix+'scripts/faq.php', {url: http+'get_faq.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), tkthttp: tkthttp},  function(data) {
+        $.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/faq.php', {url: http+'get_faq.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), tkthttp: tkthttp},  function(data) {
             $('#help-faq .ui-content').html("<h4>Frequently Asked Questions</h4>" + data);
         });
 	}
 
 	var acc = document.getElementsByClassName("accordion");
 	var i;
-	
+
 	for (i = 0; i < acc.length; i++) {
 	  acc[i].onclick = function() {
 	    this.classList.toggle("active");
@@ -965,13 +978,13 @@ refreshNOHSStudentID();
 	      panel.style.maxHeight = null;
 	    } else {
 	      panel.style.maxHeight = panel.scrollHeight + "px";
-	    } 
+	    }
 	  }
-	}	
+	}
 	//PROMO
 	$('#promo-submit-btn').click(function() {
 		$('#promo-submit-btn').text('Checking...');
-		$.post(api_prefix+'scripts/ajax.php', {url: http+'promo-code.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), invite: $('#promoTF').val()},  function(data) {
+		$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'promo-code.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), invite: $('#promoTF').val()},  function(data) {
 	    	var json = jQuery.parseJSON(data);
 		        if(json.response == 'ok') {
 					alert(json.msg);
@@ -985,7 +998,7 @@ refreshNOHSStudentID();
 				}
 		});
 	});
-	
+
 	//INVITE
 	$('#invite-submit-btn').click(function() {
 	   	var users = [];
@@ -996,23 +1009,23 @@ refreshNOHSStudentID();
 				emails: {'manual': [ sub ]},
 				phones: {'manual': [ sub ]}
 			}
-		); 
+		);
 		alert('Your invitation is being sent');
 		//$.mobile.changePage( '#profile', { reverse: 'true'} );
 		$.mobile.back();
 		$('#inviteTF').val('');
 		console.log(users);
-		$.post(api_prefix+'scripts/ajax.php', {url: http+'invite.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), invite: JSON.stringify(users)},  function(data) {
+		$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'invite.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), invite: JSON.stringify(users)},  function(data) {
 			console.log(data);
 		});
     });
-	
+
 	//NOTIFICATIONS
     $('body').on('click','#refresh-notifications',function(e) {
 		refreshNotifications();
 	});
-	
-	
+
+
     //OFFERS
     $('body').on('click','#refresh-offers',function(e) {
 		refreshOffers();
@@ -1027,12 +1040,12 @@ refreshNOHSStudentID();
 			redeemOffer( oid );
 		}
 	});
-	
+
 	//SOCIAL FEED
     $('body').on('click','#refresh-social-feed',function(e) {
 		refreshSocialFeed();
 	});
-	
+
 	//SOUNDBOARD
 	$('#soundboard tr a').each(function(i) {
 		soundboardSounds.push( {name: $( this ).attr('data-link')} );
@@ -1041,11 +1054,11 @@ refreshNOHSStudentID();
 			ion.sound({
 			    sounds: soundboardSounds,
 			    volume: 1.0,
-			    path: "audio/soundboard/",
+			    path: "http://sites.superfanu.com/nohsstampede/6.0.0/assets/audio/soundboard/",
 			    preload: true
 			});
-		}	
-	
+		}
+
 	$('body').on('click', '#soundboard a', function(e) {
 		e.preventDefault();
 		var audio = $(this);
@@ -1053,25 +1066,25 @@ refreshNOHSStudentID();
 			//start audio
 			soundboardIsPlaying = audio.attr('data-link');
 			ion.sound.play( audio.attr('data-link') );
-			$('#soundboard img').attr('src','img/play-black@2x.png');
-			audio.parent().parent().find('img').attr('src','img/stop-black@2x.png');
+			$('#soundboard img').attr('src','http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/play-black@2x.png');
+			audio.parent().parent().find('img').attr('src','http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/stop-black@2x.png');
 		} else {
 			//stop old one first
 			ion.sound.stop(soundboardIsPlaying);
 			if(soundboardIsPlaying == audio.attr('data-link')) {
 				//do nothing
 				soundboardIsPlaying = false;
-				$('#soundboard img').attr('src','img/play-black@2x.png');
+				$('#soundboard img').attr('src','http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/play-black@2x.png');
 			} else {
 				//start the selected song
 				soundboardIsPlaying = audio.attr('data-link');
 				ion.sound.play( audio.attr('data-link') );
-				$('#soundboard img').attr('src','img/play-black@2x.png');
-				audio.parent().parent().find('img').attr('src','img/stop-black@2x.png');
+				$('#soundboard img').attr('src','http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/play-black@2x.png');
+				audio.parent().parent().find('img').attr('src','http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/stop-black@2x.png');
 			}
 		}
 	});
-	
+
 	//TICKETS
 	$('body').on('pageshow','#student-tickets',function(){
 		getMyTicketsAndChats();
@@ -1079,7 +1092,7 @@ refreshNOHSStudentID();
 	$('body').on('pageshow','#student-tickets-buy',function(){
 		getAvailableTickets();
 	});
-	
+
 	$('#add-tickets').click(function() {
 		if( $('#student-tickets-sell-eid').val() == null ) {
 			alert("You have to select an event to list tickets for");
@@ -1087,7 +1100,7 @@ refreshNOHSStudentID();
 		}
 		$('#add-tickets').text('Adding....');
 		console.log('eid: '+$('#student-tickets-sell-eid').val());
-		$.post(api_prefix+'scripts/ajax.php', {url: http+'student_tickets_sell.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), eid: $('#student-tickets-sell-eid').val(), event: 'placeholder', qty: $('#student-tickets-sell-qty').val(), price: $('#student-tickets-sell-price').val(), location: $('#student-tickets-sell-location').val(), description: $('#student-tickets-sell-description').val()}, function(data) {
+		$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'student_tickets_sell.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), eid: $('#student-tickets-sell-eid').val(), event: 'placeholder', qty: $('#student-tickets-sell-qty').val(), price: $('#student-tickets-sell-price').val(), location: $('#student-tickets-sell-location').val(), description: $('#student-tickets-sell-description').val()}, function(data) {
 			console.log(data);
 			$('#add-tickets').text('Add Tickets');
 			var json = jQuery.parseJSON(data);
@@ -1097,18 +1110,18 @@ refreshNOHSStudentID();
 				$.mobile.back();
 				alert(json.msg);
 				//close window
-				
+
 			} else {
 				alert(json.errormsg);
 				//don't close the window
 			}
 		});
 	});
-	
+
 	$('#student-tickets-buy-eid').change(function() {
 		getAvailableTickets();
 	});
-	
+
 	$('body').on('click', '#single-sign-on-login', function(e) {
 		if(platform == 'Android') {
 			window.location = 'modal:'+ssoURL;
@@ -1116,7 +1129,7 @@ refreshNOHSStudentID();
 			//alert("figuring this out for web still");
 		}
 	});
-	
+
 	$('body').on('click','#student-tickets-buy-tickets .chat-link a, #my-chats .chat-link a',function(e) {
 		e.preventDefault();
 		var chat = $(this);
@@ -1126,17 +1139,17 @@ refreshNOHSStudentID();
 		getStudentTicketsChat( chat.attr('data-stid'), null, chat.attr('data-touid') );
 		$.mobile.changePage( '#student-tickets-chat' );
 	});
-	
+
 	$('body').on('click','#student-tickets-buy-message-send',function(e) {
 		e.preventDefault();
 		var msg = $('#student-tickets-buy-message').val();
 		if(msg == '') {return;}
 		var send = $(this);
-		$.post(api_prefix+'scripts/ajax.php', {url: http+'student_tickets_chat_post.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), stid: send.attr('data-stid'), to_uid: send.attr('data-touid'), message: msg}, function(data) {
+		$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'student_tickets_chat_post.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), stid: send.attr('data-stid'), to_uid: send.attr('data-touid'), message: msg}, function(data) {
 			getStudentTicketsChat( send.attr('data-stid') , null, send.attr('data-touid') );
 		});
 	});
-	
+
 	$('body').on('click','#my-tickets .chats-link a',function(e) {
 		e.preventDefault();
 		var tix = $(this);
@@ -1144,7 +1157,7 @@ refreshNOHSStudentID();
 		getTicketChats(tix.attr('data-stid'));
 		$.mobile.changePage( '#student-tickets-chats' );
 	});
-	
+
 	$('body').on('click','#ticket-chats .chat-link a',function(e) {
 		e.preventDefault();
 		var chat = $(this);
@@ -1154,11 +1167,11 @@ refreshNOHSStudentID();
 		getStudentTicketsChat( chat.attr('data-stid'), chat.attr('data-threadid'), chat.attr('data-touid') );
 		$.mobile.changePage( '#student-tickets-chat' );
 	});
-	
+
 	$('body').on('click','#delete-tickets',function(e) {
 		var stid = $(this).attr('data-stid');
 		if(confirm('Are you sure you want to remove these tickets from the listings? There is no undo.')) {
-			$.post(api_prefix+'scripts/ajax.php', {url: http+'student_tickets_remove.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), stid: stid }, function(data) {
+			$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'student_tickets_remove.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), stid: stid }, function(data) {
 				getMyTicketsAndChats();
 				$.mobile.changePage( '#student-tickets' );
 			});
@@ -1175,23 +1188,23 @@ refreshNOHSStudentID();
 	$('body').on('change','#add-score-chooser',function(e) {
 		scoreEIDSelected = $(this).val();
 			console.log('scoreEID = '+scoreEIDSelected);
-			
+
 		$('#scores-add-us-img').attr('src', $('#scores-us-img-'+scoreEIDSelected).attr('src'));
 		$('#scores-add-opp-img').attr('src', $('#scores-opp-img-'+scoreEIDSelected).attr('src'));
 		$.mobile.changePage( '#scores-add' );
 		$('#scores li.scores-event-chooser').hide();
 		$('#add-score-chooser').val('');
 	});
-	
+
 	$('#scores-add-btn').click(function() {
 		$('#scores-add-btn').text('Submitting...');
-		$.post(api_prefix+'scripts/ajax.php', {url: http+'add_scores.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), eid: scoreEIDSelected, us_score: $('#scores-add-us-score').val(), opp_score: $('#scores-add-opp-score').val()}, function(data) {
+		$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'add_scores.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), eid: scoreEIDSelected, us_score: $('#scores-add-us-score').val(), opp_score: $('#scores-add-opp-score').val()}, function(data) {
 			$('#update-profile-btn').text('Add Score');
 			try {
 				var json = jQuery.parseJSON(data);
 			} catch(e) {
 				alert('There was an error submitting your score. Please try again.');
-				return;	
+				return;
 			}
 			alert(json.message);
 			if(json.response == 'ok') {
@@ -1202,22 +1215,22 @@ refreshNOHSStudentID();
 				$('#scores-add-opp-score').val('');
 				$.mobile.back();
 			}
-			
+
 		});
 	});
-	
-	
-	
-	
+
+
+
+
 	//MISC
 	$('body').on('click','.link-track', function() {
 		var link = $(this);
 		//console.log( 'track: ' + link.attr('data-lkey') + ' ' + link.attr('data-url') + ' ' + link.attr('data-title') + ' ' + link.attr('data-eid') );
-		
+
 		if( link.attr('data-url') != undefined ) {
 			if( link.attr('data-url') != '' ) {
 				//have the URL, just need to track it
-				$.post(api_prefix+'scripts/ajax.php', {url: http+'link_out.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), evurl: link.attr('data-url'), eid: link.attr('data-eid')}, function(data) {
+				$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'link_out.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), evurl: link.attr('data-url'), eid: link.attr('data-eid')}, function(data) {
 					//console.log( data );
 				});
 				if(platform == 'Android') {
@@ -1237,16 +1250,36 @@ refreshNOHSStudentID();
 	$('body').on('click','.ad-interstitial .ad-header .close-btn', function() {
 		$(this).parent().parent().hide();
 	});
-	
-	$('span.appName').text(appname);
+
+    $('span.appName').text(appname);
 	$('span.networkName').text(networkName);
 	$('span.app-version').text('version '+appVersion);
 	if(platform == 'Android') {
 		$('.android-only').show();
 	}
-	
+
+    for(module in modulesToUpdate) {
+        moduleImageExists(modulesToUpdate[module]);
+    }
+
+    function AnimateRotate(d){
+        $({deg: 0}).animate({deg: d}, {
+            duration: 250,
+            step: function(now, fx){
+                $("img.hologram-verification").css({
+                     transform: "rotate(" + now + "deg)"
+                });
+            }
+        });
+    }
+
 });
 
+function moduleImageExists(module) {
+    $.get("http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/custom/"+module["img"])
+    .fail(function() {console.log('http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/custom/'+module["img"]+" doesn't exist");})
+    .done(function() {$("#"+module["elementId"]).addClass(module["css"])});
+}
 
 
 function updateLoginKey( loginkey ) {
@@ -1280,7 +1313,7 @@ function checkLogin() {
 	} else {
         console.log("main: here is the cookies: " + JSON.stringify(localCookieStorage));
 		console.log("main: here are the vars we passed: " + `platform: ${platform}, uuid: ${getCookie("UUID")}, login_key: ${getCookie("login_key")}, version: ${platformVersion}, app_version: ${appVersion}, architecture: ${ostype}, model: ${phoneModel}, osname: ${platform}, is_jailbroken: ${isJailbroken}`);
-		$.post(api_prefix+'scripts/ajax.php', {url: http+'check_login.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), version: platformVersion, app_version: appVersion, architecture: ostype, model: phoneModel, osname: platform, ostype: "32bit", is_jailbroken: isJailbroken}, function(data) {
+		$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'check_login.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), version: platformVersion, app_version: appVersion, architecture: ostype, model: phoneModel, osname: platform, ostype: "32bit", is_jailbroken: isJailbroken}, function(data) {
 			console.log("main: here is the data returned: " + data);
 			var json = jQuery.parseJSON(data);
 			console.log('check login response: '+json.response);
@@ -1322,8 +1355,8 @@ function checkLogin() {
 
 //events
 function refreshEvents() {
-	$('#events .ui-content').html('<div class="loading"><img src="img/ajax-loader.gif" /><p>Loading Events...</p></div>');
-	$.post(api_prefix+'scripts/events.php', {url: http+'get_events.php?nid='+nid+'&headers=month', platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
+	$('#events .ui-content').html('<div class="loading"><img src="http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/ajax-loader.gif" /><p>Loading Events...</p></div>');
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/events.php', {url: http+'get_events.php?nid='+nid+'&headers=month', platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
 		$('#events .ui-content').html(data).find('ul').listview().listview('refresh');
 		$('#events .nav-bar-color h1').html( $('#events .ui-content #event-tags').html() );
 		var showOnlyTag = $('#show-only-tag').text();
@@ -1352,8 +1385,8 @@ function refreshEvents() {
 
 function getEventInfo(eventid) {
 	eventid = eventid.replace('event-','');
-	$('#event-info .ui-content').html('<div class="loading"><p><img src="img/ajax-loader.gif" /><p>Loading Event Info...</p></div>');
-	$.post(api_prefix+'scripts/event-info.php', {url: http+'event_info.php?nid='+nid, eventid: eventid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
+	$('#event-info .ui-content').html('<div class="loading"><p><img src="http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/ajax-loader.gif" /><p>Loading Event Info...</p></div>');
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/event-info.php', {url: http+'event_info.php?nid='+nid, eventid: eventid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
 		$('#event-info .ui-content').html(data);
 		if(platform != 'Android') {
 			$('.android-only').hide();
@@ -1372,16 +1405,16 @@ function getEventInfo(eventid) {
 }
 
 function getEventInfoUsers( eventid ) {
-	$('#event-info-users .ui-content').html('<div class="loading"><p><img src="img/ajax-loader.gif" /><p>Loading Event Users...</p></div>');
-	$.post(api_prefix+'scripts/event-info-users.php', {url: http+'get_event_checked_in_users.php?nid='+nid, eid: eventid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
+	$('#event-info-users .ui-content').html('<div class="loading"><p><img src="http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/ajax-loader.gif" /><p>Loading Event Users...</p></div>');
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/event-info-users.php', {url: http+'get_event_checked_in_users.php?nid='+nid, eid: eventid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
 		$('#event-info-users .ui-content').html(data).find('ul').listview().listview('refresh');
 	});
 }
 
 //rewards
 function refreshRewards() {
-	$('#awards .ui-content').html('<div class="loading"><img src="img/ajax-loader.gif" /><p>Loading Rewards...</p></div>');
-	$.post(api_prefix+'scripts/rewards.php', {url: http+'get_awards_and_prizes.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), tkthttp: tkthttp},  function(data) {
+	$('#awards .ui-content').html('<div class="loading"><img src="http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/ajax-loader.gif" /><p>Loading Rewards...</p></div>');
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/rewards.php', {url: http+'get_awards_and_prizes.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), tkthttp: tkthttp},  function(data) {
 		$('#awards .ui-content').html(data).find('ul').listview().listview('refresh');
 		twemoji.parse(document.getElementById('awards'), {size: 36});
 		var a = $('#rewards').html();
@@ -1443,8 +1476,8 @@ function redeemAward( cid ) {
 	var latitude = 0;
 	var longitude = 0;
 	var accuracy = 0;
-	$.post(api_prefix+'scripts/ajax.php', {url: http+'redeem_prize.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), latitude: latitude, longitude: longitude, accuracy: accuracy, cid: cid}, function(data) {
-	
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'redeem_prize.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), latitude: latitude, longitude: longitude, accuracy: accuracy, cid: cid}, function(data) {
+
 		var resp = $.parseJSON( data );
 		if(resp.success) {
 			alert("Success! Your award was redeemed!");
@@ -1463,7 +1496,7 @@ function redeemAward( cid ) {
 					month = month + 1;
 				var year = date.getFullYear();
 				var datetime = month + '/' + day + '/' + year + ' at ' + hour + ':' + (minute<10?'0':'') + minute + am;
-			
+
 			$('#award-detail .ui-content span.date').text('Redeemed: '+datetime);
 			$('#award-'+ $('#redeem-award-btn').attr('data-aid') ).attr('data-used', '1').attr('data-used-tx', datetime);
 			$('#redeem-award-btn').removeClass('award-redeemable').addClass('award-redeemed').text('Redeemed')
@@ -1476,8 +1509,8 @@ function redeemAward( cid ) {
 
 //prize store
 function refreshPrizeStore() {
-	$('#prize-store .ui-content').html('<div class="loading"><img src="img/ajax-loader.gif" /><p>Loading Prize Store...</p></div>');
-	$.post(api_prefix+'scripts/prize-store.php', {url: http+'get_prize_store.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
+	$('#prize-store .ui-content').html('<div class="loading"><img src="http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/ajax-loader.gif" /><p>Loading Prize Store...</p></div>');
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/prize-store.php', {url: http+'get_prize_store.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
 		$('#prize-store .ui-content').html(data).find('ul').listview().listview('refresh');
 		twemoji.parse(document.getElementById('prize-store'), {size: 36});
 	});
@@ -1495,17 +1528,17 @@ function setPrizeStoreDetail( _o ) {
 	if( _o.attr('data-is-redeemable') == '1' ) {
 		$('#prize-store-detail .ui-content div#redeemable-items').addClass('is-redeemable');
 	}
-	
+
 	if( _o.attr('data-award-img-inside-unlocked') != '' ) {
 		$('#prize-store-detail img.img-inside-unlocked').attr('src', _o.attr('data-award-img-inside-unlocked'));
 	}
 	if( _o.attr('data-award-img-inside') != '' ) {
 		$('#prize-store-detail img.img-inside').attr('src', _o.attr('data-award-img-inside'));
 	}
-	
+
 	$('#prize-store-detail img.img-inside').hide();
 	$('#prize-store-detail img.img-inside-unlocked').hide();
-	
+
 	if( parseInt( _o.attr('data-prize-count') ) == 0 ) {
 		if( _o.attr('data-award-img-inside') != '' ) {
 			$('#prize-store-detail img.img-inside').show();
@@ -1538,7 +1571,7 @@ function setPrizeStoreDetail( _o ) {
 
 function getPrizeStoreRedeemableItems( pid ) {
 	//return;
-	$.post(api_prefix+'scripts/prize-store-redeemable-items.php', {url: http+'redeem_prize_store_purchased_items.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), pid: pid},  function(data) {
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/prize-store-redeemable-items.php', {url: http+'redeem_prize_store_purchased_items.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), pid: pid},  function(data) {
 		console.log('data = '+data);
 		$('#prize-store-detail .ui-content div.loading-text').hide();
 		$('#prize-store-detail .ui-content div#redeemable-items').html(data).find('ul').listview().listview('refresh');
@@ -1553,7 +1586,7 @@ function buyPrize(pid, _obj) {
 	if($('#prize-store-option').val() !== undefined) {
 		prize_option = $('#prize-store-option').val();
 	}
-	$.post(api_prefix+'scripts/ajax.php', {url: http+'redeem_prize_store.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), pid: pid, prize_option: prize_option},  function(data) {
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'redeem_prize_store.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), pid: pid, prize_option: prize_option},  function(data) {
 		var json = JSON.parse( data );
 		if(json.response == 'ok') {
 			getPrizeStoreRedeemableItems( pid );
@@ -1563,7 +1596,7 @@ function buyPrize(pid, _obj) {
 			//update coins
 			$('#prize-store .ui-content .user-info span.user-points').text( json.coins );
 			//update original prize card
-			$('#prize-id-'+pid).attr('data-prize-count', 
+			$('#prize-id-'+pid).attr('data-prize-count',
 				parseInt( $('#prize-id-'+pid).attr('data-prize-count') ) + 1
 			);
 			//update inside image
@@ -1583,8 +1616,8 @@ function buyPrize(pid, _obj) {
 
 function prizeStoreRedeemItem(pid, prid, _obj) {
 	var original_text = _obj.html();
-	_obj.html('<img src="img/ajax-loader.gif" />');
-	$.post(api_prefix+'scripts/ajax.php', {url: http+'redeem_prize_store_redeem_item.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), prid: prid},  function(data) {
+	_obj.html('<img src="http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/ajax-loader.gif" />');
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'redeem_prize_store_redeem_item.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), prid: prid},  function(data) {
 		var json = JSON.parse( data );
 		if(json.response == 'ok') {
 			alert( json.title + "\n" + json.msg );
@@ -1597,16 +1630,16 @@ function prizeStoreRedeemItem(pid, prid, _obj) {
 }
 
 function refreshHistory() {
-	$('#history .ui-content').html('<div class="loading"><img src="img/ajax-loader.gif" /><p>Loading History...</p></div>');
-	$.post(api_prefix+'scripts/history.php', {url: http+'get_point_history.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
+	$('#history .ui-content').html('<div class="loading"><img src="http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/ajax-loader.gif" /><p>Loading History...</p></div>');
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/history.php', {url: http+'get_point_history.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
 		$('#history .ui-content').html(data).find('ul').listview().listview('refresh');
 	});
 }
 
 //offers
 function refreshOffers() {
-	$('#offers .ui-content').html('<div class="loading"><img src="img/ajax-loader.gif" /><p>Loading Offers...</p></div>');
-	$.post(api_prefix+'scripts/offers.php', {url: http+'get_offers.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
+	$('#offers .ui-content').html('<div class="loading"><img src="http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/ajax-loader.gif" /><p>Loading Offers...</p></div>');
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/offers.php', {url: http+'get_offers.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
 		$('#offers .ui-content').html(data).find('ul').listview().listview('refresh');
 	});
 }
@@ -1637,7 +1670,7 @@ function setOfferDetail( _o ) {
 		} else {
 			$('#offer-detail .ui-content span.date').text('Redeemed on '+_o.attr('data-used-tx'));
 		}
-		
+
 	}
 
 	$('#offer-detail .ui-content p.description').html(  _o.attr('data-description').replace(/\\(.)/mg, "$1") );
@@ -1648,7 +1681,7 @@ function redeemOffer(oid) {
 	var latitude = 0;
 	var longitude = 0;
 	var accuracy = 0;
-	$.post(api_prefix+'scripts/ajax.php', {url: http+'redeem_offer.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), latitude: latitude, longitude: longitude, accuracy: accuracy, oid: oid}, function(data) {
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'redeem_offer.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), latitude: latitude, longitude: longitude, accuracy: accuracy, oid: oid}, function(data) {
 		console.log(data);
 		try {
 			var resp = $.parseJSON( data );
@@ -1674,7 +1707,7 @@ function redeemOffer(oid) {
 					month = month + 1;
 				var year = date.getFullYear();
 				var datetime = month + '/' + day + '/' + year + ' at ' + hour + ':' + (minute<10?'0':'') + minute + am;
-			
+
 			$('#offer-detail .ui-content span.date').text('Redeemed: '+datetime);
 			$('#offer-'+ oid ).attr('data-used-tx', datetime);
 			$('#redeem-offer-btn').removeClass('offer-redeemable').addClass('offer-redeemed').text('Redeemed')
@@ -1687,8 +1720,8 @@ function redeemOffer(oid) {
 
 //social feed
 function refreshSocialFeed() {
-	$('#social-feed .ui-content').html('<div class="loading"><img src="img/ajax-loader.gif" /><p>Loading Social Feed...</p></div>');
-	$.post(api_prefix+'scripts/social-feed.php', {url: http+'social_feed.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
+	$('#social-feed .ui-content').html('<div class="loading"><img src="http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/ajax-loader.gif" /><p>Loading Social Feed...</p></div>');
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/social-feed.php', {url: http+'social_feed.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
 		$('#social-feed .ui-content').html(data).find('ul').listview().listview('refresh');
 		twemoji.parse(document.getElementById('social-feed'), {size: 16});
 	});
@@ -1696,8 +1729,8 @@ function refreshSocialFeed() {
 
 //leaderboard
 function refreshLeaderboard() {
-	$('#leaderboard .ui-content').html('<div class="loading"><img src="img/ajax-loader.gif" /><p>Loading Leaderboard...</p></div>');
-	$.post(api_prefix+'scripts/leaderboard.php', {url: http+'get_leaders.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
+	$('#leaderboard .ui-content').html('<div class="loading"><img src="http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/ajax-loader.gif" /><p>Loading Leaderboard...</p></div>');
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/leaderboard.php', {url: http+'get_leaders.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
 		$('#leaderboard #tab-form').html(data).trigger('create');
 		if( $('#tab-form .ui-radio').size() == 1 ) {
 			$('#tab-form').hide();
@@ -1711,8 +1744,8 @@ function refreshLeaderboard() {
 
 //fancam
 function refreshFanCam() {
-	$('#fancam #fancam-pics').html('<div class="loading"><img src="img/ajax-loader.gif" /><p>Loading FanCam...</p></div>');
-	$.post(api_prefix+'scripts/fancam.php', {url: http+'get_media.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
+	$('#fancam #fancam-pics').html('<div class="loading"><img src="http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/ajax-loader.gif" /><p>Loading FanCam...</p></div>');
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/fancam.php', {url: http+'get_media.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
 		$('#fancam #fancam-pics').html(data);
 		$('#fancam-single .ui-content').html( $('#fancam #fancam-pics .swipe-slick').clone() );
 			$('#fancam-single .ui-content .swipe-slick').slick({
@@ -1735,23 +1768,23 @@ function uploadFanCamPicProgress(e){
 
 //scores
 function refreshScores() {
-	$('#scores .ui-content').html('<div class="loading"><img src="img/ajax-loader.gif" /><p>Loading Scores...</p></div>');
-	$.post(api_prefix+'scripts/scores.php', {url: http+'get_scores.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
+	$('#scores .ui-content').html('<div class="loading"><img src="http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/ajax-loader.gif" /><p>Loading Scores...</p></div>');
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/scores.php', {url: http+'get_scores.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
 		$('#scores .ui-content').html(data).find('ul').listview().listview('refresh');
 	});
 }
 
 //profile
 function refreshProfile() {
-	$('#profile .ui-content').html('<div class="loading"><img src="img/ajax-loader.gif" /><p>Loading Account...</p></div>');
-	$.post(api_prefix+'scripts/profile.php', {url: http+'get_profile.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
+	$('#profile .ui-content').html('<div class="loading"><img src="http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/ajax-loader.gif" /><p>Loading Account...</p></div>');
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/profile.php', {url: http+'get_profile.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
 		$('#profile .ui-content').html(data);
 		$('#profile .admin-link').attr('data-url', 'https://app.superfanu.com/auto-login?nid='+nid+'&uuid='+getCookie("UUID")+'&hash='+login_key);
 		twemoji.parse(document.getElementById('profile'), {size: 36});
 	});
-	
-	$('#profile-edit .ui-content').html('<div class="loading"><img src="img/ajax-loader.gif" /><p>Loading Profile...</p></div>');
-	$.post(api_prefix+'scripts/profile-edit.php', {url: http+'get_profile.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
+
+	$('#profile-edit .ui-content').html('<div class="loading"><img src="http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/ajax-loader.gif" /><p>Loading Profile...</p></div>');
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/profile-edit.php', {url: http+'get_profile.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
 		$('#profile-edit .ui-content').html(data).trigger('create');
 	});
 }
@@ -1764,23 +1797,23 @@ function uploadProfilePicProgress(e){
 
 function facebookStatus(status) {
 	if (status === 'connected') {
-		$('img.facebook-login-logout-btn').attr('src', 'img/fb-settings-logout-btn.png');
+		$('img.facebook-login-logout-btn').attr('src', 'http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/fb-settings-logout-btn.png');
 	} else {
-		$('img.facebook-login-logout-btn').attr('src', 'img/fb-settings-login-btn.png');
+		$('img.facebook-login-logout-btn').attr('src', 'http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/fb-settings-login-btn.png');
 	}
 }
 
 //notifications
 function refreshNotifications() {
-	$('#notifications .ui-content').html('<div class="loading"><img src="img/ajax-loader.gif" /><p>Loading Notifications...</p></div>');
-	$.post(api_prefix+'scripts/notifications.php', {url: http+'get_notifications.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
+	$('#notifications .ui-content').html('<div class="loading"><img src="http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/ajax-loader.gif" /><p>Loading Notifications...</p></div>');
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/notifications.php', {url: http+'get_notifications.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
 		$('#notifications .ui-content').html(data).find('ul').listview().listview('refresh');
 	});
 	checkNotifications(nid);
 }
 
 function checkNotifications() {
-	$.post(api_prefix+'scripts/check-notifications.php', {url: http+'get_notifications.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/check-notifications.php', {url: http+'get_notifications.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
 		var not = jQuery.parseJSON( data );
 		if(not.count > 0) {
 			$('#notification-count').html( not.count );
@@ -1794,8 +1827,8 @@ function checkNotifications() {
 function refreshFanPoll() {
 	var currentTime = new Date();
 	var n = currentTime.getTime();
-	$('#fanpoll .ui-content').html('<div class="loading"><img src="img/ajax-loader.gif" /><p>Loading Poll...</p></div>');
-	$.post(api_prefix+'scripts/fanpoll.php', {url: http+'get_poll.php?nid='+nid+'&n='+n, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
+	$('#fanpoll .ui-content').html('<div class="loading"><img src="http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/ajax-loader.gif" /><p>Loading Poll...</p></div>');
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/fanpoll.php', {url: http+'get_poll.php?nid='+nid+'&n='+n, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
 		$('#fanpoll .ui-content').html(data).find('ul').listview().listview('refresh');
 	});
 }
@@ -1803,8 +1836,8 @@ function refreshFanPoll() {
 //news
 function refreshNews() {
 	if(rssLink!='') {
-		$('#news .ui-content').html('<div class="loading"><img src="img/ajax-loader.gif" /><p>Loading News...</p></div>');
-		$.post(api_prefix+'scripts/news-pics.php', {url: rssLink, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
+		$('#news .ui-content').html('<div class="loading"><img src="http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/ajax-loader.gif" /><p>Loading News...</p></div>');
+		$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/news-pics.php', {url: rssLink, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
 			$('#news .ui-content').html(data).find('ul').listview().listview('refresh');
 		});
 	}
@@ -1812,49 +1845,49 @@ function refreshNews() {
 
 //rosters
 function refreshRosters() {
-	$('#rosters .ui-content').html('<div class="loading"><img src="img/ajax-loader.gif" /><p>Loading Rosters...</p></div>');
-	$.post(api_prefix+'scripts/rosters.php', {url: http+'rosters.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
+	$('#rosters .ui-content').html('<div class="loading"><img src="http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/ajax-loader.gif" /><p>Loading Rosters...</p></div>');
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/rosters.php', {url: http+'rosters.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
 		$('#rosters .ui-content').html(data).trigger('create');
 	});
 }
 
 //venue list
 function refreshVenueList() {
-	$('#venue-list .ui-content').html('<div class="loading"><img src="img/ajax-loader.gif" /><p>Loading Venues...</p></div>');
-	$.post('scripts/venue-list.php', {url: http+'get_venues.php?nid='+nid, platform: platform, uuid: uuid, login_key: login_key},  function(data) {
+	$('#venue-list .ui-content').html('<div class="loading"><img src="http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/ajax-loader.gif" /><p>Loading Venues...</p></div>');
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/venue-list.php', {url: http+'get_venues.php?nid='+nid, platform: platform, uuid: uuid, login_key: login_key},  function(data) {
 		$('#venue-list .ui-content').html(data).trigger('create');
 	});
 }
 
 //dynamic text
 function getDynamicText() {
-	$('#dynamic-text .ui-content').html('<div class="loading"><img src="img/ajax-loader.gif" /><p>Loading...</p></div>');
-	$.post(api_prefix+'scripts/ajax.php', {url: http+'get_dynamic_text.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
+	$('#dynamic-text .ui-content').html('<div class="loading"><img src="http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/ajax-loader.gif" /><p>Loading...</p></div>');
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'get_dynamic_text.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
 		//console.log(data);
 		try {
 			var json = JSON.parse( data );
 		} catch(e) {
-			
+
 		}
 		if(json.text !== null) {
 			$('#dynamic-text .ui-content').html( json.text[1].text );
 		}
-		
+
 		//$('#rosters .ui-content').html(data).trigger('create');
 	});
 }
 
 function getDynamicTextTabs(option) {
-	$('#dynamic-text-tabs .ui-content #dtt-content').html('<div class="loading"><img src="img/ajax-loader.gif" /><p>Loading...</p></div>');
-	$.post(api_prefix+'scripts/ajax.php', {url: http+'get_dynamic_text_tabs.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), option: option},  function(data) {
+	$('#dynamic-text-tabs .ui-content #dtt-content').html('<div class="loading"><img src="http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/ajax-loader.gif" /><p>Loading...</p></div>');
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'get_dynamic_text_tabs.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), option: option},  function(data) {
 		try {
 			var json = JSON.parse( data );
 		} catch(e) {
-			
+
 		}
 		var btn_count = 0;
 		var btn_str = '<form><fieldset data-role="controlgroup" data-type="horizontal">';
-		if(json.text) {		
+		if(json.text) {
 			for (var t in json.text) {
 				if (json.text.hasOwnProperty(t)) {
 					if(btn_count == 0) {
@@ -1874,13 +1907,13 @@ function getDynamicTextTabs(option) {
 
 
 function getDynamicTextTabsOptions() {
-	$('#dynamic-text-tabs-options .ui-content #dtt-content').html('<div class="loading"><img src="img/ajax-loader.gif" /><p>Loading...</p></div>');
-	$.post(api_prefix+'scripts/ajax.php', {url: http+'get_dynamic_text_tabs_options.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
+	$('#dynamic-text-tabs-options .ui-content #dtt-content').html('<div class="loading"><img src="http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/ajax-loader.gif" /><p>Loading...</p></div>');
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'get_dynamic_text_tabs_options.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
 		console.log(data);
 		try {
 			var json = JSON.parse( data );
 		} catch(e) {
-			
+
 		}
 		var str = '<table class="styled" border="0">';
 		if(json) {
@@ -1923,7 +1956,7 @@ function setCanUseBeaconToggle(bool, msg) {
 
 function refreshBeacons() {
 	if(platform=='Android') {
-		$.post(api_prefix+'scripts/ajax.php', {url: http+'beacons.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
+		$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'beacons.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
 			try {
 				var json = jQuery.parseJSON( data );
 			} catch(e) {
@@ -1936,7 +1969,7 @@ function refreshBeacons() {
 					//console.log(json[beacon]);
 					//window.location = 'addbeacon:/'+json[beacon].buuid+'/'+json[beacon].bmajor+'/'+json[beacon].bminor+'/'+json[beacon].bname+'/'+encodeURIComponent(json[beacon].bmessage)+'/'+encodeURIComponent(json[beacon].bmessage_full)+'/'+encodeURIComponent(json[beacon].bmessage_full_img)+'/'+json[beacon].message_start+'/'+json[beacon].message_end+'/'+json[beacon].message_repeat_delay+'/'+json[beacon].message_show_total_times+'/';
 					window.location = 'addbeacon:/'+json[beacon].buuid+'/'+json[beacon].bmajor+'/'+json[beacon].bminor+'/'+json[beacon].bname+'/'+encodeURIComponent(json[beacon].bmessage)+'/'+json[beacon].message_start+'/'+json[beacon].message_end+'/'+json[beacon].message_repeat_delay+'/'+json[beacon].message_show_total_times+'/';
-				} 
+				}
 			}
 			//window.location = 'beacons://';
 			setCookie("beacons",JSON.stringify(json),365);
@@ -1967,7 +2000,7 @@ function showIndividualBeaconNotfication( bid ) {
 					}
 					$.mobile.changePage( '#individual-beacon-notification' );
 				}
-			} 
+			}
 		}
 	}
 }
@@ -1978,7 +2011,7 @@ function showIndividualPushNotfication( mid ) {
 	if(mid == undefined) {
 		mid = 'latest';
 	}
-	$.post(api_prefix+'scripts/ajax.php', {url: http+'get_notification.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), mid: mid}, function(data) {
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'get_notification.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), mid: mid}, function(data) {
 		try {
 			var json = jQuery.parseJSON( data );
 		} catch(e) {
@@ -1988,7 +2021,7 @@ function showIndividualPushNotfication( mid ) {
 		for (var not in json) {
 			if( json.hasOwnProperty( not ) ) {
 				//mark that we read this
-				$.post(api_prefix+'scripts/ajax.php', {url: http+'read_notification.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), id: json[not].id}, function(data) {
+				$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'read_notification.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), id: json[not].id}, function(data) {
 					//nothing
 				});
 				if(json[not].full_message_image != '') {
@@ -1998,7 +2031,7 @@ function showIndividualPushNotfication( mid ) {
 					} else if( json[not].full_message_image_alignment == 'bottom' ) {
 						$('#individual-push-notification img.img-top').hide();
 						$('#individual-push-notification img.img-bottom').attr('src', json[not].full_message_image).show();
-					} 
+					}
 				} else {
 					$('#individual-push-notification img.img-top').hide();
 					$('#individual-push-notification img.img-bottom').hide();
@@ -2017,7 +2050,7 @@ function showIndividualPushNotfication( mid ) {
 
 //ticket community
 function getMyTicketsAndChats() {
-	$.post(api_prefix+'scripts/ajax.php', {url: http+'student_tickets_mine.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")}, function(data) {
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'student_tickets_mine.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")}, function(data) {
 		var json = jQuery.parseJSON( data );
 		var myTickets = '';
 		if(json.mylistcount > 0) {
@@ -2035,7 +2068,7 @@ function getMyTicketsAndChats() {
 			myTickets = '<h5>No Tickets</h5>';
 		}
 		$('#my-tickets').html(myTickets);
-		
+
 		var myChats = '';
 		if(json.mychatcount > 0) {
 			myChat = '<h5>My Chats</h5><table class="styled" border="0">';
@@ -2057,7 +2090,7 @@ function getMyTicketsAndChats() {
 }
 
 function getTaggedTicketEvents() {
-	$.post(api_prefix+'scripts/ajax.php', {url: http+'student_tickets_events.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")}, function(data) {
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'student_tickets_events.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")}, function(data) {
 		var json = jQuery.parseJSON( data );
 		if(json.count > 0) {
 			taggedTicketEvents = json.events;
@@ -2106,7 +2139,7 @@ function updateStudentTicketsBuySelect() {
 
 function getAvailableTickets() {
 	$('#student-tickets-buy-tickets').html('');
-	$.post(api_prefix+'scripts/ajax.php', {url: http+'student_tickets_buy.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), eid: $('#student-tickets-buy-eid').val()}, function(data) {
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'student_tickets_buy.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), eid: $('#student-tickets-buy-eid').val()}, function(data) {
 		var json = jQuery.parseJSON( data );
 		var tickets = '';
 		if(json.response == 'ok') {
@@ -2134,7 +2167,7 @@ function getAvailableTickets() {
 
 function getStudentTicketsChat(stid, threadid, touid) {
 	$('#student-tickets-chat-chat').html('');
-	$.post(api_prefix+'scripts/ajax.php', {url: http+'student_tickets_chat.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), stid: stid, threadid: threadid}, function(data) {
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'student_tickets_chat.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), stid: stid, threadid: threadid}, function(data) {
 		var json = jQuery.parseJSON( data );
 		if(json.response == 'ok') {
 			$('#student-tickets-chat-chat').html('');
@@ -2142,26 +2175,26 @@ function getStudentTicketsChat(stid, threadid, touid) {
 			for(_i = 1; _i<=json.count; _i ++) {
 				console.log(user.uid);
 				if(json.chat[_i].to_uid == user.uid ) {
-					
+
 					chat+= '<div class="chat-them">';
-					
+
 				} else {
-				
+
 					chat+= '<div class="chat-me">';
-					
+
 				}
-				
+
 				chat+= '<img src="'+json.chat[_i].from_pic+'">';
 				chat+= '<span class="username">'+json.chat[_i].from_user+'</span>';
 				chat+= '<div class="chat">'+json.chat[_i].message+'</div><div style="clear: both"></div>';
 				chat+= '</div>';
-				
+
 			}
-			
+
 			chat+= '<div class="chat-bar"><input id="student-tickets-buy-message"><a href="#" id="student-tickets-buy-message-send" data-stid="'+stid+'" data-touid="'+touid+'">Send</a></div>';
-			
+
 			$('#student-tickets-chat-chat').html(chat);
-			
+
 		} else {
 			alert(json.msg);
 		}
@@ -2169,7 +2202,7 @@ function getStudentTicketsChat(stid, threadid, touid) {
 }
 
 function getTicketChats(stid) {
-	$.post(api_prefix+'scripts/ajax.php', {url: http+'student_tickets_chats.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), stid: stid}, function(data) {
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'student_tickets_chats.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), stid: stid}, function(data) {
 		var json = jQuery.parseJSON( data );
 		var chats = '';
 		if(json.count > 0) {
@@ -2192,8 +2225,8 @@ function getTicketChats(stid) {
 }
 
 function refreshNOHSStudentID() {
-    $('#nohs-student-id .ui-content').html('<div class="loading"><img src="img/ajax-loader.gif" /><p>Loading Student ID...</p></div>');
-	$.post(api_prefix+'scripts/nohs_student_id.php', {url: http+'nohs_sports_pass.php?nid='+nid, platform: platform, uuid: uuid, login_key: login_key},  function(data) {
+    $('#nohs-student-id .ui-content').html('<div class="loading"><img src="http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/ajax-loader.gif" /><p>Loading Student ID...</p></div>');
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/nohs_student_id.php', {url: http+'nohs_sports_pass.php?nid='+nid, platform: platform, uuid: uuid, login_key: login_key},  function(data) {
 		$('#nohs-student-id .ui-content').html(data);
 	});
 }
@@ -2211,7 +2244,7 @@ function checkForNewHomescreen() {
 	} else {
 		//console.log('no video found :(');
 	}
-	$.post(api_prefix+'scripts/ajax.php', {url: http+'check_for_homescreen_updates.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'check_for_homescreen_updates.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key")},  function(data) {
 		try {
 			var json = jQuery.parseJSON( data );
 		} catch(e) {
@@ -2238,7 +2271,7 @@ function checkForNewHomescreen() {
 					//and hide the video background
 					$('#homescreen-bg-video').hide();
 				}
-				
+
 			} else {
 				//reset
 				$('#homescreen').css('background-image','url('+homescreenBGImg+')');
@@ -2252,28 +2285,28 @@ function checkForNewHomescreen() {
 					$('#homescreen-bg-video').hide();
 				}
 			}
-			
+
 			if(json.modules) {
 				$('#homescreen-modules-img').css('background-image','url('+json.modules+')');
 			} else {
 				//reset to default
 				$('#homescreen-modules-img').css('background-image','url('+homescreenModulesImg+')');
 			}
-			
+
 			if(json.sponsor) {
 				$('#homescreen-sponsor-img').css('background-image','url('+json.sponsor+')');
 			} else {
 				//reset to default
 				$('#homescreen').css('background-image','url('+homescreenSponsorImg+')');
 			}
-			
+
 			if( json.home_touch ) {
 				home_touch_target_action = json.home_touch;
 			} else {
 				home_touch_target_action = null;
 			}
 
-			
+
 		} else {
 			$('#homescreen').css('background-image','url('+homescreenBGImg+')');
 		}
@@ -2284,7 +2317,7 @@ function checkForAds(pageKey, pageHash) {
 	if(pageHash.indexOf('#') == -1) {
 		pageHash = '#' + pageHash;
 	}
-	$.post(api_prefix+'scripts/ajax.php', {url: http+'get_page_ad.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), pageKey: pageKey},  function(data) {
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'get_page_ad.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), pageKey: pageKey},  function(data) {
 		try {
 			var json = jQuery.parseJSON( data );
 		} catch(e) {
@@ -2373,7 +2406,7 @@ function fbLoginResponse() {
 }
 
 function androidLoginViaFacebook(uuid, response, platformVersion, phoneModel, isJailbroken) {
-	$.post(api_prefix+'scripts/fb-login.php', {url: http+'fb_login.php?nid='+nid, platform: 'Android', uuid: getCookie("UUID"), fbdata: response, version: platformVersion, app_version: appVersion, architecture: '32bit', model: phoneModel, osname: platform, ostype: "32bit", is_jailbroken: isJailbroken}, function(data) {
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/fb-login.php', {url: http+'fb_login.php?nid='+nid, platform: 'Android', uuid: getCookie("UUID"), fbdata: response, version: platformVersion, app_version: appVersion, architecture: '32bit', model: phoneModel, osname: platform, ostype: "32bit", is_jailbroken: isJailbroken}, function(data) {
 		try {
 		    console.log(data);
  			var rr = jQuery.parseJSON( data );
@@ -2406,7 +2439,7 @@ function androidLoginViaFacebook(uuid, response, platformVersion, phoneModel, is
 }
 
 function loginViaFacebook() {
-	$.post(api_prefix+'scripts/ajax.php', {url: http+'new_session.php?num=64'}, function(data) {
+	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'new_session.php?num=64'}, function(data) {
 		console.log(data);
 		if(getVar('uuid')==undefined) {
 			console.log('no uuid');
@@ -2423,7 +2456,7 @@ function loginViaFacebook() {
 				response = JSON.stringify( response );
 				console.log('response was an object, now its a string');
 			}
-			$.post(api_prefix+'scripts/fb-login.php', {url: http+'fb_login.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), fbdata: response, version: platformVersion, app_version: appVersion, architecture: ostype, model: phoneModel, osname: platform, ostype: "32bit", is_jailbroken: isJailbroken}, function(data) {
+			$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/fb-login.php', {url: http+'fb_login.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), fbdata: response, version: platformVersion, app_version: appVersion, architecture: ostype, model: phoneModel, osname: platform, ostype: "32bit", is_jailbroken: isJailbroken}, function(data) {
 				try {
 					var rr = jQuery.parseJSON( data );
 				} catch(e) {
@@ -2461,7 +2494,7 @@ function postToFB() {
 			if (response.status === 'connected') {
 				//let's post this monster
 				var postdata = fbPost;
-				
+
 				if(platform == 'Android') {
 					var url = 'https://www.facebook.com/dialog/feed?';
 						url+='app_id='+fbAppId;
@@ -2473,13 +2506,13 @@ function postToFB() {
 						url+='&caption='+fbPost.caption;
 						url+='&description='+fbPost.description;
 						url+='&redirect_uri='+rooturl + 'fb-close-sharewindow.php';
-					
+
 					window.location = 'modal:'+url;
 				} else {
 					FB.ui(postdata,
 						function(response) {
 						    if (response && response.post_id) {
-						    	$.post(api_prefix+'scripts/ajax.php', {url: http+'fb_post.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), eventid: fbPost.eventid}, function(data) {
+						    	$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'fb_post.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), eventid: fbPost.eventid}, function(data) {
 						    		//shhhhh
 						    	});
 						    	fbLast.action = null;
@@ -2494,7 +2527,7 @@ function postToFB() {
 					);
 				}
 
-				
+
 			} else if (response.status === 'not_authorized') {
 				//what to do here?
 				console.log('logged into facebook, but not authenticated');
@@ -2512,7 +2545,7 @@ function closedShareWindow(posted) {
 	//they closed the share window,
 	//either as a fail or success
 	if(posted == "true") {
-		$.post(api_prefix+'scripts/ajax.php', {url: http+'fb_post.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), eventid: fbPost.eventid}, function(data) {
+		$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'fb_post.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), eventid: fbPost.eventid}, function(data) {
     		//shhhhh
     	});
     	fbLast.action = null;
@@ -2528,7 +2561,7 @@ window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.
 	twttr.ready(
 		function (twttr) {
 			twttr.events.bind('tweet',function (event) {
-				$.post(api_prefix+'scripts/ajax.php', {url: http+'twitter_post.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), eid: twPost.eid}, function(data) {
+				$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'twitter_post.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), eid: twPost.eid}, function(data) {
 	    			//shhhhh
 	    			if(data == 'ok') {
 		    			alert('Your message was posted to Twitter!');
@@ -2538,12 +2571,12 @@ window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.
 	    		});
 			});
 			twttr.events.bind('retweet',function (event) {
-				$.post(api_prefix+'scripts/ajax.php', {url: http+'social_interaction.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), source: 'social_feed', social_network: 'twitter', social_uuid: '', action: 'retweet'}, function(data) {
+				$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'social_interaction.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), source: 'social_feed', social_network: 'twitter', social_uuid: '', action: 'retweet'}, function(data) {
 					//i doubt it makes it here anyway...
 	    		});
 			});
 			twttr.events.bind('favorite',function (event) {
-				$.post(api_prefix+'scripts/ajax.php', {url: http+'social_interaction.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), source: 'social_feed', social_network: 'twitter', social_uuid: '', action: 'retweet'}, function(data) {
+				$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'social_interaction.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), source: 'social_feed', social_network: 'twitter', social_uuid: '', action: 'retweet'}, function(data) {
 	    			//i doubt it makes it here anyway...
 	    		});
 			});
@@ -2557,17 +2590,17 @@ window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.
 		if(posted == "true") {
 			if(action == 'tweet') {
 				if( getVarFromURL('in_reply_to', url) != undefined) {
-					$.post(api_prefix+'scripts/ajax.php', {url: http+'social_interaction.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), source: 'social_feed', social_network: 'twitter', social_uuid: getVarFromURL('in_reply_to', url), action: 'reply'}, function(data) {
+					$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'social_interaction.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), source: 'social_feed', social_network: 'twitter', social_uuid: getVarFromURL('in_reply_to', url), action: 'reply'}, function(data) {
 			    		if(data == 'ok') {
 			    			alert('Your tweet was sent successfully!');
 			    			//we should just update the image
-							//$('#social-feed li.sf-'+social_uuid+' .actions img.twitter-retweet').attr('src', 'img/social/twitter/retweet_on.png');
+							//$('#social-feed li.sf-'+social_uuid+' .actions img.twitter-retweet').attr('src', 'http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/social/twitter/retweet_on.png');
 						} else {
 			    			alert('There was an error tweeting that');
 						}
 			    	});
 				} else {
-					$.post(api_prefix+'scripts/ajax.php', {url: http+'twitter_post.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), eid: twPost.eid, return_url: url}, function(data) {
+					$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'twitter_post.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), eid: twPost.eid, return_url: url}, function(data) {
 			    		if(data == 'ok') {
 			    			alert('Your message was posted to Twitter!');
 						} else {
@@ -2579,11 +2612,11 @@ window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.
 			if(action == 'retweet') {
 				//https://twitter.com/intent/retweet/complete?tweet_id=thetweetid
 				var social_uuid = getVarFromURL('tweet_id',url);
-				$.post(api_prefix+'scripts/ajax.php', {url: http+'social_interaction.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), source: 'social_feed', social_network: 'twitter', social_uuid: social_uuid, action: action}, function(data) {
+				$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'social_interaction.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), source: 'social_feed', social_network: 'twitter', social_uuid: social_uuid, action: action}, function(data) {
 		    		if(data == 'ok') {
 		    			//alert('You retweeted that tweet!');
 		    			//we should just update the image
-						$('#social-feed li.sf-'+social_uuid+' .actions img.twitter-retweet').attr('src', 'img/social/twitter/retweet_on.png');
+						$('#social-feed li.sf-'+social_uuid+' .actions img.twitter-retweet').attr('src', 'http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/social/twitter/retweet_on.png');
 					} else {
 		    			alert('There was an error retweeting that');
 					}
@@ -2593,18 +2626,18 @@ window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.
 				//https://twitter.com/intent/favorite/complete?tweet_id=thetweetid&already_favorited=true|false
 				var social_uuid = getVarFromURL('tweet_id',url);
 				if( getVarFromURL('already_favorited', url) == 'false') {
-					$.post(api_prefix+'scripts/ajax.php', {url: http+'social_interaction.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), source: 'social_feed', social_network: 'twitter', social_uuid: social_uuid, action: action}, function(data) {
+					$.post('http://sites.superfanu.com/nohsstampede/6.0.0/assets/scripts/ajax.php', {url: http+'social_interaction.php?nid='+nid, platform: platform, uuid: getCookie("UUID"), login_key: getCookie("login_key"), source: 'social_feed', social_network: 'twitter', social_uuid: social_uuid, action: action}, function(data) {
 			    		if(data == 'ok') {
 			    			//alert('Your favorited this message');
 			    			//we should just update the image
-							$('#social-feed li.sf-'+social_uuid+' .actions img.twitter-favorite').attr('src', 'img/social/twitter/favorite_on.png');
+							$('#social-feed li.sf-'+social_uuid+' .actions img.twitter-favorite').attr('src', 'http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/social/twitter/favorite_on.png');
 						} else {
 			    			alert('There was an error favoriting this message');
 						}
 			    	});
 				} else {
 					alert('You have already favorited this tweet');
-					$('#social-feed li.sf-'+social_uuid+' .actions img.twitter-favorite').attr('src', 'img/social/twitter/favorite_on.png');
+					$('#social-feed li.sf-'+social_uuid+' .actions img.twitter-favorite').attr('src', 'http://sites.superfanu.com/nohsstampede/6.0.0/assets/img/social/twitter/favorite_on.png');
 				}
 			}
 		}
@@ -2728,7 +2761,7 @@ function hexToRgb(hex) {
 }
 
 function tintImage(image, image_src, image_class, r, g, b) {
-    
+
     if(image == null) {
 	    image = new Image;
 		image.src = image_src;
@@ -2739,7 +2772,7 @@ function tintImage(image, image_src, image_class, r, g, b) {
     newImg.className = image_class;
     var newCtx = newImg.getContext('2d');
     newCtx.drawImage(image, 0, 0);
-    
+
     var imageData = newCtx.getImageData(0, 0, image.width, image.height);
     data = imageData.data;
     for (var i = 0; i < data.length; i += 4) {
@@ -2748,7 +2781,7 @@ function tintImage(image, image_src, image_class, r, g, b) {
         data[i+2] = b;
     }
     newCtx.putImageData(imageData, 0, 0);
-    
+
     return newImg;
 }
 
