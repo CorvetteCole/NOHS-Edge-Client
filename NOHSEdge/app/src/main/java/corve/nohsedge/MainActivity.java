@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public String getUuid() {
-        uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen","UUID");
+        uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#homescreen","UUID");
         return uuid;
     }
 
@@ -109,23 +109,22 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setAllowFileAccessFromFileURLs(true);
         webSettings.setAllowUniversalAccessFromFileURLs(true);
         mLoginPage.setVisibility(View.VISIBLE);
-        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login"); //http://sites.superfanu.com/nohsstampede/6.0.0/#login     //file:///android_asset/index.html
+        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#login"); //http://sites.superfanu.com/nohsstampede/6.0.0/#login     //file:///android_asset/index.html
         //mLoginPage.loadUrl("file:///android_asset/index.html");
     }
     public void openHomescreen() {
         mLogin.setVisibility(View.INVISIBLE);
         WebView mLoginPage = (WebView) findViewById(R.id.loginWebview);
-        WebView mHomePage = (WebView) findViewById(R.id.HomescreenWebview);
+        //WebView mHomePage = (WebView) findViewById(R.id.HomescreenWebview);
         mWarning.setVisibility(View.INVISIBLE);
         mNext.setVisibility(View.INVISIBLE);
-        mLoginPage.setVisibility(View.INVISIBLE);
-        WebSettings webSettings = mHomePage.getSettings();
+        WebSettings webSettings = mLoginPage.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setDomStorageEnabled(true);
         webSettings.setAllowFileAccessFromFileURLs(true);
         webSettings.setAllowUniversalAccessFromFileURLs(true);
-        mHomePage.setVisibility(View.VISIBLE);
-        mHomePage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen");
+        //mHomePage.setVisibility(View.VISIBLE);
+        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#homescreen");
 
     }
 
