@@ -1,8 +1,6 @@
 package corve.nohsedge;
 
-import android.content.Intent;
-import android.graphics.Color;
-import android.net.Uri;
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,13 +12,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import java.util.concurrent.locks.Condition;
-import java.util.UUID;
-
-
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,10 +28,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        //mUsername = (EditText) findViewById(R.id.usernameText);
         mLogin = (Button) findViewById(R.id.loginButton);
-        //mPassword = (EditText) findViewById(R.id.passwordText);
         mLoginPage = (WebView) findViewById(R.id.loginWebview);
         mCredit = (TextView) findViewById(R.id.creditText);
         mLoading = (ProgressBar) findViewById(R.id.progressBar);
@@ -49,8 +39,6 @@ public class MainActivity extends AppCompatActivity {
                 {
                     public void onClick(View view)
                     {
-                        //username = mUsername.getText().toString());
-                        //password = mPassword.getText().toString());
                         openLoginpage();
 
                     }
@@ -84,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openLoginpage() {
-
         mLogin.setVisibility(View.INVISIBLE);
         mCredit.setVisibility(View.INVISIBLE);
         mLoading.setVisibility(View.VISIBLE);
@@ -104,17 +91,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 return true;
-
             }
         });
         webSettings.setDomStorageEnabled(true);
-        webSettings.setJavaScriptEnabled(true);//XSS vulnerable
-        //webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
-        //mLoginPage.setVisibility(View.VISIBLE);
-
-        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#login");
-
-        //mLoginPage.loadUrl("file:///android_asset/index.html");
+        webSettings.setJavaScriptEnabled(true);
+        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/index.html");
         mLoginPage.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageFinished(WebView view, String url) {
