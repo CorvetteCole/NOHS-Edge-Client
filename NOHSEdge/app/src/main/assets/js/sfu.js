@@ -114,19 +114,17 @@ $(document).ready( function(){
 	// Setup. Refresh Modules.
 	$(document).on("moduleRefresh", function() {
 		checkForNewHomescreen();
-		refreshNotifications();
-		refreshBeacons();
-		setupCanUseBeaconToggle();
-		refreshHistory();
-		refreshFAQ();
-		refreshEvents();
-refreshRewards();
-refreshProfile();
-refreshFanCam();
-refreshLeaderboard();
-refreshScores();
-refreshRosters();
-refreshNOHSStudentID();
+        		refreshNotifications();
+        		refreshBeacons();
+        		setupCanUseBeaconToggle();
+        		refreshHistory();
+        		refreshFAQ();
+        		refreshEvents();
+        refreshRewards();
+        refreshProfile();
+        refreshFanCam();
+        refreshLeaderboard();
+        refreshScores();
 
         console.log("Refreshing modules");
 	});

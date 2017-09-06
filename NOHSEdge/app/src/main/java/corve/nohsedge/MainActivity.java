@@ -15,6 +15,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import java.util.concurrent.locks.Condition;
 import java.util.UUID;
@@ -27,7 +28,10 @@ public class MainActivity extends AppCompatActivity {
     private String uuid = "b39de08ded8ac21c";
     Button mLogin;
     TextView mCredit;
+    ProgressBar mLoading;
+    Button mNext;
     private static final String TAG = "MainActivity";
+    int x = 0;
 
 
     public String getUuid() {
@@ -44,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         mLogin = (Button) findViewById(R.id.loginButton);
         //mPassword = (EditText) findViewById(R.id.passwordText);
         mCredit = (TextView) findViewById(R.id.creditText);
+        mLoading = (ProgressBar) findViewById(R.id.progressBar);
 
         mLogin.setOnClickListener(
                 new View.OnClickListener()
@@ -84,9 +89,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openLoginpage() {
-        WebView mLoginPage = (WebView) findViewById(R.id.loginWebview);
+        final WebView mLoginPage = (WebView) findViewById(R.id.loginWebview);
         mLogin.setVisibility(View.INVISIBLE);
         mCredit.setVisibility(View.INVISIBLE);
+        mLoading.setVisibility(View.VISIBLE);
         WebSettings webSettings = mLoginPage.getSettings();
         mLoginPage.setWebChromeClient(new WebChromeClient() {
             public boolean onConsoleMessage(ConsoleMessage cm) {
@@ -97,30 +103,43 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         webSettings.setDomStorageEnabled(true);
-        mLoginPage.setWebViewClient(new WebViewClient() {
-                                        @Override
-                                        public void onPageFinished(WebView view, String url) {
-                                            super.onPageFinished(view, url);
-                                            setTitle(view.getTitle());
-                                            //do your stuff ...
-                                        }
 
-                                        @Override
-                                        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                                            if (url.startsWith("file")) {
-                                                // Keep local assets in this WebView.
-                                                return false;
-                                            }
-                                        else return true;
-                                        }
-                                    });
-        mLoginPage.clearCache(true);
-        mLoginPage.clearHistory();
         webSettings.setJavaScriptEnabled(true);//XSS vulnerable
-        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
-        mLoginPage.setVisibility(View.VISIBLE);
-        //mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#login"); //http://sites.superfanu.com/nohsstampede/6.0.0/#login     //file:///android_asset/index.html
-        mLoginPage.loadUrl("file:///android_asset/index.html");
+        //webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+        //mLoginPage.setVisibility(View.VISIBLE);
+        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#login"); //http://sites.superfanu.com/nohsstampede/6.0.0/#login     //file:///android_asset/index.html
+        //mLoginPage.loadUrl("file:///android_asset/index.html");
+        mLoginPage.setWebViewClient(new WebViewClient(){
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                mLoginPage.loadUrl(
+                        "javascript:(function() { " +
+                                "file:///android_asset/js/sfu.js" +
+                                "})()");
+                mLoading.setVisibility(View.INVISIBLE);
+                mLoginPage.setVisibility(View.VISIBLE);
+                mNext = (Button) findViewById(R.id.nextButton);
+                if (x == 0) {
+                    mNext.setVisibility(View.VISIBLE);
+                }
+                else mNext.setVisibility(View.INVISIBLE);
+
+                mNext.setOnClickListener(
+                        new View.OnClickListener()
+                        {
+                            public void onClick(View view)
+                            {
+                                //username = mUsername.getText().toString());
+                                //password = mPassword.getText().toString());
+                                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#homescreen");
+                                x = 1;
+
+                            }
+                        }
+                );
+            }
+        });
     }
 
 
