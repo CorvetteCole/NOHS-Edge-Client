@@ -1,6 +1,13 @@
 package corve.nohsedge;
 
 
+import android.content.Intent;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
+import android.graphics.drawable.Icon;
+import android.net.Uri;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +22,8 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.Collections;
+
 public class MainActivity extends AppCompatActivity {
 
     Button mLogin;
@@ -23,7 +32,9 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     int x = 0;
     private WebView mLoginPage;
+    private String uuid;
 
+    @RequiresApi(api = Build.VERSION_CODES.N_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +44,17 @@ public class MainActivity extends AppCompatActivity {
         mCredit = (TextView) findViewById(R.id.creditText);
         mLoading = (ProgressBar) findViewById(R.id.progressBar);
 
+        ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+        ShortcutInfo webShortcut = new ShortcutInfo.Builder(this, "shortcut_web")
+                .setShortLabel("Edge")
+                .setLongLabel("Open NOHS Edge")
+                .setIcon(Icon.createWithResource(this, R.drawable.icon))
+                //.setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("http://api.superfanu.com/6.0.0/gen/link_track.php?platform=Android&uuid=" + getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#homescreen", "UUID") + "&nid=305&lkey=nohsstampede-edgetime-module")))
+                //.setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://api.superfanu.com/edgetime/assets/js/edgetime.js")))
+                .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#homescreen")))
+                .build();
+
+        shortcutManager.setDynamicShortcuts(Collections.singletonList(webShortcut));
 
         mLogin.setOnClickListener(
                 new View.OnClickListener()
@@ -66,10 +88,12 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (mLoginPage.canGoBack()) {
             mLoginPage.goBack();
+            uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#homescreen", "UUID");
         } else {
             super.onBackPressed();
         }
     }
+
 
     public void openLoginpage() {
         mLogin.setVisibility(View.INVISIBLE);
