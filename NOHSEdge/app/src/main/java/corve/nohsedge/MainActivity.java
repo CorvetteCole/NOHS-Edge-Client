@@ -24,20 +24,12 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
-
-    private String uuid = "b39de08ded8ac21c";
     Button mLogin;
     TextView mCredit;
     ProgressBar mLoading;
-    Button mNext;
     private static final String TAG = "MainActivity";
     int x = 0;
-
-
-    public String getUuid() {
-        uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#homescreen","UUID");
-        return uuid;
-    }
+    private WebView mLoginPage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +39,10 @@ public class MainActivity extends AppCompatActivity {
         //mUsername = (EditText) findViewById(R.id.usernameText);
         mLogin = (Button) findViewById(R.id.loginButton);
         //mPassword = (EditText) findViewById(R.id.passwordText);
+        mLoginPage = (WebView) findViewById(R.id.loginWebview);
         mCredit = (TextView) findViewById(R.id.creditText);
         mLoading = (ProgressBar) findViewById(R.id.progressBar);
+
 
         mLogin.setOnClickListener(
                 new View.OnClickListener()
@@ -62,14 +56,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
-    }
-
-
-
-    public void openBrowser() {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://api.superfanu.com/6.0.0/gen/link_track.php?platform=Android&uuid=" + getUuid() + "&nid=305&lkey=nohsstampede-edgetime-module"));
-        startActivity(browserIntent);
-
     }
 
     public String getCookie(String siteName,String CookieName){
@@ -88,8 +74,17 @@ public class MainActivity extends AppCompatActivity {
         return CookieValue;
     }
 
+    @Override
+    public void onBackPressed() {
+        if (mLoginPage.canGoBack()) {
+            mLoginPage.goBack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     public void openLoginpage() {
-        final WebView mLoginPage = (WebView) findViewById(R.id.loginWebview);
+
         mLogin.setVisibility(View.INVISIBLE);
         mCredit.setVisibility(View.INVISIBLE);
         mLoading.setVisibility(View.VISIBLE);
@@ -99,45 +94,33 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, cm.message() + " -- From line "
                         + cm.lineNumber() + " of "
                         + cm.sourceId() );
+                if (cm.lineNumber() == 128) {
+                    if (x == 1) {
+                        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#homescreen");
+                        x = 2;
+                    }
+                    if (x == 0) {
+                        x = 1;
+                    }
+                }
                 return true;
+
             }
         });
         webSettings.setDomStorageEnabled(true);
-
         webSettings.setJavaScriptEnabled(true);//XSS vulnerable
         //webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
         //mLoginPage.setVisibility(View.VISIBLE);
-        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#login"); //http://sites.superfanu.com/nohsstampede/6.0.0/#login     //file:///android_asset/index.html
+
+        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#login");
+
         //mLoginPage.loadUrl("file:///android_asset/index.html");
         mLoginPage.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                mLoginPage.loadUrl(
-                        "javascript:(function() { " +
-                                "file:///android_asset/js/sfu.js" +
-                                "})()");
                 mLoading.setVisibility(View.INVISIBLE);
                 mLoginPage.setVisibility(View.VISIBLE);
-                mNext = (Button) findViewById(R.id.nextButton);
-                if (x == 0) {
-                    mNext.setVisibility(View.VISIBLE);
-                }
-                else mNext.setVisibility(View.INVISIBLE);
-
-                mNext.setOnClickListener(
-                        new View.OnClickListener()
-                        {
-                            public void onClick(View view)
-                            {
-                                //username = mUsername.getText().toString());
-                                //password = mPassword.getText().toString());
-                                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#homescreen");
-                                x = 1;
-
-                            }
-                        }
-                );
             }
         });
     }
