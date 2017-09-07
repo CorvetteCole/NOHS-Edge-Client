@@ -1,11 +1,13 @@
 package corve.nohsedge;
 
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.Build;
@@ -32,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREF_UNAME = "Username";
     private static final String PREF_PASSWORD = "Password";
     private static final String PREF_PREMEM = "RememPass";
+    private String WrongPassword = "pass did not match";
+
 
     private final String DefaultUnameValue = "";
     private String UnameValue;
@@ -63,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
             savePreferences();
     }
-    @RequiresApi(api = Build.VERSION_CODES.N_MR1)
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,18 +79,22 @@ public class MainActivity extends AppCompatActivity {
         mUsername = (TextView) findViewById(R.id.usernameField);
         mPassword = (TextView) findViewById(R.id.passwordField);
         mRemember = (CheckBox) findViewById(R.id.rememberPassword);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+            ShortcutInfo webShortcut = new ShortcutInfo.Builder(this, "shortcut_web")
+                    .setShortLabel("Edge")
+                    .setLongLabel("Open NOHS Edge")
+                    .setIcon(Icon.createWithResource(this, R.drawable.icon))
+                    //.setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("http://api.superfanu.com/6.0.0/gen/link_track.php?platform=Android&uuid=" + getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#homescreen", "UUID") + "&nid=305&lkey=nohsstampede-edgetime-module")))
+                    //.setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://api.superfanu.com/edgetime/assets/js/edgetime.js")))
+                    .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#homescreen")))
+                    .build();
 
-        ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
-        ShortcutInfo webShortcut = new ShortcutInfo.Builder(this, "shortcut_web")
-                .setShortLabel("Edge")
-                .setLongLabel("Open NOHS Edge")
-                .setIcon(Icon.createWithResource(this, R.drawable.icon))
-                //.setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("http://api.superfanu.com/6.0.0/gen/link_track.php?platform=Android&uuid=" + getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#homescreen", "UUID") + "&nid=305&lkey=nohsstampede-edgetime-module")))
-                //.setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://api.superfanu.com/edgetime/assets/js/edgetime.js")))
-                .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#homescreen")))
-                .build();
+            shortcutManager.setDynamicShortcuts(Collections.singletonList(webShortcut));
+        }
 
-        shortcutManager.setDynamicShortcuts(Collections.singletonList(webShortcut));
+
+
 
         mLogin.setOnClickListener(
                 new View.OnClickListener()
@@ -145,6 +153,10 @@ public class MainActivity extends AppCompatActivity {
                         x = 1;
                     }
                 }
+                if (cm.message().toLowerCase().contains(WrongPassword.toLowerCase())) {
+                    mLoading.setVisibility(View.INVISIBLE);
+                    mLogin.setVisibility(View.VISIBLE);
+                }
                 return true;
             }
         });
@@ -157,8 +169,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                mLoading.setVisibility(View.INVISIBLE);
-                mLoginPage.setVisibility(View.VISIBLE);
                 mLoginPage.loadUrl("javascript:(function(){"+
                         "document.getElementById('login-username').value = '"+mUsername.getText().toString()+"';" +
                         "document.getElementById('login-password').value = '"+mPassword.getText().toString()+"';" +
@@ -167,6 +177,16 @@ public class MainActivity extends AppCompatActivity {
                         "e.initEvent('click',true,true);"+
                         "l.dispatchEvent(e);"+
                         "})()");
+            }
+
+            @Override
+            public void onLoadResource(WebView view, String url) {
+                super.onLoadResource(view, url);
+                String webUrl = mLoginPage.getUrl();
+                if (webUrl.equals("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#homescreen")) {
+                    mLoading.setVisibility(View.INVISIBLE);
+                    mLoginPage.setVisibility(View.VISIBLE);
+                }
             }
         });
     }
@@ -186,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
             editor.putString(PREF_PASSWORD, PasswordValue);
         }
         editor.putBoolean(PREF_PREMEM, PRememValue);
-        editor.commit();
+        editor.apply();
     }
     private void loadPreferences() {
 
@@ -205,7 +225,4 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("onResume load name: " + UnameValue);
         System.out.println("onResume load password: " + PasswordValue);
     }
-
-
-
 }
