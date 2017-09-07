@@ -150,6 +150,8 @@ public class MainActivity extends AppCompatActivity {
         });
         webSettings.setDomStorageEnabled(true);
         webSettings.setJavaScriptEnabled(true);
+        webSettings.setGeolocationEnabled(true);
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
         mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#login");
         mLoginPage.setWebViewClient(new WebViewClient(){
             @Override
@@ -157,12 +159,14 @@ public class MainActivity extends AppCompatActivity {
                 super.onPageFinished(view, url);
                 mLoading.setVisibility(View.INVISIBLE);
                 mLoginPage.setVisibility(View.VISIBLE);
-                mLoginPage.loadUrl(
-                        "javascript:(function() { " +
-                                "document.getElementById('login-username').value = '"+mUsername.getText().toString()+"';" +
-                                "document.getElementById('login-password').value = '"+mPassword.getText().toString()+"'" +
-                                //"document.getElementById('login-btn').click();" +
-                                "})()");
+                mLoginPage.loadUrl("javascript:(function(){"+
+                        "document.getElementById('login-username').value = '"+mUsername.getText().toString()+"';" +
+                        "document.getElementById('login-password').value = '"+mPassword.getText().toString()+"';" +
+                        "l=document.getElementById('login-btn');"+
+                        "e=document.createEvent('HTMLEvents');"+
+                        "e.initEvent('click',true,true);"+
+                        "l.dispatchEvent(e);"+
+                        "})()");
             }
         });
     }
@@ -193,9 +197,11 @@ public class MainActivity extends AppCompatActivity {
         UnameValue = settings.getString(PREF_UNAME, DefaultUnameValue);
         PasswordValue = settings.getString(PREF_PASSWORD, DefaultPasswordValue);
         PRememValue = settings.getBoolean(PREF_PREMEM, DefaultPRememValue);
-        mUsername.setText(UnameValue);
-        mPassword.setText(PasswordValue);
         mRemember.setChecked(PRememValue);
+        if (mRemember.isChecked()) {
+            mUsername.setText(UnameValue);
+            mPassword.setText(PasswordValue);
+        }
         System.out.println("onResume load name: " + UnameValue);
         System.out.println("onResume load password: " + PasswordValue);
     }
