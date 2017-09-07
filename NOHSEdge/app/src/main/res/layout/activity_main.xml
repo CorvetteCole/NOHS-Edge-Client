@@ -6,9 +6,6 @@
     android:layout_height="match_parent"
     tools:context="corve.nohsedge.MainActivity">
 
-
-
-
     <EditText
         android:id="@+id/usernameField"
         android:layout_width="wrap_content"
