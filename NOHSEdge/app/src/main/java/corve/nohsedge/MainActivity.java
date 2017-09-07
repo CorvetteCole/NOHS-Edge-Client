@@ -1,7 +1,9 @@
 package corve.nohsedge;
 
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Icon;
@@ -19,12 +21,26 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String PREFS_NAME = "preferences";
+    private static final String PREF_UNAME = "Username";
+    private static final String PREF_PASSWORD = "Password";
+    private static final String PREF_PREMEM = "RememPass";
+
+    private final String DefaultUnameValue = "";
+    private String UnameValue;
+
+    private final String DefaultPasswordValue = "";
+    private String PasswordValue;
+
+    private final boolean DefaultPRememValue = false;
+    private boolean PRememValue;
 
     Button mLogin;
     TextView mCredit;
@@ -33,7 +49,20 @@ public class MainActivity extends AppCompatActivity {
     int x = 0;
     private WebView mLoginPage;
     private String uuid;
+    private TextView mUsername;
+    private TextView mPassword;
+    private CheckBox mRemember;
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadPreferences();
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+            savePreferences();
+    }
     @RequiresApi(api = Build.VERSION_CODES.N_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +72,9 @@ public class MainActivity extends AppCompatActivity {
         mLoginPage = (WebView) findViewById(R.id.loginWebview);
         mCredit = (TextView) findViewById(R.id.creditText);
         mLoading = (ProgressBar) findViewById(R.id.progressBar);
+        mUsername = (TextView) findViewById(R.id.usernameField);
+        mPassword = (TextView) findViewById(R.id.passwordField);
+        mRemember = (CheckBox) findViewById(R.id.rememberPassword);
 
         ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
         ShortcutInfo webShortcut = new ShortcutInfo.Builder(this, "shortcut_web")
@@ -62,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(View view)
                     {
                         openLoginpage();
-
                     }
                 }
         );
@@ -119,15 +150,54 @@ public class MainActivity extends AppCompatActivity {
         });
         webSettings.setDomStorageEnabled(true);
         webSettings.setJavaScriptEnabled(true);
-        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/index.html");
+        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#login");
         mLoginPage.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 mLoading.setVisibility(View.INVISIBLE);
                 mLoginPage.setVisibility(View.VISIBLE);
+                mLoginPage.loadUrl(
+                        "javascript:(function() { " +
+                                "document.getElementById('login-username').value = '"+mUsername.getText().toString()+"';" +
+                                "document.getElementById('login-password').value = '"+mPassword.getText().toString()+"'" +
+                                //"document.getElementById('login-btn').click();" +
+                                "})()");
             }
         });
+    }
+    private void savePreferences() {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+
+        // Edit and commit
+        UnameValue = mUsername.getText().toString();
+        PasswordValue = mPassword.getText().toString();
+        PRememValue = mRemember.isChecked();
+        System.out.println("onPause save name: " + UnameValue);
+        System.out.println("onPause save password: " + PasswordValue);
+        if (mRemember.isChecked()) {
+            editor.putString(PREF_UNAME, UnameValue);
+            editor.putString(PREF_PASSWORD, PasswordValue);
+        }
+        editor.putBoolean(PREF_PREMEM, PRememValue);
+        editor.commit();
+    }
+    private void loadPreferences() {
+
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
+                Context.MODE_PRIVATE);
+
+        // Get value
+        UnameValue = settings.getString(PREF_UNAME, DefaultUnameValue);
+        PasswordValue = settings.getString(PREF_PASSWORD, DefaultPasswordValue);
+        PRememValue = settings.getBoolean(PREF_PREMEM, DefaultPRememValue);
+        mUsername.setText(UnameValue);
+        mPassword.setText(PasswordValue);
+        mRemember.setChecked(PRememValue);
+        System.out.println("onResume load name: " + UnameValue);
+        System.out.println("onResume load password: " + PasswordValue);
     }
 
 
