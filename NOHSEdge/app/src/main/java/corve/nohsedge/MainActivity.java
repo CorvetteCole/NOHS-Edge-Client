@@ -104,8 +104,8 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
             ShortcutInfo wNOHSShortcut = new ShortcutInfo.Builder(this, "shortcut_web")
-                    .setShortLabel("nohs Website")
-                    .setLongLabel("Open the nohs Website")
+                    .setShortLabel("NOHS Website")
+                    .setLongLabel("Open the NOHS Website")
                     .setIcon(Icon.createWithResource(this, R.drawable.nohs))
                     .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.oldham.kyschools.us/nohs/")))
                     .build();
