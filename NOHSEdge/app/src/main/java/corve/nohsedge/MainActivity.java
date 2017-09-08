@@ -34,6 +34,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import java.util.Arrays;
 import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREF_PREMEM = "RememPass";
     private String WrongPassword = "pass did not match";
     private String webUrl;
+    private String usernameCheck;
 
 
     private final String DefaultUnameValue = "";
@@ -94,6 +97,23 @@ public class MainActivity extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.BLACK);
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+            ShortcutInfo wNOHSShortcut = new ShortcutInfo.Builder(this, "shortcut_web")
+                    .setShortLabel("NOHS Website")
+                    .setLongLabel("Open the NOHS Website")
+                    .setIcon(Icon.createWithResource(this, R.drawable.icon))
+                    .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.oldham.kyschools.us/nohs/")))
+                    .build();
+            ShortcutInfo wCampusShortcut = new ShortcutInfo.Builder(this, "shortcut_dynamic")
+                    .setShortLabel("Campus Portal")
+                    .setLongLabel("Open Campus Portal")
+                    .setIcon(Icon.createWithResource(this, R.drawable.icon))
+                    .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://kyede10.infinitecampus.org/campus/portal/oldham.jsp")))
+                    .build();
+            shortcutManager.setDynamicShortcuts(Arrays.asList(wNOHSShortcut, wCampusShortcut));
+
+        }
 
 
 
@@ -107,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
 
                         inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
                                 InputMethodManager.HIDE_NOT_ALWAYS);
+                        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#login");
                         openLoginpage();
                     }
                 }
@@ -154,10 +175,11 @@ public class MainActivity extends AppCompatActivity {
                     mLogin.setVisibility(View.VISIBLE);
                     x = 0;
                 }
-                if (cm.message().toLowerCase().contains("loginkey".toLowerCase()) && x == 0) {
+                if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(mUsername.getText().toString())) && x == 0) {
                     mLoading.setVisibility(View.INVISIBLE);
                     mLoginPage.setVisibility(View.VISIBLE);
                     x = 1;
+                    //confirmLogin();
                 }
                 return true;
             }
@@ -176,9 +198,6 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setDatabaseEnabled(true);
         mLoginPage.addJavascriptInterface(new MyJavaScriptInterface(), "android");
 
-        if (x == 0) {
-            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#login");
-        }
         mLoginPage.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageFinished(WebView view, String url) {
@@ -192,7 +211,12 @@ public class MainActivity extends AppCompatActivity {
                             "e.initEvent('click',true,true);" +
                             "l.dispatchEvent(e);" +
                             "})()");
-                    mLoginPage.loadUrl("javascript:window.android.onUrlChange(window.location.href);");
+
+                    //mLoginPage.loadUrl("javascript:window.android.onUrlChange(window.location.href);");
+                }
+                if (x == 2) {
+                    mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#homescreen");
+                    x = 1;
                 }
 
             }
@@ -204,12 +228,13 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("!URL", webUrl);
                 if (webUrl.toLowerCase().contains("edgetime".toLowerCase())) {
                     edgeUrl = webUrl;
-                    addShortcut();
+                    //addShortcut();
                 }
                 if ((!webUrl.toLowerCase().contains("edgetime".toLowerCase())) && (!webUrl.toLowerCase().contains("nohs".toLowerCase()))){
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webUrl));
                     startActivity(browserIntent);
                 }
+
             }
         });
     }
@@ -249,8 +274,8 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
             ShortcutInfo webShortcut = new ShortcutInfo.Builder(this, "shortcut_web")
-                    .setShortLabel("Edge")
-                    .setLongLabel("Open Edge")
+                    .setShortLabel("NOHS Website")
+                    .setLongLabel("Open the NOHS Website")
                     .setIcon(Icon.createWithResource(this, R.drawable.icon))
                     .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse(edgeUrl)))
                     .build();
@@ -262,7 +287,22 @@ public class MainActivity extends AppCompatActivity {
         @JavascriptInterface
         public void onUrlChange(String url) {
             Log.d("hydrated", "onUrlChange" + url);
-            mLoginPage.loadUrl("javascript:window.android.onUrlChange(window.location.href);");
+            //mLoginPage.loadUrl("javascript:window.android.onUrlChange(window.location.href);");
         }
+    }
+    public  void confirmLogin() {
+        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#profile");
+        mLoginPage.loadUrl("javascript:(function waitForElementToDisplay('50') {" +
+                "        if(document.getElementById('profile').getAttribute('href')!=null) {" +
+                "            alert('The element is displayed, you can put your code instead of this alert.')" +
+                "            return;" +
+                "        }" +
+                "        else {" +
+                "            setTimeout(function() {" +
+                "                waitForElementToDisplay(document.getElementById('profile').getAttribute('href');, time);" +
+                "            }, time);" +
+                "        }" +
+                "    }");
+        x = 2;
     }
 }
