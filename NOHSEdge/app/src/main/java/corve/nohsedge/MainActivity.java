@@ -24,6 +24,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
+import android.webkit.GeolocationPermissions;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -154,6 +155,9 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return true;
             }
+            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+                callback.invoke(origin, true, false);
+            }
         });
         webSettings.setDomStorageEnabled(true);
         webSettings.setJavaScriptEnabled(true);
@@ -211,8 +215,6 @@ public class MainActivity extends AppCompatActivity {
         UnameValue = mUsername.getText().toString();
         PasswordValue = mPassword.getText().toString();
         PRememValue = mRemember.isChecked();
-        System.out.println("onPause save name: " + UnameValue);
-        System.out.println("onPause save password: " + PasswordValue);
         if (mRemember.isChecked()) {
             editor.putString(PREF_UNAME, UnameValue);
             editor.putString(PREF_PASSWORD, PasswordValue);
@@ -234,8 +236,6 @@ public class MainActivity extends AppCompatActivity {
             mUsername.setText(UnameValue);
             mPassword.setText(PasswordValue);
         }
-        System.out.println("onResume load name: " + UnameValue);
-        System.out.println("onResume load password: " + PasswordValue);
     }
 
     public void addShortcut(){
