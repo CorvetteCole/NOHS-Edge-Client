@@ -25,6 +25,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -153,6 +154,11 @@ public class MainActivity extends AppCompatActivity {
                     mLogin.setVisibility(View.VISIBLE);
                     x = 0;
                 }
+                if (cm.message().toLowerCase().contains("loginkey".toLowerCase()) && x == 0) {
+                    mLoading.setVisibility(View.INVISIBLE);
+                    mLoginPage.setVisibility(View.VISIBLE);
+                    x = 1;
+                }
                 return true;
             }
             public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
@@ -168,6 +174,7 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setAllowFileAccessFromFileURLs(true);
         webSettings.setAppCacheEnabled(true);
         webSettings.setDatabaseEnabled(true);
+        mLoginPage.addJavascriptInterface(new MyJavaScriptInterface(), "android");
 
         if (x == 0) {
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#login");
@@ -185,6 +192,7 @@ public class MainActivity extends AppCompatActivity {
                             "e.initEvent('click',true,true);" +
                             "l.dispatchEvent(e);" +
                             "})()");
+                    mLoginPage.loadUrl("javascript:window.android.onUrlChange(window.location.href);");
                 }
 
             }
@@ -194,14 +202,13 @@ public class MainActivity extends AppCompatActivity {
                 super.onLoadResource(view, url);
                 webUrl = mLoginPage.getUrl();
                 Log.d("!URL", webUrl);
-                if (webUrl.equals("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#homescreen") && x == 0) {
-                    mLoading.setVisibility(View.INVISIBLE);
-                    mLoginPage.setVisibility(View.VISIBLE);
-                    x = 1;
-                }
                 if (webUrl.toLowerCase().contains("edgetime".toLowerCase())) {
                     edgeUrl = webUrl;
                     addShortcut();
+                }
+                if ((!webUrl.toLowerCase().contains("edgetime".toLowerCase())) && (!webUrl.toLowerCase().contains("nohs".toLowerCase()))){
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webUrl));
+                    startActivity(browserIntent);
                 }
             }
         });
@@ -249,6 +256,13 @@ public class MainActivity extends AppCompatActivity {
                     .build();
 
             shortcutManager.setDynamicShortcuts(Collections.singletonList(webShortcut));
+        }
+    }
+    class MyJavaScriptInterface {
+        @JavascriptInterface
+        public void onUrlChange(String url) {
+            Log.d("hydrated", "onUrlChange" + url);
+            mLoginPage.loadUrl("javascript:window.android.onUrlChange(window.location.href);");
         }
     }
 }
