@@ -70,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox mRemember;
     private String edgeUrl;
     private TextView mLoadingText;
+    private Button mRegister;
+    private TextView mEmail;
+    private  TextView mActivateRegister;
 
 
     @Override
@@ -95,6 +98,9 @@ public class MainActivity extends AppCompatActivity {
         mPassword = (TextView) findViewById(R.id.passwordField);
         mRemember = (CheckBox) findViewById(R.id.rememberPassword);
         mLoadingText = (TextView) findViewById(R.id.LoadingText);
+        mRegister = (Button) findViewById(R.id.RegisterButton);
+        mEmail = (TextView) findViewById(R.id.emailField);
+        mActivateRegister = (TextView) findViewById(R.id.ActivateRegister);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -119,7 +125,18 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-
+        mActivateRegister.setOnClickListener(
+                new View.OnClickListener()
+                {
+                    public void onClick(View view)
+                    {
+                        mRegister.setVisibility(View.VISIBLE);
+                        mEmail.setVisibility(View.VISIBLE);
+                        mActivateRegister.setVisibility(View.INVISIBLE);
+                        mLogin.setVisibility(View.INVISIBLE);
+                    }
+                }
+        );
 
         mLogin.setOnClickListener(
                 new View.OnClickListener()
@@ -128,10 +145,27 @@ public class MainActivity extends AppCompatActivity {
                     {
                         InputMethodManager inputManager = (InputMethodManager)
                                 getSystemService(Context.INPUT_METHOD_SERVICE);
-
-                        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                                InputMethodManager.HIDE_NOT_ALWAYS);
-                        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
+                        if (getCurrentFocus() != null) {
+                            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                                    InputMethodManager.HIDE_NOT_ALWAYS);
+                            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
+                            openLoginpage();
+                        }
+                    }
+                }
+        );
+        mRegister.setOnClickListener(
+                new View.OnClickListener()
+                {
+                    public void onClick(View view)
+                    {
+                        InputMethodManager inputManager = (InputMethodManager)
+                                getSystemService(Context.INPUT_METHOD_SERVICE);
+                        if (getCurrentFocus() != null) {
+                            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                                    InputMethodManager.HIDE_NOT_ALWAYS);
+                        }
+                        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#register");
                         openLoginpage();
                     }
                 }
@@ -184,6 +218,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void openLoginpage() {
+        mActivateRegister.setVisibility(View.GONE);
+        mEmail.setVisibility(View.INVISIBLE);
+        mRegister.setVisibility(View.INVISIBLE);
         mLogin.setVisibility(View.INVISIBLE);
         mCredit.setVisibility(View.INVISIBLE);
         mRemember.setVisibility(View.INVISIBLE);
@@ -208,6 +245,7 @@ public class MainActivity extends AppCompatActivity {
                         + cm.lineNumber() + " of "
                         + cm.sourceId() );
                 if (cm.message().toLowerCase().contains(WrongPassword.toLowerCase())) {
+                    mRegister.setVisibility(View.VISIBLE);
                     mLoadingCircle.setVisibility(View.INVISIBLE);
                     mLogin.setVisibility(View.VISIBLE);
                     mRemember.setVisibility(View.VISIBLE);
@@ -222,6 +260,7 @@ public class MainActivity extends AppCompatActivity {
                     mUsername.setVisibility(View.GONE);
                     mPassword.setVisibility(View.GONE);
                     mRemember.setVisibility(View.GONE);
+                    mEmail.setVisibility(View.GONE);
                     mLoadingText.setVisibility(View.INVISIBLE);
                     x = 2;
                     //confirmLogin();
@@ -236,11 +275,23 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                if (x == 0) {
+                if (mLoginPage.getUrl().contains("login")) {
                     mLoginPage.loadUrl("javascript:(function(){" +
                             "document.getElementById('login-username').value = '" + mUsername.getText().toString() + "';" +
                             "document.getElementById('login-password').value = '" + mPassword.getText().toString() + "';" +
                             "l=document.getElementById('login-btn');" +
+                            "e=document.createEvent('HTMLEvents');" +
+                            "e.initEvent('click',true,true);" +
+                            "l.dispatchEvent(e);" +
+                            "})()");
+                    x = 1;
+                }
+                if (mLoginPage.getUrl().contains("register")) {
+                    mLoginPage.loadUrl("javascript:(function(){" +
+                            "document.getElementById('register-username').value = '" + mUsername.getText().toString() + "';" +
+                            "document.getElementById('register-password').value = '" + mPassword.getText().toString() + "';" +
+                            "document.getElementById('register-email').value = '" + mEmail.getText().toString() + "';" +
+                            "l=document.getElementById('register-btn');" +
                             "e=document.createEvent('HTMLEvents');" +
                             "e.initEvent('click',true,true);" +
                             "l.dispatchEvent(e);" +
