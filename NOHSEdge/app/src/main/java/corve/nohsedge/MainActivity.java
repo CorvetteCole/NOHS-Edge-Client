@@ -1,20 +1,18 @@
 package corve.nohsedge;
 
 
-import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
-import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.v4.content.pm.ShortcutManagerCompat;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,7 +22,9 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.GeolocationPermissions;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -33,6 +33,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import java.util.Arrays;
 import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
@@ -43,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREF_PREMEM = "RememPass";
     private String WrongPassword = "pass did not match";
     private String webUrl;
+    private String usernameCheck;
+    String newUrl = "";
 
 
     private final String DefaultUnameValue = "";
@@ -56,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button mLogin;
     TextView mCredit;
-    ProgressBar mLoading;
+    ProgressBar mLoadingCircle;
     private static final String TAG = "MainActivity";
     int x = 0;
     private WebView mLoginPage;
@@ -65,6 +69,11 @@ public class MainActivity extends AppCompatActivity {
     private TextView mPassword;
     private CheckBox mRemember;
     private String edgeUrl;
+    private TextView mLoadingText;
+    private Button mRegister;
+    private TextView mEmail;
+    private  TextView mActivateRegister;
+
 
     @Override
     public void onResume() {
@@ -84,17 +93,50 @@ public class MainActivity extends AppCompatActivity {
         mLogin = (Button) findViewById(R.id.loginButton);
         mLoginPage = (WebView) findViewById(R.id.loginWebview);
         mCredit = (TextView) findViewById(R.id.creditText);
-        mLoading = (ProgressBar) findViewById(R.id.progressBar);
+        mLoadingCircle = (ProgressBar) findViewById(R.id.progressBar);
         mUsername = (TextView) findViewById(R.id.usernameField);
         mPassword = (TextView) findViewById(R.id.passwordField);
         mRemember = (CheckBox) findViewById(R.id.rememberPassword);
+        mLoadingText = (TextView) findViewById(R.id.LoadingText);
+        mRegister = (Button) findViewById(R.id.RegisterButton);
+        mEmail = (TextView) findViewById(R.id.emailField);
+        mActivateRegister = (TextView) findViewById(R.id.ActivateRegister);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.BLACK);
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+            ShortcutInfo wNOHSShortcut = new ShortcutInfo.Builder(this, "shortcut_web")
+                    .setShortLabel("NOHS Website")
+                    .setLongLabel("Open the NOHS Website")
+                    .setIcon(Icon.createWithResource(this, R.drawable.nohs))
+                    .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.oldham.kyschools.us/nohs/")))
+                    .build();
+            ShortcutInfo wCampusShortcut = new ShortcutInfo.Builder(this, "shortcut_dynamic")
+                    .setShortLabel("Campus Portal")
+                    .setLongLabel("Open Campus Portal")
+                    .setIcon(Icon.createWithResource(this, R.drawable.infinitecampus))
+                    .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://kyede10.infinitecampus.org/campus/portal/oldham.jsp")))
+                    .build();
+            shortcutManager.setDynamicShortcuts(Arrays.asList(wNOHSShortcut, wCampusShortcut));
 
+        }
 
+        mActivateRegister.setOnClickListener(
+                new View.OnClickListener()
+                {
+                    public void onClick(View view)
+                    {
+                        mRegister.setVisibility(View.VISIBLE);
+                        mEmail.setVisibility(View.VISIBLE);
+                        mActivateRegister.setVisibility(View.INVISIBLE);
+                        mLogin.setVisibility(View.INVISIBLE);
+                    }
+                }
+        );
 
         mLogin.setOnClickListener(
                 new View.OnClickListener()
@@ -103,15 +145,52 @@ public class MainActivity extends AppCompatActivity {
                     {
                         InputMethodManager inputManager = (InputMethodManager)
                                 getSystemService(Context.INPUT_METHOD_SERVICE);
-
-                        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                                InputMethodManager.HIDE_NOT_ALWAYS);
+                        if (getCurrentFocus() != null) {
+                            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                                    InputMethodManager.HIDE_NOT_ALWAYS);
+                            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
+                            openLoginpage();
+                        }
+                    }
+                }
+        );
+        mRegister.setOnClickListener(
+                new View.OnClickListener()
+                {
+                    public void onClick(View view)
+                    {
+                        InputMethodManager inputManager = (InputMethodManager)
+                                getSystemService(Context.INPUT_METHOD_SERVICE);
+                        if (getCurrentFocus() != null) {
+                            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                                    InputMethodManager.HIDE_NOT_ALWAYS);
+                        }
+                        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#register");
                         openLoginpage();
                     }
                 }
         );
     }
+    @SuppressWarnings("deprecation")
+    public static void clearCookies(Context context)
+    {
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            Log.d(TAG, "Using clearCookies code for API >=" + String.valueOf(Build.VERSION_CODES.LOLLIPOP_MR1));
+            CookieManager.getInstance().removeAllCookies(null);
+            CookieManager.getInstance().flush();
+        } else
+        {
+            Log.d(TAG, "Using clearCookies code for API <" + String.valueOf(Build.VERSION_CODES.LOLLIPOP_MR1));
+            CookieSyncManager cookieSyncMngr=CookieSyncManager.createInstance(context);
+            cookieSyncMngr.startSync();
+            CookieManager cookieManager=CookieManager.getInstance();
+            cookieManager.removeAllCookie();
+            cookieManager.removeSessionCookie();
+            cookieSyncMngr.stopSync();
+            cookieSyncMngr.sync();
+        }
+    }
     public String getCookie(String siteName,String CookieName){
         String CookieValue = null;
 
@@ -139,26 +218,16 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void openLoginpage() {
+        mActivateRegister.setVisibility(View.GONE);
+        mEmail.setVisibility(View.INVISIBLE);
+        mRegister.setVisibility(View.INVISIBLE);
         mLogin.setVisibility(View.INVISIBLE);
         mCredit.setVisibility(View.INVISIBLE);
-        mLoading.setVisibility(View.VISIBLE);
+        mRemember.setVisibility(View.INVISIBLE);
+        mLoadingCircle.setVisibility(View.VISIBLE);
+        mLoadingText.setText("Checking login details...");
+        mLoadingText.setVisibility(View.VISIBLE);
         WebSettings webSettings = mLoginPage.getSettings();
-        mLoginPage.setWebChromeClient(new WebChromeClient() {
-            public boolean onConsoleMessage(ConsoleMessage cm) {
-                Log.d(TAG, cm.message() + " -- From line "
-                        + cm.lineNumber() + " of "
-                        + cm.sourceId() );
-                if (cm.message().toLowerCase().contains(WrongPassword.toLowerCase())) {
-                    mLoading.setVisibility(View.INVISIBLE);
-                    mLogin.setVisibility(View.VISIBLE);
-                    x = 0;
-                }
-                return true;
-            }
-            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
-                callback.invoke(origin, true, false);
-            }
-        });
         webSettings.setDomStorageEnabled(true);
         webSettings.setJavaScriptEnabled(true);
         webSettings.setGeolocationEnabled(true);
@@ -168,15 +237,45 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setAllowFileAccessFromFileURLs(true);
         webSettings.setAppCacheEnabled(true);
         webSettings.setDatabaseEnabled(true);
-
-        if (x == 0) {
-            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#login");
-        }
+        mLoginPage.clearHistory();
+        clearCookies(this);
+        mLoginPage.setWebChromeClient(new WebChromeClient() {
+            public boolean onConsoleMessage(ConsoleMessage cm) {
+                Log.d(TAG, cm.message() + " -- From line "
+                        + cm.lineNumber() + " of "
+                        + cm.sourceId() );
+                if (cm.message().toLowerCase().contains(WrongPassword.toLowerCase())) {
+                    mRegister.setVisibility(View.VISIBLE);
+                    mLoadingCircle.setVisibility(View.INVISIBLE);
+                    mLogin.setVisibility(View.VISIBLE);
+                    mRemember.setVisibility(View.VISIBLE);
+                    mUsername.setVisibility(View.VISIBLE);
+                    mPassword.setVisibility(View.VISIBLE);
+                    mLoadingText.setVisibility(View.INVISIBLE);
+                    x = 0;
+                }
+                if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(mUsername.getText().toString())) && x == 1) {
+                    mLoadingCircle.setVisibility(View.INVISIBLE);
+                    mLoginPage.setVisibility(View.VISIBLE);
+                    mUsername.setVisibility(View.GONE);
+                    mPassword.setVisibility(View.GONE);
+                    mRemember.setVisibility(View.GONE);
+                    mEmail.setVisibility(View.GONE);
+                    mLoadingText.setVisibility(View.INVISIBLE);
+                    x = 2;
+                    //confirmLogin();
+                }
+                return true;
+            }
+            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+                callback.invoke(origin, true, false);
+            }
+        });
         mLoginPage.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                if (x == 0) {
+                if (mLoginPage.getUrl().contains("login")) {
                     mLoginPage.loadUrl("javascript:(function(){" +
                             "document.getElementById('login-username').value = '" + mUsername.getText().toString() + "';" +
                             "document.getElementById('login-password').value = '" + mPassword.getText().toString() + "';" +
@@ -185,8 +284,30 @@ public class MainActivity extends AppCompatActivity {
                             "e.initEvent('click',true,true);" +
                             "l.dispatchEvent(e);" +
                             "})()");
+                    x = 1;
                 }
-
+                if (mLoginPage.getUrl().contains("register")) {
+                    mLoginPage.loadUrl("javascript:(function(){" +
+                            "document.getElementById('register-username').value = '" + mUsername.getText().toString() + "';" +
+                            "document.getElementById('register-password').value = '" + mPassword.getText().toString() + "';" +
+                            "document.getElementById('register-email').value = '" + mEmail.getText().toString() + "';" +
+                            "l=document.getElementById('register-btn');" +
+                            "e=document.createEvent('HTMLEvents');" +
+                            "e.initEvent('click',true,true);" +
+                            "l.dispatchEvent(e);" +
+                            "})()");
+                    x = 1;
+                }
+                if ((mLoginPage.getUrl().contains("nohsstampede")) && (x == 2)) {
+                    mLoadingCircle.setVisibility(View.INVISIBLE);
+                    mLoginPage.setVisibility(View.VISIBLE);
+                    newUrl = "";
+                }
+                if ((mLoginPage.getUrl().contains("edgetime")) && (x == 2)) {
+                    mLoadingCircle.setVisibility(View.INVISIBLE);
+                    mLoginPage.setVisibility(View.VISIBLE);
+                    mLoadingText.setVisibility(View.INVISIBLE);
+                }
             }
 
             @Override
@@ -194,15 +315,23 @@ public class MainActivity extends AppCompatActivity {
                 super.onLoadResource(view, url);
                 webUrl = mLoginPage.getUrl();
                 Log.d("!URL", webUrl);
-                if (webUrl.equals("http://sites.superfanu.com/nohsstampede/6.0.0/index.html#homescreen") && x == 0) {
-                    mLoading.setVisibility(View.INVISIBLE);
-                    mLoginPage.setVisibility(View.VISIBLE);
-                    x = 1;
-                }
-                if (webUrl.toLowerCase().contains("edgetime".toLowerCase())) {
+                if ((webUrl.toLowerCase().contains("edgetime".toLowerCase())) && (x == 2)) {
                     edgeUrl = webUrl;
-                    addShortcut();
+                    mLoadingCircle.setVisibility(View.VISIBLE);
+                    mLoginPage.setVisibility(View.INVISIBLE);
+                    mLoadingText.setText("Retrieving Edge Classes...");
+                    mLoadingText.setVisibility(View.VISIBLE);
                 }
+                if ((!webUrl.toLowerCase().contains("edgetime".toLowerCase())) && (!webUrl.toLowerCase().contains("nohs".toLowerCase()))){
+                    //check to make sure web page hasn't been opened already (avoids opening 20+ chrome tabs upon one button click)
+                    mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen");
+                    if (!webUrl.equals(newUrl)) {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webUrl));
+                        startActivity(browserIntent);
+                        newUrl = webUrl;
+                    }
+                }
+
             }
         });
     }
@@ -243,12 +372,12 @@ public class MainActivity extends AppCompatActivity {
             ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
             ShortcutInfo webShortcut = new ShortcutInfo.Builder(this, "shortcut_web")
                     .setShortLabel("Edge")
-                    .setLongLabel("Open Edge")
+                    .setLongLabel("Open Edge Scheduling")
                     .setIcon(Icon.createWithResource(this, R.drawable.icon))
                     .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse(edgeUrl)))
                     .build();
 
-            shortcutManager.setDynamicShortcuts(Collections.singletonList(webShortcut));
+            shortcutManager.addDynamicShortcuts(Collections.singletonList(webShortcut));
         }
     }
 }
