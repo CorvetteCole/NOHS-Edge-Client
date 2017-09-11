@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox mNotify;
     int a = 0;
     int REQUEST_CODE = 0;
+    private Button mLogout;
 
 
     @Override
@@ -113,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
         mEmail = (TextView) findViewById(R.id.emailField);
         mActivateRegister = (TextView) findViewById(R.id.ActivateRegister);
         mNotify = (CheckBox) findViewById(R.id.NotificationCheckbox);
+        mLogout = (Button) findViewById(R.id.logoutButton);
         if (mNotify.isChecked()) {
             setNotifications();
         }
@@ -195,6 +197,20 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
+        mLogout.setOnClickListener(
+                new View.OnClickListener() {
+                    public void onClick(View view) {
+                        mLoginPage.setVisibility(View.INVISIBLE);
+                        mLogin.setVisibility(View.VISIBLE);
+                        mUsername.setText("");
+                        mPassword.setText("");
+                        mRemember.setChecked(false);
+                        mUsername.setVisibility(View.VISIBLE);
+                        mPassword.setVisibility(View.VISIBLE);
+                        mRemember.setVisibility(View.VISIBLE);
+                        mLogout.setVisibility(View.INVISIBLE);
+                    }
+                });
     }
 
     @SuppressWarnings("deprecation")
@@ -246,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
         mNotify.setVisibility(View.INVISIBLE);
         mActivateRegister.setVisibility(View.GONE);
         mEmail.setVisibility(View.INVISIBLE);
-        mRegister.setVisibility(View.INVISIBLE);
+        mRegister.setVisibility(View.GONE);
         mLogin.setVisibility(View.INVISIBLE);
         mCredit.setVisibility(View.INVISIBLE);
         mRemember.setVisibility(View.INVISIBLE);
@@ -271,7 +287,6 @@ public class MainActivity extends AppCompatActivity {
                         + cm.lineNumber() + " of "
                         + cm.sourceId());
                 if (cm.message().toLowerCase().contains(WrongPassword.toLowerCase())) {
-                    mRegister.setVisibility(View.VISIBLE);
                     mLoadingCircle.setVisibility(View.INVISIBLE);
                     mLogin.setVisibility(View.VISIBLE);
                     mRemember.setVisibility(View.VISIBLE);
@@ -357,6 +372,12 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(browserIntent);
                         newUrl = webUrl;
                     }
+                }
+                if (webUrl.toLowerCase().contains("#profile".toLowerCase())) {
+                    mLogout.setVisibility(View.VISIBLE);
+                }
+                if (!webUrl.toLowerCase().contains("#profile".toLowerCase())) {
+                    mLogout.setVisibility(View.INVISIBLE);
                 }
 
             }
