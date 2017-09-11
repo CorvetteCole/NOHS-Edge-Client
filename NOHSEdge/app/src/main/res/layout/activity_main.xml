@@ -186,10 +186,10 @@
 
     <WebView
         android:id="@+id/loginWebview"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
 
-        android:visibility="gone"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="parent"
         app:layout_constraintHorizontal_bias="0.18"
         app:layout_constraintLeft_toLeftOf="parent"

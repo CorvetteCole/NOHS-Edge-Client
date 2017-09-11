@@ -243,6 +243,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void openLoginpage() {
+        mNotify.setVisibility(View.INVISIBLE);
         mActivateRegister.setVisibility(View.GONE);
         mEmail.setVisibility(View.INVISIBLE);
         mRegister.setVisibility(View.INVISIBLE);
