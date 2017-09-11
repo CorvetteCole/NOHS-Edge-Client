@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView mEmail;
     private TextView mActivateRegister;
     private CheckBox mNotify;
+    int a = 0;
     int REQUEST_CODE = 0;
 
 
@@ -141,10 +142,27 @@ public class MainActivity extends AppCompatActivity {
         mActivateRegister.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        mRegister.setVisibility(View.VISIBLE);
-                        mEmail.setVisibility(View.VISIBLE);
-                        mActivateRegister.setVisibility(View.INVISIBLE);
-                        mLogin.setVisibility(View.INVISIBLE);
+                        if (mActivateRegister.getText().equals("Back to login")){
+                            a = 1;
+                        }
+                        if (mActivateRegister.getText().equals("Need to register?")){
+                            a = 0;
+                        }
+
+                        if (a == 0) {
+                            mRegister.setVisibility(View.VISIBLE);
+                            mEmail.setVisibility(View.VISIBLE);
+                            mActivateRegister.setText("Back to login");
+                            mLogin.setVisibility(View.INVISIBLE);
+
+                        }
+                        if (a == 1) {
+                            mRegister.setVisibility(View.INVISIBLE);
+                            mEmail.setVisibility(View.INVISIBLE);
+                            mActivateRegister.setText("Need to register?");
+                            mLogin.setVisibility(View.VISIBLE);
+
+                        }
                     }
                 }
         );
