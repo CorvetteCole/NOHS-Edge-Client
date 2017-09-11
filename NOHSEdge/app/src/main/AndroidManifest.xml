@@ -19,7 +19,7 @@
             </intent-filter>
 
         </activity>
-
+        <receiver android:name=".Receiver" />
     </application>
 
 </manifest>
