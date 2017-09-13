@@ -215,6 +215,8 @@ public class MainActivity extends AppCompatActivity {
                         mUsername.setVisibility(View.VISIBLE);
                         mPassword.setVisibility(View.VISIBLE);
                         mRemember.setVisibility(View.VISIBLE);
+                        mAutoLogin.setVisibility(View.VISIBLE);
+                        mNotify.setVisibility(View.VISIBLE);
                         mLogout.setVisibility(View.INVISIBLE);
                     }
                 });
@@ -431,7 +433,7 @@ public class MainActivity extends AppCompatActivity {
             mUsername.setText(UnameValue);
             mPassword.setText(PasswordValue);
         }
-        if (mAutoLogin.isChecked()) {
+        if (mAutoLogin.isChecked() && !mUsername.getText().toString().equals("") && !mPassword.getText().toString().equals("")) {
                 mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
                 openLoginpage();
             }
