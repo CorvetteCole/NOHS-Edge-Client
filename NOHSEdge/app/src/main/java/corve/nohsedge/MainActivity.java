@@ -34,6 +34,7 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.Arrays;
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREF_PASSWORD = "Password";
     private static final String PREF_PREMEM = "RememPass";
     private static final String PREF_NOTIFY = "NOTIFICATIONS";
+    private static final String PREF_AUTOLOGIN = "Autologin";
     private String WrongPassword = "pass did not match";
     private String webUrl;
     private String usernameCheck;
@@ -65,6 +67,9 @@ public class MainActivity extends AppCompatActivity {
     private final boolean DefaultNotificationValue = true;
     private boolean NotificationValue;
 
+    private final boolean DefaultAutologinValue = false;
+    private boolean AutologinValue;
+
     Button mLogin;
     TextView mCredit;
     ProgressBar mLoadingCircle;
@@ -80,7 +85,8 @@ public class MainActivity extends AppCompatActivity {
     private Button mRegister;
     private TextView mEmail;
     private TextView mActivateRegister;
-    private CheckBox mNotify;
+    private Switch mNotify;
+    private Switch mAutoLogin;
     int a = 0;
     int REQUEST_CODE = 0;
     private Button mLogout;
@@ -113,8 +119,9 @@ public class MainActivity extends AppCompatActivity {
         mRegister = (Button) findViewById(R.id.RegisterButton);
         mEmail = (TextView) findViewById(R.id.emailField);
         mActivateRegister = (TextView) findViewById(R.id.ActivateRegister);
-        mNotify = (CheckBox) findViewById(R.id.NotificationCheckbox);
+        mNotify = (Switch) findViewById(R.id.NotificationCheckbox);
         mLogout = (Button) findViewById(R.id.logoutButton);
+        mAutoLogin = (Switch) findViewById(R.id.AutoLoginSwitch);
         if (mNotify.isChecked()) {
             setNotifications();
         }
@@ -144,10 +151,10 @@ public class MainActivity extends AppCompatActivity {
         mActivateRegister.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        if (mActivateRegister.getText().equals("Back to login")){
+                        if (mActivateRegister.getText().equals("Back to login")) {
                             a = 1;
                         }
-                        if (mActivateRegister.getText().equals("Need to register?")){
+                        if (mActivateRegister.getText().equals("Need to register?")) {
                             a = 0;
                         }
 
@@ -211,6 +218,7 @@ public class MainActivity extends AppCompatActivity {
                         mLogout.setVisibility(View.INVISIBLE);
                     }
                 });
+
     }
 
     @SuppressWarnings("deprecation")
@@ -259,6 +267,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void openLoginpage() {
+        mAutoLogin.setVisibility(View.INVISIBLE);
         mNotify.setVisibility(View.INVISIBLE);
         mActivateRegister.setVisibility(View.GONE);
         mEmail.setVisibility(View.INVISIBLE);
@@ -394,11 +403,13 @@ public class MainActivity extends AppCompatActivity {
         PasswordValue = mPassword.getText().toString();
         PRememValue = mRemember.isChecked();
         NotificationValue = mNotify.isChecked();
+        AutologinValue = mAutoLogin.isChecked();
         if (mRemember.isChecked()) {
             editor.putString(PREF_UNAME, UnameValue);
             editor.putString(PREF_PASSWORD, PasswordValue);
         }
         editor.putBoolean(PREF_PREMEM, PRememValue);
+        editor.putBoolean(PREF_AUTOLOGIN, AutologinValue);
         editor.apply();
     }
 
@@ -412,12 +423,18 @@ public class MainActivity extends AppCompatActivity {
         PasswordValue = settings.getString(PREF_PASSWORD, DefaultPasswordValue);
         PRememValue = settings.getBoolean(PREF_PREMEM, DefaultPRememValue);
         NotificationValue = settings.getBoolean(PREF_NOTIFY, DefaultNotificationValue);
+        AutologinValue = settings.getBoolean(PREF_AUTOLOGIN, DefaultAutologinValue);
+        mAutoLogin.setChecked(AutologinValue);
         mRemember.setChecked(PRememValue);
         mNotify.setChecked(NotificationValue);
         if (mRemember.isChecked()) {
             mUsername.setText(UnameValue);
             mPassword.setText(PasswordValue);
         }
+        if (mAutoLogin.isChecked()) {
+                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
+                openLoginpage();
+            }
     }
     private void setNotifications() {
         Intent intent = new Intent(MainActivity.this, Receiver.class);
