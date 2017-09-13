@@ -13,7 +13,7 @@ public class MyBackupAgent extends BackupAgentHelper {
     static final String PREFS = "preferences";
 
     // A key to uniquely identify the set of backup data
-    static final String PREFS_BACKUP_KEY = "EdgePrefs";
+    static final String PREFS_BACKUP_KEY = "AEdPqrEAAAAI4qgTlC1Nq1lIWo6Q92e4AErsd-OlhphKmmSplQ";
 
     @Override
     public void onCreate() {
