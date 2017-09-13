@@ -1,6 +1,8 @@
 package corve.nohsedge;
 
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,9 +34,11 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
@@ -43,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREF_UNAME = "Username";
     private static final String PREF_PASSWORD = "Password";
     private static final String PREF_PREMEM = "RememPass";
+    private static final String PREF_NOTIFY = "NOTIFICATIONS";
+    private static final String PREF_AUTOLOGIN = "Autologin";
     private String WrongPassword = "pass did not match";
     private String webUrl;
     private String usernameCheck;
@@ -58,6 +64,12 @@ public class MainActivity extends AppCompatActivity {
     private final boolean DefaultPRememValue = false;
     private boolean PRememValue;
 
+    private final boolean DefaultNotificationValue = true;
+    private boolean NotificationValue;
+
+    private final boolean DefaultAutologinValue = false;
+    private boolean AutologinValue;
+
     Button mLogin;
     TextView mCredit;
     ProgressBar mLoadingCircle;
@@ -72,7 +84,12 @@ public class MainActivity extends AppCompatActivity {
     private TextView mLoadingText;
     private Button mRegister;
     private TextView mEmail;
-    private  TextView mActivateRegister;
+    private TextView mActivateRegister;
+    private Switch mNotify;
+    private Switch mAutoLogin;
+    int a = 0;
+    int REQUEST_CODE = 0;
+    private Button mLogout;
 
 
     @Override
@@ -80,10 +97,11 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         loadPreferences();
     }
+
     @Override
     public void onPause() {
         super.onPause();
-            savePreferences();
+        savePreferences();
     }
 
     @Override
@@ -101,7 +119,12 @@ public class MainActivity extends AppCompatActivity {
         mRegister = (Button) findViewById(R.id.RegisterButton);
         mEmail = (TextView) findViewById(R.id.emailField);
         mActivateRegister = (TextView) findViewById(R.id.ActivateRegister);
-
+        mNotify = (Switch) findViewById(R.id.NotificationCheckbox);
+        mLogout = (Button) findViewById(R.id.logoutButton);
+        mAutoLogin = (Switch) findViewById(R.id.AutoLoginSwitch);
+        if (mNotify.isChecked()) {
+            setNotifications();
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -126,23 +149,36 @@ public class MainActivity extends AppCompatActivity {
         }
 
         mActivateRegister.setOnClickListener(
-                new View.OnClickListener()
-                {
-                    public void onClick(View view)
-                    {
-                        mRegister.setVisibility(View.VISIBLE);
-                        mEmail.setVisibility(View.VISIBLE);
-                        mActivateRegister.setVisibility(View.INVISIBLE);
-                        mLogin.setVisibility(View.INVISIBLE);
+                new View.OnClickListener() {
+                    public void onClick(View view) {
+                        if (mActivateRegister.getText().equals("Back to login")) {
+                            a = 1;
+                        }
+                        if (mActivateRegister.getText().equals("Need to register?")) {
+                            a = 0;
+                        }
+
+                        if (a == 0) {
+                            mRegister.setVisibility(View.VISIBLE);
+                            mEmail.setVisibility(View.VISIBLE);
+                            mActivateRegister.setText("Back to login");
+                            mLogin.setVisibility(View.INVISIBLE);
+
+                        }
+                        if (a == 1) {
+                            mRegister.setVisibility(View.INVISIBLE);
+                            mEmail.setVisibility(View.INVISIBLE);
+                            mActivateRegister.setText("Need to register?");
+                            mLogin.setVisibility(View.VISIBLE);
+
+                        }
                     }
                 }
         );
 
         mLogin.setOnClickListener(
-                new View.OnClickListener()
-                {
-                    public void onClick(View view)
-                    {
+                new View.OnClickListener() {
+                    public void onClick(View view) {
                         InputMethodManager inputManager = (InputMethodManager)
                                 getSystemService(Context.INPUT_METHOD_SERVICE);
                         if (getCurrentFocus() != null) {
@@ -155,10 +191,8 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
         mRegister.setOnClickListener(
-                new View.OnClickListener()
-                {
-                    public void onClick(View view)
-                    {
+                new View.OnClickListener() {
+                    public void onClick(View view) {
                         InputMethodManager inputManager = (InputMethodManager)
                                 getSystemService(Context.INPUT_METHOD_SERVICE);
                         if (getCurrentFocus() != null) {
@@ -170,36 +204,53 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
+        mLogout.setOnClickListener(
+                new View.OnClickListener() {
+                    public void onClick(View view) {
+                        mLoginPage.setVisibility(View.INVISIBLE);
+                        mLogin.setVisibility(View.VISIBLE);
+                        mUsername.setText("");
+                        mPassword.setText("");
+                        mRemember.setChecked(false);
+                        mUsername.setVisibility(View.VISIBLE);
+                        mPassword.setVisibility(View.VISIBLE);
+                        mRemember.setVisibility(View.VISIBLE);
+                        mAutoLogin.setVisibility(View.VISIBLE);
+                        mNotify.setVisibility(View.VISIBLE);
+                        mLogout.setVisibility(View.INVISIBLE);
+                    }
+                });
+
     }
+
     @SuppressWarnings("deprecation")
-    public static void clearCookies(Context context)
-    {
+    public static void clearCookies(Context context) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
             Log.d(TAG, "Using clearCookies code for API >=" + String.valueOf(Build.VERSION_CODES.LOLLIPOP_MR1));
             CookieManager.getInstance().removeAllCookies(null);
             CookieManager.getInstance().flush();
-        } else
-        {
+        } else {
             Log.d(TAG, "Using clearCookies code for API <" + String.valueOf(Build.VERSION_CODES.LOLLIPOP_MR1));
-            CookieSyncManager cookieSyncMngr=CookieSyncManager.createInstance(context);
+            CookieSyncManager cookieSyncMngr = CookieSyncManager.createInstance(context);
             cookieSyncMngr.startSync();
-            CookieManager cookieManager=CookieManager.getInstance();
+            CookieManager cookieManager = CookieManager.getInstance();
             cookieManager.removeAllCookie();
             cookieManager.removeSessionCookie();
             cookieSyncMngr.stopSync();
             cookieSyncMngr.sync();
         }
     }
-    public String getCookie(String siteName,String CookieName){
+
+    public String getCookie(String siteName, String CookieName) {
         String CookieValue = null;
 
         CookieManager cookieManager = CookieManager.getInstance();
         String cookies = cookieManager.getCookie(siteName);
-        String[] temp=cookies.split(";");
-        for (String ar1 : temp ){
-            if(ar1.contains(CookieName)){
-                String[] temp1=ar1.split("=");
+        String[] temp = cookies.split(";");
+        for (String ar1 : temp) {
+            if (ar1.contains(CookieName)) {
+                String[] temp1 = ar1.split("=");
                 CookieValue = temp1[1];
                 break;
             }
@@ -218,9 +269,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void openLoginpage() {
+        mAutoLogin.setVisibility(View.INVISIBLE);
+        mNotify.setVisibility(View.INVISIBLE);
         mActivateRegister.setVisibility(View.GONE);
         mEmail.setVisibility(View.INVISIBLE);
-        mRegister.setVisibility(View.INVISIBLE);
+        mRegister.setVisibility(View.GONE);
         mLogin.setVisibility(View.INVISIBLE);
         mCredit.setVisibility(View.INVISIBLE);
         mRemember.setVisibility(View.INVISIBLE);
@@ -243,9 +296,8 @@ public class MainActivity extends AppCompatActivity {
             public boolean onConsoleMessage(ConsoleMessage cm) {
                 Log.d(TAG, cm.message() + " -- From line "
                         + cm.lineNumber() + " of "
-                        + cm.sourceId() );
+                        + cm.sourceId());
                 if (cm.message().toLowerCase().contains(WrongPassword.toLowerCase())) {
-                    mRegister.setVisibility(View.VISIBLE);
                     mLoadingCircle.setVisibility(View.INVISIBLE);
                     mLogin.setVisibility(View.VISIBLE);
                     mRemember.setVisibility(View.VISIBLE);
@@ -267,11 +319,12 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return true;
             }
+
             public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
                 callback.invoke(origin, true, false);
             }
         });
-        mLoginPage.setWebViewClient(new WebViewClient(){
+        mLoginPage.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
@@ -322,7 +375,7 @@ public class MainActivity extends AppCompatActivity {
                     mLoadingText.setText("Retrieving Edge Classes...");
                     mLoadingText.setVisibility(View.VISIBLE);
                 }
-                if ((!webUrl.toLowerCase().contains("edgetime".toLowerCase())) && (!webUrl.toLowerCase().contains("nohs".toLowerCase()))){
+                if ((!webUrl.toLowerCase().contains("edgetime".toLowerCase())) && (!webUrl.toLowerCase().contains("nohs".toLowerCase()))) {
                     //check to make sure web page hasn't been opened already (avoids opening 20+ chrome tabs upon one button click)
                     mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen");
                     if (!webUrl.equals(newUrl)) {
@@ -331,10 +384,17 @@ public class MainActivity extends AppCompatActivity {
                         newUrl = webUrl;
                     }
                 }
+                if (webUrl.toLowerCase().contains("#profile".toLowerCase())) {
+                    mLogout.setVisibility(View.VISIBLE);
+                }
+                if (!webUrl.toLowerCase().contains("#profile".toLowerCase())) {
+                    mLogout.setVisibility(View.INVISIBLE);
+                }
 
             }
         });
     }
+
     private void savePreferences() {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                 Context.MODE_PRIVATE);
@@ -344,13 +404,17 @@ public class MainActivity extends AppCompatActivity {
         UnameValue = mUsername.getText().toString();
         PasswordValue = mPassword.getText().toString();
         PRememValue = mRemember.isChecked();
+        NotificationValue = mNotify.isChecked();
+        AutologinValue = mAutoLogin.isChecked();
         if (mRemember.isChecked()) {
             editor.putString(PREF_UNAME, UnameValue);
             editor.putString(PREF_PASSWORD, PasswordValue);
         }
         editor.putBoolean(PREF_PREMEM, PRememValue);
+        editor.putBoolean(PREF_AUTOLOGIN, AutologinValue);
         editor.apply();
     }
+
     private void loadPreferences() {
 
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
@@ -360,24 +424,33 @@ public class MainActivity extends AppCompatActivity {
         UnameValue = settings.getString(PREF_UNAME, DefaultUnameValue);
         PasswordValue = settings.getString(PREF_PASSWORD, DefaultPasswordValue);
         PRememValue = settings.getBoolean(PREF_PREMEM, DefaultPRememValue);
+        NotificationValue = settings.getBoolean(PREF_NOTIFY, DefaultNotificationValue);
+        AutologinValue = settings.getBoolean(PREF_AUTOLOGIN, DefaultAutologinValue);
+        mAutoLogin.setChecked(AutologinValue);
         mRemember.setChecked(PRememValue);
+        mNotify.setChecked(NotificationValue);
         if (mRemember.isChecked()) {
             mUsername.setText(UnameValue);
             mPassword.setText(PasswordValue);
         }
+        if (mAutoLogin.isChecked() && !mUsername.getText().toString().equals("") && !mPassword.getText().toString().equals("")) {
+                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
+                openLoginpage();
+            }
     }
-
-    public void addShortcut(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
-            ShortcutInfo webShortcut = new ShortcutInfo.Builder(this, "shortcut_web")
-                    .setShortLabel("Edge")
-                    .setLongLabel("Open Edge Scheduling")
-                    .setIcon(Icon.createWithResource(this, R.drawable.icon))
-                    .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse(edgeUrl)))
-                    .build();
-
-            shortcutManager.addDynamicShortcuts(Collections.singletonList(webShortcut));
-        }
+    private void setNotifications() {
+        Intent intent = new Intent(MainActivity.this, Receiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, REQUEST_CODE, intent, 0);
+        AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Calendar calendar3 = Calendar.getInstance();
+        calendar3.set(Calendar.DAY_OF_WEEK, 5); // Thursday
+        calendar3.set(Calendar.DAY_OF_WEEK_IN_MONTH, 1); // First Thursday of
+        // Each Month
+        // Thursday
+        calendar3.set(Calendar.HOUR_OF_DAY, 5);
+        calendar3.set(Calendar.MINUTE, 0);
+        calendar3.set(Calendar.SECOND, 0);
+        calendar3.set(Calendar.AM_PM, Calendar.PM);
+        am.set(AlarmManager.RTC_WAKEUP, calendar3.getTimeInMillis(), pendingIntent);
     }
 }
