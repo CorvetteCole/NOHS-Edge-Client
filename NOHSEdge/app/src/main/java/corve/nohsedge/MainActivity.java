@@ -326,29 +326,24 @@ public class MainActivity extends AppCompatActivity {
                 if (cm.message().toLowerCase().contains("RetrievedEdgeClass".toLowerCase())){
                     if (cm.message().toLowerCase().contains("Mon".toLowerCase())){
                         EdgeMon = cm.message();
-                        Log.d("Thursday Edge Class", EdgeMon);
+                        Log.d("Monday Edge Class", EdgeMon);
+                    }
+                    if (cm.message().toLowerCase().contains("Tue".toLowerCase())){
+                        EdgeTue = cm.message();
+                        Log.d("Tuesday Edge Class", EdgeTue);
+                    }
+                    if (cm.message().toLowerCase().contains("Wed".toLowerCase())){
+                        EdgeWed = cm.message();
+                        Log.d("Wednesday Edge Class", EdgeWed);
                     }
                     if (cm.message().toLowerCase().contains("Thu".toLowerCase())){
                         EdgeThur = cm.message();
                         Log.d("Thursday Edge Class", EdgeThur);
                     }
-                    if (cm.message().toLowerCase().contains("Thu".toLowerCase())){
-                        EdgeThur = cm.message();
-                        Log.d("Thursday Edge Class", EdgeThur);
+                    if (cm.message().toLowerCase().contains("Fri".toLowerCase())){
+                        EdgeFri = cm.message();
+                        Log.d("Friday Edge Class", EdgeFri);
                     }
-                    if (cm.message().toLowerCase().contains("Thu".toLowerCase())){
-                        EdgeThur = cm.message();
-                        Log.d("Thursday Edge Class", EdgeThur);
-                    }
-                    if (cm.message().toLowerCase().contains("Thu".toLowerCase())){
-                        EdgeThur = cm.message();
-                        Log.d("Thursday Edge Class", EdgeThur);
-                    }
-                    if (cm.message().toLowerCase().contains("Thu".toLowerCase())){
-                        EdgeThur = cm.message();
-                        Log.d("Thursday Edge Class", EdgeThur);
-                    }
-
                 }
                 return true;
             }
