@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,7 +33,6 @@ import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
-
 import java.util.Arrays;
 import java.util.Calendar;
 
@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREF_PREMEM = "RememPass";
     private static final String PREF_NOTIFY = "NOTIFICATIONS";
     private static final String PREF_AUTOLOGIN = "Autologin";
+    private static final String PREF_TITLE = "NotificationTitle";
+    private static final String PREF_TEXT = "NotificationText";
     private String WrongPassword = "pass did not match";
     private String webUrl;
     private String usernameCheck;
@@ -64,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
 
     private final boolean DefaultAutologinValue = false;
     private boolean AutologinValue;
+    private String Title;
+    private String Text;
 
     Button mLogin;
     TextView mCredit;
@@ -90,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
     private String EdgeWed;
     private String EdgeThur;
     private String EdgeFri;
-
 
 
     @Override
@@ -123,9 +126,7 @@ public class MainActivity extends AppCompatActivity {
         mNotify = (Switch) findViewById(R.id.NotificationCheckbox);
         mLogout = (Button) findViewById(R.id.logoutButton);
         mAutoLogin = (Switch) findViewById(R.id.AutoLoginSwitch);
-        if (mNotify.isChecked()) {
-            setWeeklyNotifications();
-        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -337,7 +338,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     if (cm.message().toLowerCase().contains("Fri".toLowerCase())){
                         EdgeFri = cm.message();
-                        Log.d("Friday Edge Class", EdgeFri);
+                        Log.d("Friday Edge Class", parseEdgeTitle(EdgeFri));
                     }
                 }
                 return true;
@@ -421,7 +422,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void savePreferences() {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
-                Context.MODE_PRIVATE);
+                Context.MODE_APPEND);
         SharedPreferences.Editor editor = settings.edit();
 
         // Edit and commit
@@ -450,6 +451,10 @@ public class MainActivity extends AppCompatActivity {
         PRememValue = settings.getBoolean(PREF_PREMEM, DefaultPRememValue);
         NotificationValue = settings.getBoolean(PREF_NOTIFY, DefaultNotificationValue);
         AutologinValue = settings.getBoolean(PREF_AUTOLOGIN, DefaultAutologinValue);
+        if (NotificationValue) {
+                Log.d("Setting notifications", " ");
+                setWeeklyNotifications();
+        }
         mAutoLogin.setChecked(AutologinValue);
         mRemember.setChecked(PRememValue);
         mNotify.setChecked(NotificationValue);
@@ -464,19 +469,51 @@ public class MainActivity extends AppCompatActivity {
     }
     private void setWeeklyNotifications() {
         Intent intent = new Intent(MainActivity.this, Receiver.class);
-        intent.putExtra("Title", "Edge Scheduling");
-        intent.putExtra("Text", "Get ahead of the crowd! Schedule your NOHS classes today!");
+        Title = "Edge Scheduling";
+        Text = "Get ahead of the crowd! Schedule your NOHS classes today!";
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("TITLE", Title);
+        editor.putString("TEXT", Text);
+        editor.commit();
+
         PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, REQUEST_CODE, intent, 0);
         AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
         Calendar calendar3 = Calendar.getInstance();
+        //calendar3.set(Calendar.DAY_OF_WEEK_IN_MONTH, 1);
         calendar3.set(Calendar.DAY_OF_WEEK, 5); // Thursday
         // Thursday
-        calendar3.set(Calendar.HOUR_OF_DAY, 5);
-        calendar3.set(Calendar.MINUTE, 0);
+        calendar3.set(Calendar.HOUR_OF_DAY, 4);
+        calendar3.set(Calendar.MINUTE, 15);
         calendar3.set(Calendar.SECOND, 0);
         calendar3.set(Calendar.AM_PM, Calendar.PM);
         am.set(AlarmManager.RTC_WAKEUP, calendar3.getTimeInMillis(), pendingIntent);
     }
+
+    private void setEdgeNotifications(String EdgeTitle, String EdgeText, int EdgeSession, int DayofWeek) {
+        Intent intent = new Intent(MainActivity.this, Receiver.class);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("TITLE", EdgeTitle);
+        editor.putString("TEXT", EdgeText);
+        editor.commit();
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, REQUEST_CODE, intent, 0);
+        AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Calendar calendar3 = Calendar.getInstance();
+        calendar3.set(Calendar.DAY_OF_WEEK, DayofWeek); // 5 = Thursday
+        if (EdgeSession == 1) {
+            calendar3.set(Calendar.HOUR_OF_DAY, 12);
+            calendar3.set(Calendar.MINUTE, 38);
+        }
+        if (EdgeSession == 2) {
+            calendar3.set(Calendar.HOUR_OF_DAY, 1);
+            calendar3.set(Calendar.MINUTE, 4);
+        }
+        calendar3.set(Calendar.SECOND, 0);
+        calendar3.set(Calendar.AM_PM, Calendar.PM);
+        am.set(AlarmManager.RTC_WAKEUP, calendar3.getTimeInMillis(), pendingIntent);
+    }
+
     public void getEdgeClasses() {
             int ClassElement = 0;
             while (ClassElement != 5) {
@@ -487,5 +524,10 @@ public class MainActivity extends AppCompatActivity {
             ClassElement++;
          }
 
+    }
+    public String parseEdgeTitle(String EdgeString){
+        EdgeString = EdgeString.substring(EdgeString.indexOf(">") + 1);
+        EdgeString = EdgeString.substring(0, EdgeString.indexOf("</h3>"));
+        return EdgeString;
     }
 }

@@ -20,7 +20,7 @@
             </intent-filter>
 
         </activity>
-        <receiver android:name=".Receiver" />
+        <receiver android:name="corve.nohsedge.Receiver" />
     </application>
 
 </manifest>
