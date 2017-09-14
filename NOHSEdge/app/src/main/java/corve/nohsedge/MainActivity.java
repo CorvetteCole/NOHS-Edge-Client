@@ -339,6 +339,7 @@ public class MainActivity extends AppCompatActivity {
                     if (cm.message().toLowerCase().contains("Fri".toLowerCase())){
                         EdgeFri = cm.message();
                         Log.d("Friday Edge Class", parseEdgeTitle(EdgeFri));
+                        setEdgeNotifications(parseEdgeTitle(EdgeFri), "test", parseEdgeSession(EdgeFri), 5);
                     }
                 }
                 return true;
@@ -529,5 +530,16 @@ public class MainActivity extends AppCompatActivity {
         EdgeString = EdgeString.substring(EdgeString.indexOf(">") + 1);
         EdgeString = EdgeString.substring(0, EdgeString.indexOf("</h3>"));
         return EdgeString;
+    }
+
+    public int parseEdgeSession(String EdgeString){
+        int session = 0;
+        if (EdgeString.toLowerCase().contains("12:43")){
+            session = 1;
+        }
+        if (EdgeString.toLowerCase().contains("1:09")){
+            session = 2;
+        }
+        return session;
     }
 }
