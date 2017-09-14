@@ -90,6 +90,11 @@ public class MainActivity extends AppCompatActivity {
     int a = 0;
     int REQUEST_CODE = 0;
     private Button mLogout;
+    private String EdgeMon;
+    private String EdgeTue;
+    private String EdgeWed;
+    private String EdgeThur;
+    private String EdgeFri;
 
 
 
@@ -317,6 +322,33 @@ public class MainActivity extends AppCompatActivity {
                     mLoadingText.setVisibility(View.INVISIBLE);
                     x = 2;
                     //confirmLogin();
+                }
+                if (cm.message().toLowerCase().contains("RetrievedEdgeClass".toLowerCase())){
+                    if (cm.message().toLowerCase().contains("Mon".toLowerCase())){
+                        EdgeMon = cm.message();
+                        Log.d("Thursday Edge Class", EdgeMon);
+                    }
+                    if (cm.message().toLowerCase().contains("Thu".toLowerCase())){
+                        EdgeThur = cm.message();
+                        Log.d("Thursday Edge Class", EdgeThur);
+                    }
+                    if (cm.message().toLowerCase().contains("Thu".toLowerCase())){
+                        EdgeThur = cm.message();
+                        Log.d("Thursday Edge Class", EdgeThur);
+                    }
+                    if (cm.message().toLowerCase().contains("Thu".toLowerCase())){
+                        EdgeThur = cm.message();
+                        Log.d("Thursday Edge Class", EdgeThur);
+                    }
+                    if (cm.message().toLowerCase().contains("Thu".toLowerCase())){
+                        EdgeThur = cm.message();
+                        Log.d("Thursday Edge Class", EdgeThur);
+                    }
+                    if (cm.message().toLowerCase().contains("Thu".toLowerCase())){
+                        EdgeThur = cm.message();
+                        Log.d("Thursday Edge Class", EdgeThur);
+                    }
+
                 }
                 return true;
             }
