@@ -473,8 +473,6 @@ public class MainActivity extends AppCompatActivity {
         AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
         Calendar calendar3 = Calendar.getInstance();
         calendar3.set(Calendar.DAY_OF_WEEK, 5); // Thursday
-        calendar3.set(Calendar.DAY_OF_WEEK_IN_MONTH, 1); // First Thursday of
-        // Each Month
         // Thursday
         calendar3.set(Calendar.HOUR_OF_DAY, 5);
         calendar3.set(Calendar.MINUTE, 0);
@@ -487,7 +485,7 @@ public class MainActivity extends AppCompatActivity {
             while (ClassElement != 5) {
                 mLoginPage.loadUrl("javascript:(function(){" +
                         "if (document.getElementsByClassName('class user-in-class')['" + ClassElement + "'] != undefined){" +
-                        "console.log('RetrievedEdgeClass' + '" + ClassElement + "' + document.getElementsByClassName('class user-in-class')['" + ClassElement + "'].innerHTML);}" +
+                        "console.log('RetrievedEdgeClass' + document.getElementsByClassName('class user-in-class')['" + ClassElement + "'].innerHTML);}" +
                         "})()");
             ClassElement++;
          }
