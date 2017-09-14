@@ -464,6 +464,8 @@ public class MainActivity extends AppCompatActivity {
     }
     private void setWeeklyNotifications() {
         Intent intent = new Intent(MainActivity.this, Receiver.class);
+        intent.putExtra("Title", "Edge Scheduling");
+        intent.putExtra("Text", "Get ahead of the crowd! Schedule your NOHS classes today!");
         PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, REQUEST_CODE, intent, 0);
         AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
         Calendar calendar3 = Calendar.getInstance();

@@ -17,15 +17,16 @@ public class Receiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         showNotification(context);
     }
-
     public void showNotification(Context context) {
         int reqCode = 0;
         Intent intent = new Intent(context, MainActivity.class);
+        String Title = intent.getStringExtra("Title");
+        String Text = intent.getStringExtra("Text");
         PendingIntent pi = PendingIntent.getActivity(context, reqCode, intent, 0);
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.icon)
-                .setContentTitle("Edge Scheduling")
-                .setContentText("Get ahead of the crowd! Schedule your NOHS classes today!");
+                .setContentTitle(Title)
+                .setContentText(Text);
         mBuilder.setContentIntent(pi);
         mBuilder.setDefaults(Notification.DEFAULT_SOUND);
         mBuilder.setAutoCancel(true);
