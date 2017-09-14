@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
     int a = 0;
     int REQUEST_CODE = 0;
     private Button mLogout;
+    private int ClassElement = 0;
 
 
     @Override
@@ -360,6 +361,7 @@ public class MainActivity extends AppCompatActivity {
                     mLoadingCircle.setVisibility(View.INVISIBLE);
                     mLoginPage.setVisibility(View.VISIBLE);
                     mLoadingText.setVisibility(View.INVISIBLE);
+                    getEdgeClasses();
                 }
             }
 
@@ -452,5 +454,14 @@ public class MainActivity extends AppCompatActivity {
         calendar3.set(Calendar.SECOND, 0);
         calendar3.set(Calendar.AM_PM, Calendar.PM);
         am.set(AlarmManager.RTC_WAKEUP, calendar3.getTimeInMillis(), pendingIntent);
+    }
+    public void getEdgeClasses() {
+        ClassElement = 0;
+        while (ClassElement != 5) {
+            mLoginPage.loadUrl("javascript:(function(){" +
+                    "console.log('!' + document.getElementsByClassName('class user-in-class')['" + ClassElement + "'].innerHTML)" +
+                    "})()");
+            ClassElement++;
+        }
     }
 }
