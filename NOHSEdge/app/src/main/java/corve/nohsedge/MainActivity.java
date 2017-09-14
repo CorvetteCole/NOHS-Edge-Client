@@ -8,13 +8,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.Build;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,7 +23,6 @@ import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.GeolocationPermissions;
-import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -39,7 +35,6 @@ import android.widget.TextView;
 
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -129,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         mLogout = (Button) findViewById(R.id.logoutButton);
         mAutoLogin = (Switch) findViewById(R.id.AutoLoginSwitch);
         if (mNotify.isChecked()) {
-            setNotifications();
+            setWeeklyNotifications();
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -467,7 +462,7 @@ public class MainActivity extends AppCompatActivity {
                 openLoginpage();
             }
     }
-    private void setNotifications() {
+    private void setWeeklyNotifications() {
         Intent intent = new Intent(MainActivity.this, Receiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, REQUEST_CODE, intent, 0);
         AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
