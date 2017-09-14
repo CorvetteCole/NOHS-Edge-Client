@@ -90,7 +90,8 @@ public class MainActivity extends AppCompatActivity {
     int a = 0;
     int REQUEST_CODE = 0;
     private Button mLogout;
-    private int ClassElement = 0;
+    private int ClassGatherRan;
+
 
 
     @Override
@@ -456,12 +457,18 @@ public class MainActivity extends AppCompatActivity {
         am.set(AlarmManager.RTC_WAKEUP, calendar3.getTimeInMillis(), pendingIntent);
     }
     public void getEdgeClasses() {
-        ClassElement = 0;
-        while (ClassElement != 5) {
-            mLoginPage.loadUrl("javascript:(function(){" +
-                    "console.log('!' + document.getElementsByClassName('class user-in-class')['" + ClassElement + "'].innerHTML)" +
-                    "})()");
+        ClassGatherRan++;
+        if (ClassGatherRan == 1) {
+            int ClassElement = 0;
+
+            while (ClassElement != 5) {
+                mLoginPage.loadUrl("javascript:(function(){" +
+                        "if (document.getElementsByClassName('class user-in-class')['" + ClassElement + "'] != undefined){" +
+                        "console.log('Edge Class '" + ClassElement + "')' + document.getElementsByClassName('class user-in-class')['" + ClassElement + "'].innerHTML);}" +
+                        "})()");
             ClassElement++;
+            ClassGatherRan = 0;
+         }
         }
     }
 }
