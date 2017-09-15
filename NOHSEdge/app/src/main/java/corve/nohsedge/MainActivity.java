@@ -468,7 +468,7 @@ public class MainActivity extends AppCompatActivity {
         EdgeDay5Value = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
         if (NotificationValue) {
                 Log.d("Setting notification", " ");
-                setWeeklyNotifications();  //disabled temporarily so weekly notifications can be moved to their own receiver
+                //setWeeklyNotifications();  //disabled temporarily so weekly notifications can be moved to their own receiver
         }
         mAutoLogin.setChecked(AutologinValue);
         mRemember.setChecked(PRememValue);
@@ -500,7 +500,7 @@ public class MainActivity extends AppCompatActivity {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, REQUEST_CODE, intent, 0);
         AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
         Calendar calendar3 = Calendar.getInstance();
-        //calendar3.set(Calendar.DAY_OF_WEEK_IN_MONTH, 1);
+        calendar3.set(Calendar.DAY_OF_WEEK_IN_MONTH, 1);
         calendar3.set(Calendar.DAY_OF_WEEK, 5); // Thursday
         // Thursday
         calendar3.set(Calendar.HOUR_OF_DAY, 4);
@@ -563,7 +563,9 @@ public class MainActivity extends AppCompatActivity {
         return session;
     }
     public String parseEdgeText(String EdgeString){
-        return "Test";
+        EdgeString = EdgeString.substring(EdgeString.indexOf("g>") + 2);
+        EdgeString = EdgeString.substring(0, EdgeString.indexOf("</"));
+        return EdgeString;
     }
     public void InterpretEdgeData(String consoleMessage){
         if (consoleMessage.toLowerCase().contains("Mon".toLowerCase())){
@@ -603,5 +605,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         Log.d("!DAY", Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + "");
+        Log.d("!!", parseEdgeText(EdgeDay5));
     }
 }
