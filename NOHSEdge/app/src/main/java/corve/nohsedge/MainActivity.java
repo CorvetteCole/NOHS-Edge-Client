@@ -1,6 +1,7 @@
 package corve.nohsedge;
 
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -105,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
     private Switch mAutoLogin;
     int a = 0;
     int REQUEST_CODE = 0;
+    int REQUEST_CODE_EDGE = 1;
     private Button mLogout;
     private String EdgeDay2;
     private String EdgeDay3;
@@ -299,7 +301,7 @@ public class MainActivity extends AppCompatActivity {
         mRemember.setVisibility(View.INVISIBLE);
         mLoadingCircle.setVisibility(View.VISIBLE);
         mLoadingText.setText("Checking login details...");
-        mLoadingText.setVisibility(View.VISIBLE);
+        //mLoadingText.setVisibility(View.VISIBLE);
         WebSettings webSettings = mLoginPage.getSettings();
         webSettings.setDomStorageEnabled(true);
         webSettings.setJavaScriptEnabled(true);
@@ -313,6 +315,16 @@ public class MainActivity extends AppCompatActivity {
         mLoginPage.clearHistory();
         clearCookies(this);
         mLoginPage.setWebChromeClient(new WebChromeClient() {
+            public void onProgressChanged(WebView view, int progress){
+                mLoadingText.setText(progress + "%");
+                if (progress == 100){
+                    mLoadingText.setVisibility(View.INVISIBLE);
+                } else {
+                    mLoadingText.setVisibility(View.VISIBLE);
+                    mLoadingCircle.setVisibility(View.VISIBLE);
+                }
+
+            }
             public boolean onConsoleMessage(ConsoleMessage cm) {
                 Log.d(TAG, cm.message() + " -- From line "
                         + cm.lineNumber() + " of "
@@ -323,7 +335,7 @@ public class MainActivity extends AppCompatActivity {
                     mRemember.setVisibility(View.VISIBLE);
                     mUsername.setVisibility(View.VISIBLE);
                     mPassword.setVisibility(View.VISIBLE);
-                    mLoadingText.setVisibility(View.INVISIBLE);
+                    //mLoadingText.setVisibility(View.INVISIBLE);
                     x = 0;
                 }
                 if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(mUsername.getText().toString())) && x == 1) {
@@ -333,7 +345,7 @@ public class MainActivity extends AppCompatActivity {
                     mPassword.setVisibility(View.GONE);
                     mRemember.setVisibility(View.GONE);
                     mEmail.setVisibility(View.GONE);
-                    mLoadingText.setVisibility(View.INVISIBLE);
+                    //mLoadingText.setVisibility(View.INVISIBLE);
                     x = 2;
                     //confirmLogin();
                 }
@@ -382,7 +394,7 @@ public class MainActivity extends AppCompatActivity {
                 if ((mLoginPage.getUrl().contains("edgetime")) && (x == 2)) {
                     mLoadingCircle.setVisibility(View.INVISIBLE);
                     mLoginPage.setVisibility(View.VISIBLE);
-                    mLoadingText.setVisibility(View.INVISIBLE);
+                    //mLoadingText.setVisibility(View.INVISIBLE);
                     getEdgeClasses();
                 }
             }
@@ -394,10 +406,10 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("!URL", webUrl);
                 if ((webUrl.toLowerCase().contains("edgetime".toLowerCase())) && (x == 2)) {
                     edgeUrl = webUrl;
-                    mLoadingCircle.setVisibility(View.VISIBLE);
+                    //mLoadingCircle.setVisibility(View.VISIBLE);
                     mLoginPage.setVisibility(View.INVISIBLE);
                     mLoadingText.setText("Retrieving Edge Classes...");
-                    mLoadingText.setVisibility(View.VISIBLE);
+                    //mLoadingText.setVisibility(View.VISIBLE);
                 }
                 if ((!webUrl.toLowerCase().contains("edgetime".toLowerCase())) && (!webUrl.toLowerCase().contains("nohs".toLowerCase()))) {
                     //check to make sure web page hasn't been opened already (avoids opening 20+ chrome tabs upon one button click)
@@ -478,6 +490,7 @@ public class MainActivity extends AppCompatActivity {
         EdgeDay3 = EdgeDay3Value;
         EdgeDay4 = EdgeDay4Value;
         EdgeDay5 = EdgeDay5Value;
+
         InterpretEdgeData(EdgeDay1);
         InterpretEdgeData(EdgeDay2);
         InterpretEdgeData(EdgeDay3);
@@ -517,21 +530,22 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("TITLE", EdgeTitle);
         editor.putString("TEXT", EdgeText);
         editor.commit();
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, REQUEST_CODE, intent, 0);
-        AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-        Calendar calendar3 = Calendar.getInstance();
-        calendar3.set(Calendar.DAY_OF_WEEK, DayofWeek); // 5 = Thursday
+        PendingIntent pendingIntentEdge = PendingIntent.getBroadcast(MainActivity.this, REQUEST_CODE_EDGE, intent, 0);
+        AlarmManager amEdge = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Calendar calendar3Edge = Calendar.getInstance();
+        calendar3Edge.set(Calendar.DAY_OF_WEEK, DayofWeek); // 5 = Thursday
+        calendar3Edge.set(Calendar.DAY_OF_WEEK_IN_MONTH, 1);
         if (EdgeSession == 1) {
-            calendar3.set(Calendar.HOUR_OF_DAY, 12);
-            calendar3.set(Calendar.MINUTE, 38);
+            calendar3Edge.set(Calendar.HOUR, 12);
+            calendar3Edge.set(Calendar.MINUTE, 38);
         }
         if (EdgeSession == 2) {
-            calendar3.set(Calendar.HOUR_OF_DAY, 1);
-            calendar3.set(Calendar.MINUTE, 4);
+            calendar3Edge.set(Calendar.HOUR, 1);
+            calendar3Edge.set(Calendar.MINUTE, 4);
         }
-        calendar3.set(Calendar.SECOND, 0);
-        calendar3.set(Calendar.AM_PM, Calendar.PM);
-        am.set(AlarmManager.RTC_WAKEUP, calendar3.getTimeInMillis(), pendingIntent);
+        calendar3Edge.set(Calendar.SECOND, 0);
+        calendar3Edge.set(Calendar.AM_PM, Calendar.PM);
+        amEdge.set(AlarmManager.RTC_WAKEUP, calendar3Edge.getTimeInMillis(), pendingIntentEdge);
         Log.d("Edge notification set!", EdgeTitle);
     }
 

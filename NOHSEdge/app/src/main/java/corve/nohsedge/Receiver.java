@@ -12,8 +12,10 @@ import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
+import static android.R.attr.colorAccent;
 import static android.R.attr.id;
 import static android.content.Context.MODE_PRIVATE;
 
@@ -40,7 +42,7 @@ public class Receiver extends BroadcastReceiver {
                     (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             String channelId = "some_channel_id";
             CharSequence channelName = "Some Channel";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel notificationChannel = new NotificationChannel(channelId, channelName, importance);
             notificationChannel.enableLights(true);
             notificationChannel.setLightColor(Color.RED);
@@ -51,6 +53,7 @@ public class Receiver extends BroadcastReceiver {
                     .setContentTitle(Title)
                     .setContentText(Text)
                     .setSmallIcon(R.drawable.icon)
+                    .setColor(ContextCompat.getColor(context, R.color.colorAccent))
                     .setChannelId(channelId)
                     .setContentIntent(pi)
                     .setAutoCancel(true)
