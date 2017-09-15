@@ -535,18 +535,22 @@ public class MainActivity extends AppCompatActivity {
         Calendar calendar3Edge = Calendar.getInstance();
         calendar3Edge.set(Calendar.DAY_OF_WEEK, DayofWeek); // 5 = Thursday
         calendar3Edge.set(Calendar.DAY_OF_WEEK_IN_MONTH, 1);
-        if (EdgeSession == 1) {
-            calendar3Edge.set(Calendar.HOUR, 12);
+        int hour = Calendar.getInstance().get(Calendar.HOUR);
+        int minute = Calendar.getInstance().get(Calendar.MINUTE);
+        if (EdgeSession == 1 && ((hour > 0) || (hour == 0 && minute < 38))) {
+            calendar3Edge.set(Calendar.HOUR, 0);
             calendar3Edge.set(Calendar.MINUTE, 38);
         }
-        if (EdgeSession == 2) {
+        if (EdgeSession == 2 && ((hour > 0) || (hour == 0 && minute < 38))) {
             calendar3Edge.set(Calendar.HOUR, 1);
             calendar3Edge.set(Calendar.MINUTE, 4);
         }
         calendar3Edge.set(Calendar.SECOND, 0);
         calendar3Edge.set(Calendar.AM_PM, Calendar.PM);
-        amEdge.set(AlarmManager.RTC_WAKEUP, calendar3Edge.getTimeInMillis(), pendingIntentEdge);
-        Log.d("Edge notification set!", EdgeTitle);
+        if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == DayofWeek && (hour > calendar3Edge.HOUR)) {
+            amEdge.set(AlarmManager.RTC_WAKEUP, calendar3Edge.getTimeInMillis(), pendingIntentEdge);
+            Log.d("Edge notification set!", EdgeTitle);
+        }
     }
 
     public void getEdgeClasses() {
