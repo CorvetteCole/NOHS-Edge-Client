@@ -52,9 +52,11 @@ public class Receiver extends BroadcastReceiver {
                     .setContentText(Text)
                     .setSmallIcon(R.drawable.icon)
                     .setChannelId(channelId)
+                    .setContentIntent(pi)
+                    .setAutoCancel(true)
                     .build();
-
-            notificationManager.notify(reqCode, notification);
+            NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotificationManager.notify(reqCode, notification);
         }
 
 
