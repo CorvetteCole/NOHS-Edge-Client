@@ -605,6 +605,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         Log.d("!DAY", Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + "");
-        Log.d("!!", parseEdgeText(EdgeDay5));
+        //Log.d("!!", parseEdgeText(EdgeDay5));
     }
 }
