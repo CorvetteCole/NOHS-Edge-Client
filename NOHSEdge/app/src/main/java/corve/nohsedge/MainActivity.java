@@ -114,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
     private String EdgeDay5;
     private String EdgeDay6;
     private String EdgeDay1;
+    private boolean NotificationSet = false;
 
 
     @Override
@@ -406,7 +407,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("!URL", webUrl);
                 if ((webUrl.toLowerCase().contains("edgetime".toLowerCase())) && (x == 2)) {
                     edgeUrl = webUrl;
-                    //mLoadingCircle.setVisibility(View.VISIBLE);
+                    mLoadingCircle.setVisibility(View.VISIBLE);
                     mLoginPage.setVisibility(View.INVISIBLE);
                     mLoadingText.setText("Retrieving Edge Classes...");
                     //mLoadingText.setVisibility(View.VISIBLE);
@@ -524,32 +525,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setEdgeNotifications(String EdgeTitle, String EdgeText, int EdgeSession, int DayofWeek) {
-        Intent intent = new Intent(MainActivity.this, Receiver.class);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("TITLE", EdgeTitle);
-        editor.putString("TEXT", EdgeText);
-        editor.commit();
-        PendingIntent pendingIntentEdge = PendingIntent.getBroadcast(MainActivity.this, REQUEST_CODE_EDGE, intent, 0);
-        AlarmManager amEdge = (AlarmManager) getSystemService(ALARM_SERVICE);
-        Calendar calendar3Edge = Calendar.getInstance();
-        calendar3Edge.set(Calendar.DAY_OF_WEEK, DayofWeek); // 5 = Thursday
-        calendar3Edge.set(Calendar.DAY_OF_WEEK_IN_MONTH, 1);
-        int hour = Calendar.getInstance().get(Calendar.HOUR);
-        int minute = Calendar.getInstance().get(Calendar.MINUTE);
-        if (EdgeSession == 1 && ((hour > 0) || (hour == 0 && minute < 38))) {
-            calendar3Edge.set(Calendar.HOUR, 0);
-            calendar3Edge.set(Calendar.MINUTE, 38);
-        }
-        if (EdgeSession == 2 && ((hour > 0) || (hour == 0 && minute < 38))) {
-            calendar3Edge.set(Calendar.HOUR, 1);
-            calendar3Edge.set(Calendar.MINUTE, 4);
-        }
-        calendar3Edge.set(Calendar.SECOND, 0);
-        calendar3Edge.set(Calendar.AM_PM, Calendar.PM);
-        if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == DayofWeek && (hour > calendar3Edge.HOUR)) {
-            amEdge.set(AlarmManager.RTC_WAKEUP, calendar3Edge.getTimeInMillis(), pendingIntentEdge);
+        if (NotificationSet) {
+            Intent intent = new Intent(MainActivity.this, Receiver.class);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("TITLE", EdgeTitle);
+            editor.putString("TEXT", EdgeText);
+            editor.commit();
+            PendingIntent pendingIntentEdge = PendingIntent.getBroadcast(MainActivity.this, REQUEST_CODE_EDGE, intent, 0);
+            AlarmManager amEdge = (AlarmManager) getSystemService(ALARM_SERVICE);
+            Calendar Edgecalendar = Calendar.getInstance();
+            Edgecalendar.set(Calendar.DAY_OF_WEEK, DayofWeek); // 5 = Thursday
+            Edgecalendar.set(Calendar.DAY_OF_WEEK_IN_MONTH, 1);
+            if (EdgeSession == 1) {
+                Edgecalendar.set(Calendar.HOUR_OF_DAY, 12);
+                Edgecalendar.set(Calendar.MINUTE, 38);
+            }
+            if (EdgeSession == 2) {
+                Edgecalendar.set(Calendar.HOUR_OF_DAY, 13);
+                Edgecalendar.set(Calendar.MINUTE, 4);
+            }
+            Edgecalendar.set(Calendar.SECOND, 0);
+            //Edgecalendar.set(Calendar.AM_PM, Calendar.PM);
+            //if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == DayofWeek) {
+            amEdge.set(AlarmManager.RTC_WAKEUP, Edgecalendar.getTimeInMillis(), pendingIntentEdge);
             Log.d("Edge notification set!", EdgeTitle);
+            //}
+            NotificationSet = true;
         }
     }
 
