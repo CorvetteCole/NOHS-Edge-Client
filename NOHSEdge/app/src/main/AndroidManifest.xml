@@ -21,6 +21,7 @@
 
         </activity>
         <receiver android:name="corve.nohsedge.Receiver" />
+        <receiver android:name="corve.nohsedge.WeeklyReceiver" />
     </application>
 
 </manifest>

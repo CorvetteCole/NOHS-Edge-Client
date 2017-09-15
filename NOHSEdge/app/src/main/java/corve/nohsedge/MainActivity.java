@@ -467,8 +467,8 @@ public class MainActivity extends AppCompatActivity {
         EdgeDay4Value = settings.getString(PREF_EDGE4, DefaultEdgeDay4Value);
         EdgeDay5Value = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
         if (NotificationValue) {
-                //Log.d("Setting notification", " ");
-                //setWeeklyNotifications();  disabled temporarily so weekly notifications can be moved to their own receiver
+                Log.d("Setting notification", " ");
+                setWeeklyNotifications();  //disabled temporarily so weekly notifications can be moved to their own receiver
         }
         mAutoLogin.setChecked(AutologinValue);
         mRemember.setChecked(PRememValue);
@@ -494,15 +494,9 @@ public class MainActivity extends AppCompatActivity {
             }
     }
     private void setWeeklyNotifications() {
-        Intent intent = new Intent(MainActivity.this, Receiver.class);
-        Title = "Edge Scheduling";
-        Text = "Get ahead of the crowd! Schedule your NOHS classes today!";
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("TITLE", Title);
-        editor.putString("TEXT", Text);
-        editor.commit();
-
+        Intent intent = new Intent(MainActivity.this, WeeklyReceiver.class);
+        Title =  "Schedule your NOHS classes today!";
+        Text = "Get ahead of the crowd!";
         PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, REQUEST_CODE, intent, 0);
         AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
         Calendar calendar3 = Calendar.getInstance();
