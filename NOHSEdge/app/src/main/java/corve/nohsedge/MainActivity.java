@@ -585,7 +585,7 @@ public class MainActivity extends AppCompatActivity {
             ComponentName component = new ComponentName(this, Receiver.class);
             JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE_EDGE, component)
                 .setMinimumLatency(calendar.getTimeInMillis() - System.currentTimeMillis())
-                    .setOverrideDeadline(calendar.getTimeInMillis() + 60000);
+                    .setOverrideDeadline((calendar.getTimeInMillis() - System.currentTimeMillis()) + 60000);
             JobScheduler jobScheduler = (JobScheduler) this.getSystemService(Context.JOB_SCHEDULER_SERVICE);
             if (calendar.getTimeInMillis() - System.currentTimeMillis() > 0){
                 jobScheduler.schedule(builder.build());
