@@ -43,7 +43,7 @@ import java.util.GregorianCalendar;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String PREFS_NAME = "preferences";
+    public static final String PREFS_NAME = "preferences";
     private static final String PREF_UNAME = "Username";
     private static final String PREF_PASSWORD = "Password";
     private static final String PREF_PREMEM = "RememPass";
@@ -51,11 +51,11 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREF_AUTOLOGIN = "Autologin";
     private static final String PREF_TITLE = "NotificationTitle";
     private static final String PREF_TEXT = "NotificationText";
-    private static final String PREF_EDGE1 = "Edge 1";
-    private static final String PREF_EDGE2 = "Edge 2";
-    private static final String PREF_EDGE3 = "Edge 3";
-    private static final String PREF_EDGE4 = "Edge 4";
-    private static final String PREF_EDGE5 = "Edge 5";
+    public static final String PREF_EDGE1 = "Edge 1";
+    public static final String PREF_EDGE2 = "Edge 2";
+    public static final String PREF_EDGE3 = "Edge 3";
+    public static final String PREF_EDGE4 = "Edge 4";
+    public static final String PREF_EDGE5 = "Edge 5";
     private String WrongPassword = "pass did not match";
     private String webUrl;
     private String usernameCheck;
@@ -79,11 +79,11 @@ public class MainActivity extends AppCompatActivity {
     private String Title;
     private String Text;
 
-    private final String DefaultEdgeDay1Value = "";
-    private final String DefaultEdgeDay2Value = "";
-    private final String DefaultEdgeDay3Value = "";
-    private final String DefaultEdgeDay4Value = "";
-    private final String DefaultEdgeDay5Value = "";
+    public final String DefaultEdgeDay1Value = "";
+    public final String DefaultEdgeDay2Value = "";
+    public final String DefaultEdgeDay3Value = "";
+    public final String DefaultEdgeDay4Value = "";
+    public final String DefaultEdgeDay5Value = "";
     private String EdgeDay1Value;
     private String EdgeDay2Value;
     private String EdgeDay3Value;
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        loadPreferences();
+        loadPreferences(false);
     }
 
     @Override
@@ -151,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
         mLogout = (Button) findViewById(R.id.logoutButton);
         mAutoLogin = (Switch) findViewById(R.id.AutoLoginSwitch);
         NotificationSet = 0;
+        activateEdgeHelper();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -213,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
                                     InputMethodManager.HIDE_NOT_ALWAYS);
                             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
                             openLoginpage();
+
                         }
                     }
                 }
@@ -436,7 +438,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void savePreferences() {
+    public void savePreferences() {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                 Context.MODE_APPEND);
         SharedPreferences.Editor editor = settings.edit();
@@ -467,7 +469,7 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    private void loadPreferences() {
+    public void loadPreferences(boolean calledForeign) {
 
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                 Context.MODE_PRIVATE);
@@ -485,7 +487,7 @@ public class MainActivity extends AppCompatActivity {
         EdgeDay5Value = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
         if (NotificationValue) {
                 Log.d("Setting notification", " ");
-                //setWeeklyNotifications();  //disabled temporarily so weekly notifications can be moved to their own receiver
+                setWeeklyNotifications();  //disabled temporarily so weekly notifications can be moved to their own receiver
         }
         mAutoLogin.setChecked(AutologinValue);
         mRemember.setChecked(PRememValue);
@@ -506,93 +508,77 @@ public class MainActivity extends AppCompatActivity {
             mUsername.setText(UnameValue);
             mPassword.setText(PasswordValue);
         }
-        if (mAutoLogin.isChecked() && !mUsername.getText().toString().equals("") && !mPassword.getText().toString().equals("")) {
-                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
-                openLoginpage();
-            }
+        if (mAutoLogin.isChecked() && !mUsername.getText().toString().equals("") && !mPassword.getText().toString().equals("") && !calledForeign) {
+            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
+            openLoginpage();
+        }
+
     }
     private void setWeeklyNotifications() {
-        Intent intent = new Intent(MainActivity.this, WeeklyReceiver.class);
-        Title =  "Schedule your NOHS classes today!";
-        Text = "Get ahead of the crowd!";
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, REQUEST_CODE, intent, 0);
-        AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
         Calendar calendar3 = Calendar.getInstance();
-        calendar3.set(Calendar.DAY_OF_WEEK_IN_MONTH, 1);
         calendar3.set(Calendar.DAY_OF_WEEK, 5); // Thursday
-        // Thursday
         calendar3.set(Calendar.HOUR_OF_DAY, 4);
         calendar3.set(Calendar.MINUTE, 15);
         calendar3.set(Calendar.SECOND, 0);
         calendar3.set(Calendar.AM_PM, Calendar.PM);
-        am.set(AlarmManager.RTC_WAKEUP, calendar3.getTimeInMillis(), pendingIntent);
-    }
-
-    /*private void setEdgeNotifications(String EdgeTitle, String EdgeText, int EdgeSession, int DayofWeek) {
-        if (NotificationSet == 0) {
-            Log.d("attempting notification", EdgeTitle + " ");
-            Intent intent = new Intent(MainActivity.this, Receiver.class);
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putString("TITLE", EdgeTitle);
-            editor.putString("TEXT", EdgeText);
-            editor.commit();
-            PendingIntent pendingIntentEdge = PendingIntent.getBroadcast(MainActivity.this, REQUEST_CODE_EDGE, intent, 0);
-            AlarmManager amEdge = (AlarmManager) getSystemService(ALARM_SERVICE);
-            Calendar Edgecalendar = Calendar.getInstance();
-            Edgecalendar.set(Calendar.DAY_OF_WEEK, DayofWeek); // 5 = Thursday
-            Edgecalendar.set(Calendar.DAY_OF_WEEK_IN_MONTH, 1);
-            if (EdgeSession == 1) {
-                Edgecalendar.set(Calendar.HOUR_OF_DAY, 12);
-                Edgecalendar.set(Calendar.MINUTE, 38);
-            }
-            if (EdgeSession == 2) {
-                Edgecalendar.set(Calendar.HOUR_OF_DAY, 1);
-                Edgecalendar.set(Calendar.MINUTE, 4);
-            }
-            Edgecalendar.set(Calendar.SECOND, 0);
-            Edgecalendar.set(Calendar.AM_PM, Calendar.PM);
-            //if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == DayofWeek) {
-            amEdge.set(AlarmManager.RTC_WAKEUP, Edgecalendar.getTimeInMillis(), pendingIntentEdge);
-            Log.d("Edge notification set!", EdgeTitle);
-            //}
-            NotificationSet = 1;
+        ComponentName component = new ComponentName(this, WeeklyReceiver.class);
+        JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE_EDGE, component)
+                .setMinimumLatency(calendar3.getTimeInMillis() - System.currentTimeMillis())
+                .setPersisted(true)
+                .setOverrideDeadline((calendar3.getTimeInMillis() - System.currentTimeMillis()) + 1800000);
+        JobScheduler jobScheduler = (JobScheduler) this.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        if (calendar3.getTimeInMillis() - System.currentTimeMillis() > 0){
+            jobScheduler.schedule(builder.build());
         }
     }
-    */
-    public void setEdgeNotifications(String EdgeTitle, String EdgeText, int EdgeSession, int DayofWeek) {
 
-            //PendingIntent pendingIntent = PendingIntent.getBroadcast(this, REQUEST_CODE_EDGE, alarmIntent, 0);
-            //AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+    public void activateEdgeHelper() {
+        int ONE_MIN = 60000;
+        int ONE_DAY = 86400000;
+        Calendar calendar2 = Calendar.getInstance();
+        calendar2.set(Calendar.HOUR_OF_DAY, 1);
+        calendar2.set(Calendar.MINUTE, 1);
+        calendar2.set(Calendar.SECOND, 1);
+        calendar2.set(Calendar.AM_PM, Calendar.AM);
+        ComponentName component = new ComponentName(this, WeeklyReceiver.class);
+        JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE_EDGE, component)
+                .setPersisted(true)
+                .setMinimumLatency((calendar2.getTimeInMillis() + ONE_DAY) - System.currentTimeMillis())
+                .setOverrideDeadline(ONE_MIN * 180);
+        Log.d("edgehelptime", ((calendar2.getTimeInMillis() + ONE_DAY) - System.currentTimeMillis()) + "");
+        JobScheduler jobScheduler = (JobScheduler) this.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        jobScheduler.schedule(builder.build());
+    }
+
+    public void setEdgeNotifications(String EdgeTitle, String EdgeText, int EdgeSession, int DayofWeek) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        if (EdgeSession == 1) {
+            calendar.set(Calendar.HOUR_OF_DAY, 12);
+            calendar.set(Calendar.MINUTE, 37);
+        }
+        if (EdgeSession == 2) {
+            calendar.set(Calendar.HOUR_OF_DAY, 1);
+            calendar.set(Calendar.MINUTE, 3);
+        }
+        calendar.set(Calendar.SECOND, 1);
+        calendar.set(Calendar.AM_PM, Calendar.PM);
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString("TITLE", EdgeTitle);
             editor.putString("TEXT", EdgeText);
             editor.commit();
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(System.currentTimeMillis());
-            if (EdgeSession == 1) {
-                calendar.set(Calendar.HOUR_OF_DAY, 12);
-                calendar.set(Calendar.MINUTE, 37);
-            }
-            if (EdgeSession == 2) {
-                calendar.set(Calendar.HOUR_OF_DAY, 13);
-                calendar.set(Calendar.MINUTE, 4);
-            }
-            calendar.set(Calendar.SECOND, 1);
-            //calendar.set(Calendar.AM_PM, Calendar.PM);
-            //manager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
             ComponentName component = new ComponentName(this, Receiver.class);
             JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE_EDGE, component)
                 .setMinimumLatency(calendar.getTimeInMillis() - System.currentTimeMillis())
-                    .setOverrideDeadline((calendar.getTimeInMillis() - System.currentTimeMillis()) + 60000);
+                .setPersisted(true)
+                .setOverrideDeadline((calendar.getTimeInMillis() - System.currentTimeMillis()) + 60000);
             JobScheduler jobScheduler = (JobScheduler) this.getSystemService(Context.JOB_SCHEDULER_SERVICE);
             if (calendar.getTimeInMillis() - System.currentTimeMillis() > 0){
                 jobScheduler.schedule(builder.build());
             }
             Log.d("Notification set", EdgeTitle);
-        Log.d("sysTime", System.currentTimeMillis() + "");
-        Log.d("calTime", calendar.getTimeInMillis() + "");
+        Log.d("edgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
         }
 
 
@@ -605,7 +591,6 @@ public class MainActivity extends AppCompatActivity {
                         "})()");
             ClassElement++;
          }
-
     }
     public String parseEdgeTitle(String EdgeString){
         EdgeString = EdgeString.substring(EdgeString.indexOf(">") + 1);
@@ -633,7 +618,7 @@ public class MainActivity extends AppCompatActivity {
             EdgeDay1 = consoleMessage;
             Log.d("Monday Edge Class", EdgeDay1);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY){
-                Log.d("!notificationset called", "Monday");
+                //Log.d("!notificationset called", "Monday");
                 setEdgeNotifications(parseEdgeTitle(EdgeDay1), parseEdgeText(EdgeDay1), parseEdgeSession(EdgeDay1), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             }
         }
@@ -668,5 +653,6 @@ public class MainActivity extends AppCompatActivity {
         }
         Log.d("!DAY", Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + "");
         //Log.d("!!", parseEdgeText(EdgeDay5));
+
     }
 }

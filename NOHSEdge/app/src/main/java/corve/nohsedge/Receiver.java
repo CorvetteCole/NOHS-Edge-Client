@@ -55,14 +55,14 @@ public class Receiver extends JobService {
             int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel notificationChannel = new NotificationChannel(channelId, channelName, importance);
             notificationChannel.enableLights(true);
-            notificationChannel.setLightColor(Color.RED);
+            notificationChannel.setLightColor(Color.CYAN);
             notificationChannel.enableVibration(true);
             notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
             notificationManager.createNotificationChannel(notificationChannel);
             Notification notification = new Notification.Builder(context)
                     .setContentTitle(Title)
                     .setContentText(Text)
-                    .setSmallIcon(R.drawable.icon)
+                    .setSmallIcon(R.drawable.nohsnotif)
                     .setColor(ContextCompat.getColor(context, R.color.colorAccent))
                     .setChannelId(channelId)
                     .setContentIntent(pi)
@@ -85,4 +85,5 @@ public class Receiver extends JobService {
             mNotificationManager.notify(reqCode, mBuilder.build());
         }
     }
+
 }

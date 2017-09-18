@@ -4,6 +4,9 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.job.JobInfo;
+import android.app.job.JobParameters;
+import android.app.job.JobService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,18 +15,24 @@ import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 /**
  * Created by Cole on 9/14/2017.
  */
 
-public class WeeklyReceiver extends BroadcastReceiver {
+public class WeeklyReceiver extends JobService {
     @Override
-    public void onReceive(Context context, Intent intent) {
-        showNotification(context);
+    public boolean onStartJob(JobParameters params) {
+        showNotification(this);
+        return true;
     }
-    public void showNotification(Context context) {
-
+    @Override
+    public boolean onStopJob(JobParameters params) {
+        // whether or not you would like JobScheduler to automatically retry your failed job.
+        return false;
+    }
+        private void showNotification(Context context){
         final SharedPreferences mSharedPreference= PreferenceManager.getDefaultSharedPreferences(context);
         String Title="Schedule your NOHS classes today!";
         String Text="Get ahead of the crowd!";
