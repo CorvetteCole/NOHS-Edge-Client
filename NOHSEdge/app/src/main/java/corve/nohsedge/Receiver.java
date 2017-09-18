@@ -4,6 +4,8 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.job.JobParameters;
+import android.app.job.JobService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -23,11 +25,19 @@ import static android.content.Context.MODE_PRIVATE;
  * Created by Cole on 9/11/2017.
  */
 
-public class Receiver extends BroadcastReceiver {
+public class Receiver extends JobService {
     @Override
-    public void onReceive(Context context, Intent intent) {
-        showNotification(context);
+    public boolean onStartJob(JobParameters params) {
+        Log.d("maybe work", "or not");
+        showNotification(this);
+        return true;
     }
+    @Override
+    public boolean onStopJob(JobParameters params) {
+        // whether or not you would like JobScheduler to automatically retry your failed job.
+        return false;
+    }
+
     public void showNotification(Context context) {
 
         final SharedPreferences mSharedPreference= PreferenceManager.getDefaultSharedPreferences(context);

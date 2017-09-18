@@ -20,8 +20,10 @@
             </intent-filter>
 
         </activity>
-        <receiver android:name="corve.nohsedge.Receiver" />
         <receiver android:name="corve.nohsedge.WeeklyReceiver" />
+        <service android:name="corve.nohsedge.Receiver"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
+
 
 </manifest>

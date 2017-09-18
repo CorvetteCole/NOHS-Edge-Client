@@ -4,6 +4,9 @@ package corve.nohsedge;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -114,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
     private String EdgeDay5;
     private String EdgeDay6;
     private String EdgeDay1;
-    private boolean NotificationSet = false;
+    public int NotificationSet;
 
 
     @Override
@@ -147,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
         mNotify = (Switch) findViewById(R.id.NotificationCheckbox);
         mLogout = (Button) findViewById(R.id.logoutButton);
         mAutoLogin = (Switch) findViewById(R.id.AutoLoginSwitch);
+        NotificationSet = 0;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -524,8 +528,9 @@ public class MainActivity extends AppCompatActivity {
         am.set(AlarmManager.RTC_WAKEUP, calendar3.getTimeInMillis(), pendingIntent);
     }
 
-    private void setEdgeNotifications(String EdgeTitle, String EdgeText, int EdgeSession, int DayofWeek) {
-        if (NotificationSet) {
+    /*private void setEdgeNotifications(String EdgeTitle, String EdgeText, int EdgeSession, int DayofWeek) {
+        if (NotificationSet == 0) {
+            Log.d("attempting notification", EdgeTitle + " ");
             Intent intent = new Intent(MainActivity.this, Receiver.class);
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             SharedPreferences.Editor editor = prefs.edit();
@@ -542,18 +547,54 @@ public class MainActivity extends AppCompatActivity {
                 Edgecalendar.set(Calendar.MINUTE, 38);
             }
             if (EdgeSession == 2) {
-                Edgecalendar.set(Calendar.HOUR_OF_DAY, 13);
+                Edgecalendar.set(Calendar.HOUR_OF_DAY, 1);
                 Edgecalendar.set(Calendar.MINUTE, 4);
             }
             Edgecalendar.set(Calendar.SECOND, 0);
-            //Edgecalendar.set(Calendar.AM_PM, Calendar.PM);
+            Edgecalendar.set(Calendar.AM_PM, Calendar.PM);
             //if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == DayofWeek) {
             amEdge.set(AlarmManager.RTC_WAKEUP, Edgecalendar.getTimeInMillis(), pendingIntentEdge);
             Log.d("Edge notification set!", EdgeTitle);
             //}
-            NotificationSet = true;
+            NotificationSet = 1;
         }
     }
+    */
+    public void setEdgeNotifications(String EdgeTitle, String EdgeText, int EdgeSession, int DayofWeek) {
+
+            //PendingIntent pendingIntent = PendingIntent.getBroadcast(this, REQUEST_CODE_EDGE, alarmIntent, 0);
+            //AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("TITLE", EdgeTitle);
+            editor.putString("TEXT", EdgeText);
+            editor.commit();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(System.currentTimeMillis());
+            if (EdgeSession == 1) {
+                calendar.set(Calendar.HOUR_OF_DAY, 12);
+                calendar.set(Calendar.MINUTE, 37);
+            }
+            if (EdgeSession == 2) {
+                calendar.set(Calendar.HOUR_OF_DAY, 13);
+                calendar.set(Calendar.MINUTE, 4);
+            }
+            calendar.set(Calendar.SECOND, 1);
+            //calendar.set(Calendar.AM_PM, Calendar.PM);
+            //manager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            ComponentName component = new ComponentName(this, Receiver.class);
+            JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE_EDGE, component)
+                .setMinimumLatency(calendar.getTimeInMillis() - System.currentTimeMillis())
+                    .setOverrideDeadline(calendar.getTimeInMillis() + 60000);
+            JobScheduler jobScheduler = (JobScheduler) this.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+            if (calendar.getTimeInMillis() - System.currentTimeMillis() > 0){
+                jobScheduler.schedule(builder.build());
+            }
+            Log.d("Notification set", EdgeTitle);
+        Log.d("sysTime", System.currentTimeMillis() + "");
+        Log.d("calTime", calendar.getTimeInMillis() + "");
+        }
+
 
     public void getEdgeClasses() {
             int ClassElement = 0;
@@ -592,6 +633,7 @@ public class MainActivity extends AppCompatActivity {
             EdgeDay1 = consoleMessage;
             Log.d("Monday Edge Class", EdgeDay1);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY){
+                Log.d("!notificationset called", "Monday");
                 setEdgeNotifications(parseEdgeTitle(EdgeDay1), parseEdgeText(EdgeDay1), parseEdgeSession(EdgeDay1), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             }
         }
