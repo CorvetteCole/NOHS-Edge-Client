@@ -518,7 +518,7 @@ public class MainActivity extends AppCompatActivity {
     private void setWeeklyNotifications() {
         Calendar calendar3 = Calendar.getInstance();
         calendar3.set(Calendar.DAY_OF_WEEK, 5); // Thursday
-        calendar3.set(Calendar.HOUR_OF_DAY, 4);
+        calendar3.set(Calendar.HOUR, 4);
         calendar3.set(Calendar.MINUTE, 15);
         calendar3.set(Calendar.SECOND, 0);
         calendar3.set(Calendar.AM_PM, Calendar.PM);
@@ -537,7 +537,7 @@ public class MainActivity extends AppCompatActivity {
         int ONE_MIN = 60000;
         int ONE_DAY = 86400000;
         Calendar calendar2 = Calendar.getInstance();
-        calendar2.set(Calendar.HOUR_OF_DAY, 1);
+        calendar2.set(Calendar.HOUR, 1);
         calendar2.set(Calendar.MINUTE, 1);
         calendar2.set(Calendar.SECOND, 1);
         calendar2.set(Calendar.AM_PM, Calendar.AM);
@@ -555,11 +555,11 @@ public class MainActivity extends AppCompatActivity {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         if (EdgeSession == 1) {
-            calendar.set(Calendar.HOUR_OF_DAY, 12);
+            calendar.set(Calendar.HOUR, 0);
             calendar.set(Calendar.MINUTE, 37);
         }
         if (EdgeSession == 2) {
-            calendar.set(Calendar.HOUR_OF_DAY, 1);
+            calendar.set(Calendar.HOUR, 1);
             calendar.set(Calendar.MINUTE, 3);
         }
         calendar.set(Calendar.SECOND, 1);
