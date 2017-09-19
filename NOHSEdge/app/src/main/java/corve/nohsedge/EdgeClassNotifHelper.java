@@ -11,7 +11,7 @@ import android.util.Log;
 public class EdgeClassNotifHelper extends JobService {
     @Override
     public boolean onStartJob(JobParameters params) {
-        Log.d("lalalalala", "urmom");
+        Log.d("maybe it'll", "work");
         setNewEdgeNotif();
         return true;
     }
