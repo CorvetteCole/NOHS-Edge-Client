@@ -107,18 +107,20 @@ public class MainActivity extends AppCompatActivity {
     private TextView mActivateRegister;
     private Switch mNotify;
     private Switch mAutoLogin;
+    private Button mSettings;
     int a = 0;
     int REQUEST_CODE = 0;
     int REQUEST_CODE_EDGE = 1;
     int REQUEST_CODE_WEEKLY = 2;
     private Button mLogout;
+    private String EdgeDay1;
     private String EdgeDay2;
     private String EdgeDay3;
     private String EdgeDay4;
     private String EdgeDay5;
-    private String EdgeDay6;
-    private String EdgeDay1;
     public int NotificationSet;
+    public int notifyMinutes = 5;
+    private boolean settingsOpen = false;
 
 
     @Override
@@ -151,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
         mNotify = (Switch) findViewById(R.id.NotificationCheckbox);
         mLogout = (Button) findViewById(R.id.logoutButton);
         mAutoLogin = (Switch) findViewById(R.id.AutoLoginSwitch);
+        mSettings = (Button) findViewById(R.id.settingsButton);
         NotificationSet = 0;
         activateEdgeHelper();
 
@@ -245,11 +248,39 @@ public class MainActivity extends AppCompatActivity {
                         mUsername.setVisibility(View.VISIBLE);
                         mPassword.setVisibility(View.VISIBLE);
                         mRemember.setVisibility(View.VISIBLE);
-                        mAutoLogin.setVisibility(View.VISIBLE);
                         mNotify.setVisibility(View.VISIBLE);
                         mLogout.setVisibility(View.INVISIBLE);
                     }
                 });
+        mSettings.setOnClickListener(
+                new View.OnClickListener() {
+                    public void onClick(View view) {
+                        if (settingsOpen) {
+                            a = 1;
+                        }
+                        if (!settingsOpen) {
+                            a = 0;
+                        }
+
+                        if (a == 0) {
+                            mLoginPage.setVisibility(View.INVISIBLE);
+                            mNotify.setVisibility(View.VISIBLE);
+                            mAutoLogin.setVisibility(View.VISIBLE);
+                            mSettings.setText("Back");
+                            settingsOpen = true;
+
+                        }
+                        if (a == 1) {
+                            mLoginPage.setVisibility(View.VISIBLE);
+                            mNotify.setVisibility(View.INVISIBLE);
+                            mAutoLogin.setVisibility(View.INVISIBLE);
+                            mSettings.setText("Settings");
+                            settingsOpen = false;
+
+                        }
+                    }
+                }
+        );
 
     }
 
@@ -299,8 +330,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void openLoginpage() {
-        mAutoLogin.setVisibility(View.INVISIBLE);
-        mNotify.setVisibility(View.INVISIBLE);
         mActivateRegister.setVisibility(View.GONE);
         mEmail.setVisibility(View.INVISIBLE);
         mRegister.setVisibility(View.GONE);
@@ -434,6 +463,12 @@ public class MainActivity extends AppCompatActivity {
                 if (!webUrl.toLowerCase().contains("#profile".toLowerCase())) {
                     mLogout.setVisibility(View.INVISIBLE);
                 }
+                if (webUrl.toLowerCase().contains("#homescreen".toLowerCase())){
+                    mSettings.setVisibility(View.VISIBLE);
+                }
+                if (!webUrl.toLowerCase().contains("#homescreen".toLowerCase())){
+                    mSettings.setVisibility(View.INVISIBLE);
+                }
 
             }
         });
@@ -554,13 +589,24 @@ public class MainActivity extends AppCompatActivity {
     public void setEdgeNotifications(String EdgeTitle, String EdgeText, int EdgeSession, int DayofWeek) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
+        int edgeMin1 = 43 - notifyMinutes;
+        int edgeMin2;
+        int edgeHour2;
+        if (notifyMinutes > 4){
+            int x = notifyMinutes - 4;
+            edgeMin2 = 60 - x;
+            edgeHour2 = 0;
+        } else {
+            edgeMin2 = 4 - notifyMinutes;
+            edgeHour2 = 1;
+        }
         if (EdgeSession == 1) {
             calendar.set(Calendar.HOUR, 0);
-            calendar.set(Calendar.MINUTE, 37);
+            calendar.set(Calendar.MINUTE, edgeMin1);
         }
         if (EdgeSession == 2) {
-            calendar.set(Calendar.HOUR, 1);
-            calendar.set(Calendar.MINUTE, 3);
+            calendar.set(Calendar.HOUR, edgeHour2);
+            calendar.set(Calendar.MINUTE, edgeMin2);
         }
         calendar.set(Calendar.SECOND, 1);
         calendar.set(Calendar.AM_PM, Calendar.PM);

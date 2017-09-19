@@ -53,11 +53,11 @@
         android:progressDrawable="@color/colorAccent"
         android:progressTint="@color/colorPrimaryDark"
         android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/loginWebview"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintLeft_toLeftOf="@+id/loginWebview"
-        app:layout_constraintRight_toRightOf="@+id/loginWebview"
-        app:layout_constraintTop_toTopOf="@+id/loginWebview"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintTop_creator="1" />
 
@@ -154,7 +154,6 @@
         android:id="@+id/creditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp"
         android:layout_marginEnd="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
@@ -163,30 +162,44 @@
         android:textAlignment="center"
         android:textColor="@android:color/black"
         android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/AutoLoginSwitch"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="8dp" />
 
     <TextView
         android:id="@+id/ActivateRegister"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="16dp"
         android:layout_x="178dp"
         android:layout_y="428dp"
         android:text="Need to register?"
         android:textAppearance="@android:style/TextAppearance.Material.Small"
         android:textColor="@color/colorPrimary"
-        app:layout_constraintBottom_toTopOf="@+id/creditText"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginButton"/>
+        app:layout_constraintHorizontal_bias="0.498"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/NotificationCheckbox" />
+
+    <Button
+        android:id="@+id/settingsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_x="182dp"
+        android:layout_y="9dp"
+        android:visibility="invisible"
+        android:text="Settings"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="8dp" />
 
     <WebView
         android:id="@+id/loginWebview"
@@ -209,28 +222,31 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Receive Edge Notifications   "
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="8dp"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp" />
-    <Switch
-        android:id="@+id/AutoLoginSwitch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Automatic Login                     "
-        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginRight="8dp"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginLeft="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toTopOf="@id/NotificationCheckbox"
-        />
+        android:layout_marginTop="8dp"
+        android:visibility="invisible"
+        app:layout_constraintTop_toBottomOf="@+id/AutoLoginSwitch" />
+    <Switch
+        android:id="@+id/AutoLoginSwitch"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Automatic Login                     "
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="8dp" />
 
     <Button
         android:id="@+id/logoutButton"
