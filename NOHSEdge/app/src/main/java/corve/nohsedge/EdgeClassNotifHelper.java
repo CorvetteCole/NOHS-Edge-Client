@@ -19,7 +19,7 @@ public class EdgeClassNotifHelper extends JobService {
     public boolean onStopJob(JobParameters params) {
         Log.d("please kill me", "death");
         // whether or not you would like JobScheduler to automatically retry your failed job.
-        return false;
+        return true;
     }
     public void setNewEdgeNotif(){
         Log.d("!edgehelper worked", "im ok with life");

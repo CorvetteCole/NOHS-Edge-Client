@@ -110,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
     int a = 0;
     int REQUEST_CODE = 0;
     int REQUEST_CODE_EDGE = 1;
+    int REQUEST_CODE_WEEKLY = 2;
     private Button mLogout;
     private String EdgeDay2;
     private String EdgeDay3;
@@ -522,7 +523,7 @@ public class MainActivity extends AppCompatActivity {
         calendar3.set(Calendar.SECOND, 0);
         calendar3.set(Calendar.AM_PM, Calendar.PM);
         ComponentName component = new ComponentName(this, WeeklyReceiver.class);
-        JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE_EDGE, component)
+        JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE_WEEKLY, component)
                 .setMinimumLatency(calendar3.getTimeInMillis() - System.currentTimeMillis())
                 .setPersisted(true)
                 .setOverrideDeadline((calendar3.getTimeInMillis() - System.currentTimeMillis()) + 1800000);
@@ -540,8 +541,8 @@ public class MainActivity extends AppCompatActivity {
         calendar2.set(Calendar.MINUTE, 1);
         calendar2.set(Calendar.SECOND, 1);
         calendar2.set(Calendar.AM_PM, Calendar.AM);
-        ComponentName component = new ComponentName(this, WeeklyReceiver.class);
-        JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE_EDGE, component)
+        ComponentName component = new ComponentName(this, EdgeClassNotifHelper.class);
+        JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE_WEEKLY, component)
                 .setPersisted(true)
                 .setMinimumLatency((calendar2.getTimeInMillis() + ONE_DAY) - System.currentTimeMillis())
                 .setOverrideDeadline(ONE_MIN * 180);
@@ -579,6 +580,7 @@ public class MainActivity extends AppCompatActivity {
             }
             Log.d("Notification set", EdgeTitle);
         Log.d("edgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
+        activateEdgeHelper();
         }
 
 

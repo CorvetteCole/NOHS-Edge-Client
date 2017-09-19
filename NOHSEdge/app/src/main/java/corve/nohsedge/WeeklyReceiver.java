@@ -30,10 +30,9 @@ public class WeeklyReceiver extends JobService {
     @Override
     public boolean onStopJob(JobParameters params) {
         // whether or not you would like JobScheduler to automatically retry your failed job.
-        return false;
+        return true;
     }
         private void showNotification(Context context){
-        final SharedPreferences mSharedPreference= PreferenceManager.getDefaultSharedPreferences(context);
         String Title="Schedule your NOHS classes today!";
         String Text="Get ahead of the crowd!";
         int reqCode = 0;

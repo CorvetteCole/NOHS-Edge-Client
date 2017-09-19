@@ -30,12 +30,12 @@ public class Receiver extends JobService {
     public boolean onStartJob(JobParameters params) {
         Log.d("maybe work", "or not");
         showNotification(this);
-        return true;
+                return true;
     }
     @Override
     public boolean onStopJob(JobParameters params) {
         // whether or not you would like JobScheduler to automatically retry your failed job.
-        return false;
+        return true;
     }
 
     public void showNotification(Context context) {
