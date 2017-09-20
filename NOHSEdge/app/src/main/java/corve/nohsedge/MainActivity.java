@@ -34,6 +34,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.NumberPicker;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -49,16 +50,15 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREF_PREMEM = "RememPass";
     private static final String PREF_NOTIFY = "NOTIFICATIONS";
     private static final String PREF_AUTOLOGIN = "Autologin";
-    private static final String PREF_TITLE = "NotificationTitle";
-    private static final String PREF_TEXT = "NotificationText";
     public static final String PREF_EDGE1 = "Edge 1";
     public static final String PREF_EDGE2 = "Edge 2";
     public static final String PREF_EDGE3 = "Edge 3";
     public static final String PREF_EDGE4 = "Edge 4";
     public static final String PREF_EDGE5 = "Edge 5";
+    public static final String PREF_CALLEDFOREIGN = "from mainactivity?";
+    public static final String PREF_MIN = "Notify min";
     private String WrongPassword = "pass did not match";
     private String webUrl;
-    private String usernameCheck;
     String newUrl = "";
 
 
@@ -76,14 +76,21 @@ public class MainActivity extends AppCompatActivity {
 
     private final boolean DefaultAutologinValue = false;
     private boolean AutologinValue;
+
+    private final boolean DefaultCalledForeign = false;
+    private boolean calledForeign;
+
+    public static final int DefaultMinValue = 5;
+    private int MinValue;
+
     private String Title;
     private String Text;
 
-    public final String DefaultEdgeDay1Value = "";
-    public final String DefaultEdgeDay2Value = "";
-    public final String DefaultEdgeDay3Value = "";
-    public final String DefaultEdgeDay4Value = "";
-    public final String DefaultEdgeDay5Value = "";
+    public final static String DefaultEdgeDay1Value = "";
+    public final static String DefaultEdgeDay2Value = "";
+    public final static String DefaultEdgeDay3Value = "";
+    public final static String DefaultEdgeDay4Value = "";
+    public final static String DefaultEdgeDay5Value = "";
     private String EdgeDay1Value;
     private String EdgeDay2Value;
     private String EdgeDay3Value;
@@ -109,9 +116,9 @@ public class MainActivity extends AppCompatActivity {
     private Switch mAutoLogin;
     private Button mSettings;
     int a = 0;
-    int REQUEST_CODE = 0;
-    int REQUEST_CODE_EDGE = 1;
-    int REQUEST_CODE_WEEKLY = 2;
+    static int REQUEST_CODE = 0;
+    static int REQUEST_CODE_EDGE = 1;
+    static int REQUEST_CODE_WEEKLY = 2;
     private Button mLogout;
     private String EdgeDay1;
     private String EdgeDay2;
@@ -121,12 +128,15 @@ public class MainActivity extends AppCompatActivity {
     public int NotificationSet;
     public int notifyMinutes = 5;
     private boolean settingsOpen = false;
+    public static MainActivity activity;
+    private NumberPicker mNumberPicker;
+    private TextView mNumberPickerTextView;
 
 
     @Override
     public void onResume() {
         super.onResume();
-        loadPreferences(false);
+        loadPreferences();
     }
 
     @Override
@@ -138,24 +148,35 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        mLogin = (Button) findViewById(R.id.loginButton);
-        mLoginPage = (WebView) findViewById(R.id.loginWebview);
-        mCredit = (TextView) findViewById(R.id.creditText);
-        mLoadingCircle = (ProgressBar) findViewById(R.id.progressBar);
-        mUsername = (TextView) findViewById(R.id.usernameField);
-        mPassword = (TextView) findViewById(R.id.passwordField);
-        mRemember = (CheckBox) findViewById(R.id.rememberPassword);
-        mLoadingText = (TextView) findViewById(R.id.LoadingText);
-        mRegister = (Button) findViewById(R.id.RegisterButton);
-        mEmail = (TextView) findViewById(R.id.emailField);
-        mActivateRegister = (TextView) findViewById(R.id.ActivateRegister);
-        mNotify = (Switch) findViewById(R.id.NotificationCheckbox);
-        mLogout = (Button) findViewById(R.id.logoutButton);
-        mAutoLogin = (Switch) findViewById(R.id.AutoLoginSwitch);
-        mSettings = (Button) findViewById(R.id.settingsButton);
-        NotificationSet = 0;
-        activateEdgeHelper();
+            setContentView(R.layout.activity_main);
+            mLogin = (Button) findViewById(R.id.loginButton);
+            mLoginPage = (WebView) findViewById(R.id.loginWebview);
+            mCredit = (TextView) findViewById(R.id.creditText);
+            mLoadingCircle = (ProgressBar) findViewById(R.id.progressBar);
+            mUsername = (TextView) findViewById(R.id.usernameField);
+            mPassword = (TextView) findViewById(R.id.passwordField);
+            mRemember = (CheckBox) findViewById(R.id.rememberPassword);
+            mLoadingText = (TextView) findViewById(R.id.LoadingText);
+            mRegister = (Button) findViewById(R.id.RegisterButton);
+            mEmail = (TextView) findViewById(R.id.emailField);
+            mActivateRegister = (TextView) findViewById(R.id.ActivateRegister);
+            mNotify = (Switch) findViewById(R.id.NotificationCheckbox);
+            mLogout = (Button) findViewById(R.id.logoutButton);
+            mAutoLogin = (Switch) findViewById(R.id.AutoLoginSwitch);
+            mSettings = (Button) findViewById(R.id.settingsButton);
+            mNumberPicker = (NumberPicker) findViewById(R.id.numberPicker);
+            mNumberPickerTextView = (TextView) findViewById(R.id.numberPickerTextView);
+            NotificationSet = 0;
+            String[] nums = new String[40];
+            for(int i=0; i<nums.length; i++)
+                nums[i] = Integer.toString(i);
+
+            mNumberPicker.setMinValue(1);
+            mNumberPicker.setMaxValue(40);
+            mNumberPicker.setWrapSelectorWheel(true);
+            mNumberPicker.setDisplayedValues(nums);
+
+            activateEdgeHelper();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -166,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
             ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
             ShortcutInfo wNOHSShortcut = new ShortcutInfo.Builder(this, "shortcut_web")
                     .setShortLabel("NOHS Website")
-                    .setLongLabel("Open the NOHS Website")
+                    .setLongLabel("Open NOHS Website")
                     .setIcon(Icon.createWithResource(this, R.drawable.nohs))
                     .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.oldham.kyschools.us/nohs/")))
                     .build();
@@ -179,110 +200,128 @@ public class MainActivity extends AppCompatActivity {
             shortcutManager.setDynamicShortcuts(Arrays.asList(wNOHSShortcut, wCampusShortcut));
 
         }
+            mActivateRegister.setOnClickListener(
+                    new View.OnClickListener() {
+                        public void onClick(View view) {
+                            if (mActivateRegister.getText().equals("Back to login")) {
+                                a = 1;
+                            }
+                            if (mActivateRegister.getText().equals("Need to register?")) {
+                                a = 0;
+                            }
 
-        mActivateRegister.setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(View view) {
-                        if (mActivateRegister.getText().equals("Back to login")) {
-                            a = 1;
-                        }
-                        if (mActivateRegister.getText().equals("Need to register?")) {
-                            a = 0;
-                        }
+                            if (a == 0) {
+                                mRegister.setVisibility(View.VISIBLE);
+                                mEmail.setVisibility(View.VISIBLE);
+                                mActivateRegister.setText("Back to login");
+                                mLogin.setVisibility(View.INVISIBLE);
 
-                        if (a == 0) {
-                            mRegister.setVisibility(View.VISIBLE);
-                            mEmail.setVisibility(View.VISIBLE);
-                            mActivateRegister.setText("Back to login");
-                            mLogin.setVisibility(View.INVISIBLE);
+                            }
+                            if (a == 1) {
+                                mRegister.setVisibility(View.INVISIBLE);
+                                mEmail.setVisibility(View.INVISIBLE);
+                                mActivateRegister.setText("Need to register?");
+                                mLogin.setVisibility(View.VISIBLE);
 
-                        }
-                        if (a == 1) {
-                            mRegister.setVisibility(View.INVISIBLE);
-                            mEmail.setVisibility(View.INVISIBLE);
-                            mActivateRegister.setText("Need to register?");
-                            mLogin.setVisibility(View.VISIBLE);
-
+                            }
                         }
                     }
-                }
-        );
+            );
 
-        mLogin.setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(View view) {
-                        InputMethodManager inputManager = (InputMethodManager)
-                                getSystemService(Context.INPUT_METHOD_SERVICE);
-                        if (getCurrentFocus() != null) {
-                            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                                    InputMethodManager.HIDE_NOT_ALWAYS);
-                            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
+            mLogin.setOnClickListener(
+                    new View.OnClickListener() {
+                        public void onClick(View view) {
+                            InputMethodManager inputManager = (InputMethodManager)
+                                    getSystemService(Context.INPUT_METHOD_SERVICE);
+                            if (getCurrentFocus() != null) {
+                                inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                                        InputMethodManager.HIDE_NOT_ALWAYS);
+                                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
+                                openLoginpage();
+
+                            }
+                        }
+                    }
+            );
+            mRegister.setOnClickListener(
+                    new View.OnClickListener() {
+                        public void onClick(View view) {
+                            InputMethodManager inputManager = (InputMethodManager)
+                                    getSystemService(Context.INPUT_METHOD_SERVICE);
+                            if (getCurrentFocus() != null) {
+                                inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                                        InputMethodManager.HIDE_NOT_ALWAYS);
+                            }
+                            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#register");
                             openLoginpage();
-
                         }
                     }
-                }
-        );
-        mRegister.setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(View view) {
-                        InputMethodManager inputManager = (InputMethodManager)
-                                getSystemService(Context.INPUT_METHOD_SERVICE);
-                        if (getCurrentFocus() != null) {
-                            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                                    InputMethodManager.HIDE_NOT_ALWAYS);
-                        }
-                        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#register");
-                        openLoginpage();
-                    }
-                }
-        );
-        mLogout.setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(View view) {
-                        mLoginPage.setVisibility(View.INVISIBLE);
-                        mLogin.setVisibility(View.VISIBLE);
-                        mUsername.setText("");
-                        mPassword.setText("");
-                        mRemember.setChecked(false);
-                        mUsername.setVisibility(View.VISIBLE);
-                        mPassword.setVisibility(View.VISIBLE);
-                        mRemember.setVisibility(View.VISIBLE);
-                        mNotify.setVisibility(View.VISIBLE);
-                        mLogout.setVisibility(View.INVISIBLE);
-                    }
-                });
-        mSettings.setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(View view) {
-                        if (settingsOpen) {
-                            a = 1;
-                        }
-                        if (!settingsOpen) {
-                            a = 0;
-                        }
-
-                        if (a == 0) {
+            );
+            mLogout.setOnClickListener(
+                    new View.OnClickListener() {
+                        public void onClick(View view) {
                             mLoginPage.setVisibility(View.INVISIBLE);
+                            mLogin.setVisibility(View.VISIBLE);
+                            mUsername.setText("");
+                            mPassword.setText("");
+                            mRemember.setChecked(false);
+                            mUsername.setVisibility(View.VISIBLE);
+                            mPassword.setVisibility(View.VISIBLE);
+                            mRemember.setVisibility(View.VISIBLE);
                             mNotify.setVisibility(View.VISIBLE);
-                            mAutoLogin.setVisibility(View.VISIBLE);
-                            mSettings.setText("Back");
-                            settingsOpen = true;
-
+                            mLogout.setVisibility(View.INVISIBLE);
                         }
-                        if (a == 1) {
-                            mLoginPage.setVisibility(View.VISIBLE);
-                            mNotify.setVisibility(View.INVISIBLE);
-                            mAutoLogin.setVisibility(View.INVISIBLE);
-                            mSettings.setText("Settings");
-                            settingsOpen = false;
+                    });
+            mSettings.setOnClickListener(
+                    new View.OnClickListener() {
+                        public void onClick(View view) {
+                            if (settingsOpen) {
+                                a = 1;
+                            }
+                            if (!settingsOpen) {
+                                a = 0;
+                            }
 
+                            if (a == 0) {
+                                mLoginPage.setVisibility(View.INVISIBLE);
+                                mNotify.setVisibility(View.VISIBLE);
+                                mAutoLogin.setVisibility(View.VISIBLE);
+                                mSettings.setText("Back");
+                                settingsOpen = true;
+                                mLoadingCircle.setVisibility(View.INVISIBLE);
+                                mNumberPicker.setVisibility(View.VISIBLE);
+                                mNumberPickerTextView.setVisibility(View.VISIBLE);
+                                mNumberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                                    @Override
+                                    public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+
+
+                                        mNumberPickerTextView.setText("Send notification " + (newVal-1) + " minutes before class");
+                                        notifyMinutes = newVal-1;
+                                    }
+                                });
+
+
+                            }
+                            if (a == 1) {
+                                mLoginPage.setVisibility(View.VISIBLE);
+                                mNotify.setVisibility(View.INVISIBLE);
+                                mAutoLogin.setVisibility(View.INVISIBLE);
+                                mSettings.setText("Settings");
+                                settingsOpen = false;
+                                mLoadingCircle.setVisibility(View.INVISIBLE);
+                                mNumberPicker.setVisibility(View.INVISIBLE);
+                                mNumberPickerTextView.setVisibility(View.INVISIBLE);
+
+                            }
                         }
                     }
-                }
-        );
+            );
 
-    }
+
+        }
+
+
 
     @SuppressWarnings("deprecation")
     public static void clearCookies(Context context) {
@@ -325,6 +364,16 @@ public class MainActivity extends AppCompatActivity {
             mLoginPage.goBack();
         } else {
             super.onBackPressed();
+        }
+        if (settingsOpen){
+            mNotify.setVisibility(View.INVISIBLE);
+            mAutoLogin.setVisibility(View.INVISIBLE);
+            mLoginPage.setVisibility(View.VISIBLE);
+            mSettings.setText("Settings");
+            mLoadingCircle.setVisibility(View.INVISIBLE);
+            settingsOpen = false;
+            mNumberPicker.setVisibility(View.INVISIBLE);
+            mNumberPickerTextView.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -490,6 +539,7 @@ public class MainActivity extends AppCompatActivity {
         EdgeDay3Value = EdgeDay3;
         EdgeDay4Value = EdgeDay4;
         EdgeDay5Value = EdgeDay5;
+        MinValue = notifyMinutes;
         if (mRemember.isChecked()) {
             editor.putString(PREF_UNAME, UnameValue);
             editor.putString(PREF_PASSWORD, PasswordValue);
@@ -502,10 +552,11 @@ public class MainActivity extends AppCompatActivity {
         editor.putString(PREF_EDGE3, EdgeDay3Value);
         editor.putString(PREF_EDGE4, EdgeDay4Value);
         editor.putString(PREF_EDGE5, EdgeDay5Value);
+        editor.putInt(PREF_MIN, MinValue);
         editor.apply();
     }
 
-    public void loadPreferences(boolean calledForeign) {
+    public void loadPreferences() {
 
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                 Context.MODE_PRIVATE);
@@ -521,9 +572,10 @@ public class MainActivity extends AppCompatActivity {
         EdgeDay3Value = settings.getString(PREF_EDGE3, DefaultEdgeDay3Value);
         EdgeDay4Value = settings.getString(PREF_EDGE4, DefaultEdgeDay4Value);
         EdgeDay5Value = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
+        MinValue = settings.getInt(PREF_MIN, DefaultMinValue);
         if (NotificationValue) {
                 Log.d("Setting notification", " ");
-                setWeeklyNotifications();  //disabled temporarily so weekly notifications can be moved to their own receiver
+                setWeeklyNotifications();
         }
         mAutoLogin.setChecked(AutologinValue);
         mRemember.setChecked(PRememValue);
@@ -533,6 +585,9 @@ public class MainActivity extends AppCompatActivity {
         EdgeDay3 = EdgeDay3Value;
         EdgeDay4 = EdgeDay4Value;
         EdgeDay5 = EdgeDay5Value;
+        notifyMinutes = MinValue;
+        mNumberPicker.setValue((notifyMinutes + 1));
+        mNumberPickerTextView.setText("Send notification " + (notifyMinutes) + " minutes before class");
 
         InterpretEdgeData(EdgeDay1);
         InterpretEdgeData(EdgeDay2);
@@ -570,18 +625,18 @@ public class MainActivity extends AppCompatActivity {
 
     public void activateEdgeHelper() {
         int ONE_MIN = 60000;
-        int ONE_DAY = 86400000;
+        //int ONE_DAY = 86400000;
         Calendar calendar2 = Calendar.getInstance();
         calendar2.set(Calendar.HOUR, 1);
         calendar2.set(Calendar.MINUTE, 1);
         calendar2.set(Calendar.SECOND, 1);
         calendar2.set(Calendar.AM_PM, Calendar.AM);
         ComponentName component = new ComponentName(this, EdgeClassNotifHelper.class);
-        JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE_WEEKLY, component)
+        JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE, component)
                 .setPersisted(true)
-                .setMinimumLatency((calendar2.getTimeInMillis() + ONE_DAY) - System.currentTimeMillis())
+                .setMinimumLatency((calendar2.getTimeInMillis()) - System.currentTimeMillis())
                 .setOverrideDeadline(ONE_MIN * 180);
-        Log.d("edgehelptime", ((calendar2.getTimeInMillis() + ONE_DAY) - System.currentTimeMillis()) + "");
+        Log.d("edgehelptime", ((calendar2.getTimeInMillis()) - System.currentTimeMillis()) + "");
         JobScheduler jobScheduler = (JobScheduler) this.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         jobScheduler.schedule(builder.build());
     }
@@ -610,6 +665,7 @@ public class MainActivity extends AppCompatActivity {
         }
         calendar.set(Calendar.SECOND, 1);
         calendar.set(Calendar.AM_PM, Calendar.PM);
+
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString("TITLE", EdgeTitle);
@@ -626,7 +682,6 @@ public class MainActivity extends AppCompatActivity {
             }
             Log.d("Notification set", EdgeTitle);
         Log.d("edgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
-        activateEdgeHelper();
         }
 
 
@@ -666,7 +721,6 @@ public class MainActivity extends AppCompatActivity {
             EdgeDay1 = consoleMessage;
             Log.d("Monday Edge Class", EdgeDay1);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY){
-                //Log.d("!notificationset called", "Monday");
                 setEdgeNotifications(parseEdgeTitle(EdgeDay1), parseEdgeText(EdgeDay1), parseEdgeSession(EdgeDay1), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             }
         }
