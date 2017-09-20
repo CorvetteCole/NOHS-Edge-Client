@@ -638,15 +638,23 @@ public class MainActivity extends AppCompatActivity {
         calendar2.set(Calendar.MINUTE, 10);
         calendar2.set(Calendar.SECOND, 0);
         calendar2.set(Calendar.AM_PM, Calendar.AM);
+        long activateTime;
         //ComponentName component = new ComponentName(this, EdgeClassNotifHelper.class);
-        long activateTime = (calendar2.getTimeInMillis() + ONE_DAY);
+        Log.d("!edgehelp c2", calendar2.getTimeInMillis() + "");
+        Log.d("!edgehelp s", System.currentTimeMillis() + "");
+        if (calendar2.getTimeInMillis() < System.currentTimeMillis()) {
+            activateTime = (calendar2.getTimeInMillis() + ONE_DAY);
+        } else {
+            activateTime = calendar2.getTimeInMillis();
+        }
+
         Log.d("edgehelptime", (activateTime - System.currentTimeMillis()) + "");
-        if (((calendar2.getTimeInMillis() + ONE_DAY) - System.currentTimeMillis()) > 0) {
             Intent intent2 = new Intent(this, EdgeClassNotifHelper.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
                     REQUEST_CODE, intent2, PendingIntent.FLAG_UPDATE_CURRENT);
             AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);
-            am.setInexactRepeating(AlarmManager.RTC_WAKEUP, activateTime, AlarmManager.INTERVAL_DAY, pendingIntent);
+            //am.setInexactRepeating(AlarmManager.RTC_WAKEUP, activateTime, AlarmManager.INTERVAL_DAY, pendingIntent);
+            am.setExact(AlarmManager.RTC_WAKEUP, activateTime, pendingIntent);
         /*JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE, component)
                 .setPersisted(true)
                 .setMinimumLatency((calendar2.getTimeInMillis()) - System.currentTimeMillis())
@@ -654,7 +662,6 @@ public class MainActivity extends AppCompatActivity {
 
         JobScheduler jobScheduler = (JobScheduler) this.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         jobScheduler.schedule(builder.build());*/
-        }
     }
 
     public void setEdgeNotifications(String EdgeTitle, String EdgeText, int EdgeSession, int DayofWeek) {
