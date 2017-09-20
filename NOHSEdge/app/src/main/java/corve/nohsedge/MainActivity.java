@@ -261,6 +261,8 @@ public class MainActivity extends AppCompatActivity {
                     new View.OnClickListener() {
                         public void onClick(View view) {
                             mLoginPage.setVisibility(View.INVISIBLE);
+                            mSettings.setVisibility(View.INVISIBLE);
+                            clearCookies(getBaseContext());
                             mLogin.setVisibility(View.VISIBLE);
                             mUsername.setText("");
                             mPassword.setText("");
@@ -268,7 +270,6 @@ public class MainActivity extends AppCompatActivity {
                             mUsername.setVisibility(View.VISIBLE);
                             mPassword.setVisibility(View.VISIBLE);
                             mRemember.setVisibility(View.VISIBLE);
-                            mNotify.setVisibility(View.VISIBLE);
                             mLogout.setVisibility(View.INVISIBLE);
                         }
                     });
@@ -360,12 +361,23 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (mLoginPage.canGoBack()) {
+        if (mLoginPage.getUrl().toLowerCase().contains("edgetime".toLowerCase())){
             mLoginPage.goBack();
-        } else {
-            super.onBackPressed();
+            mLoadingText.setVisibility(View.VISIBLE);
+            mLoadingText.setText("Loading homescreen...");
+            int t = 0;
+            while (t < 1000){
+                t++;
+            }
+            mLoginPage.goBack();
+            //mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen");
         }
-        if (settingsOpen){
+
+
+        if (mLoginPage.canGoBack() && !settingsOpen) {
+            mLoginPage.goBack();
+        }
+        else if (settingsOpen){
             mNotify.setVisibility(View.INVISIBLE);
             mAutoLogin.setVisibility(View.INVISIBLE);
             mLoginPage.setVisibility(View.VISIBLE);
@@ -374,6 +386,10 @@ public class MainActivity extends AppCompatActivity {
             settingsOpen = false;
             mNumberPicker.setVisibility(View.INVISIBLE);
             mNumberPickerTextView.setVisibility(View.INVISIBLE);
+        }
+        else {
+            Log.d("not good", "kill me");
+            super.onBackPressed();
         }
     }
 
@@ -424,19 +440,25 @@ public class MainActivity extends AppCompatActivity {
                     //mLoadingText.setVisibility(View.INVISIBLE);
                     x = 0;
                 }
-                if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(mUsername.getText().toString())) && x == 1) {
-                    mLoadingCircle.setVisibility(View.INVISIBLE);
-                    mLoginPage.setVisibility(View.VISIBLE);
-                    mUsername.setVisibility(View.GONE);
-                    mPassword.setVisibility(View.GONE);
-                    mRemember.setVisibility(View.GONE);
-                    mEmail.setVisibility(View.GONE);
-                    //mLoadingText.setVisibility(View.INVISIBLE);
-                    x = 2;
-                    //confirmLogin();
+                if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(mUsername.getText().toString())) /*&& x == 1*/) {
+                    if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
+                        mLoadingCircle.setVisibility(View.INVISIBLE);
+                        mLoginPage.setVisibility(View.VISIBLE);
+                        mUsername.setVisibility(View.GONE);
+                        mPassword.setVisibility(View.GONE);
+                        mRemember.setVisibility(View.GONE);
+                        mEmail.setVisibility(View.GONE);
+                        //mLoadingText.setVisibility(View.INVISIBLE);
+                        x = 2;
+                        //confirmLogin();
+                    }
                 }
                 if (cm.message().toLowerCase().contains("RetrievedEdgeClass".toLowerCase()) && mNotify.isChecked()){
                     InterpretEdgeData(cm.message());
+                }
+                if(cm.message().toLowerCase().contains("post_queue") && (cm.lineNumber() == 419)){
+                    mLoadingCircle.setVisibility(View.INVISIBLE);
+                    mLoginPage.setVisibility(View.VISIBLE);
                 }
                 return true;
             }
@@ -483,6 +505,14 @@ public class MainActivity extends AppCompatActivity {
                     //mLoadingText.setVisibility(View.INVISIBLE);
                     getEdgeClasses();
                 }
+                if (mLoginPage.getUrl().toLowerCase().contains("#homescreen".toLowerCase()) && mLoginPage.getVisibility() == View.VISIBLE){
+                    mSettings.setVisibility(View.VISIBLE);
+                    mLogout.setVisibility(View.VISIBLE);
+                }
+                if (!mLoginPage.getUrl().toLowerCase().contains("#homescreen".toLowerCase())){
+                    mSettings.setVisibility(View.INVISIBLE);
+                    mLogout.setVisibility(View.INVISIBLE);
+                }
             }
 
             @Override
@@ -506,18 +536,20 @@ public class MainActivity extends AppCompatActivity {
                         newUrl = webUrl;
                     }
                 }
-                if (webUrl.toLowerCase().contains("#profile".toLowerCase())) {
-                    mLogout.setVisibility(View.VISIBLE);
-                }
-                if (!webUrl.toLowerCase().contains("#profile".toLowerCase())) {
-                    mLogout.setVisibility(View.INVISIBLE);
-                }
-                if (webUrl.toLowerCase().contains("#homescreen".toLowerCase())){
-                    mSettings.setVisibility(View.VISIBLE);
+                if (webUrl.toLowerCase().contains("#homescreen".toLowerCase()) && mLoadingCircle.getVisibility() == View.INVISIBLE){
+                    if (mLoginPage.getVisibility() == View.VISIBLE) {
+                        mSettings.setVisibility(View.VISIBLE);
+                        mLogout.setVisibility(View.VISIBLE);
+                    }
                 }
                 if (!webUrl.toLowerCase().contains("#homescreen".toLowerCase())){
                     mSettings.setVisibility(View.INVISIBLE);
+                    mLogout.setVisibility(View.INVISIBLE);
                 }
+                //if (webUrl.toLowerCase().contains("#login".toLowerCase())){
+                //    mLoginPage.setVisibility(View.INVISIBLE);
+                //    mLoadingCircle.setVisibility(View.VISIBLE);
+                //}
 
             }
         });
