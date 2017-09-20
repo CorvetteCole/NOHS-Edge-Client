@@ -6,8 +6,11 @@
     <uses-permission  android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission  android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission  android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission  android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
     <application
         android:allowBackup="true"
+        android:backupAgent="MyBackupAgent"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
@@ -19,7 +22,16 @@
             </intent-filter>
 
         </activity>
-        <receiver android:name=".Receiver" />
+
+
+        <receiver android:name="corve.nohsedge.Receiver"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <receiver android:name="corve.nohsedge.WeeklyReceiver"
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <service android:name="corve.nohsedge.EdgeClassNotifHelper"
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
+
     </application>
+
 
 </manifest>
