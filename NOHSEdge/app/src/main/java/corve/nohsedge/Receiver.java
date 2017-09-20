@@ -25,19 +25,24 @@ import static android.content.Context.MODE_PRIVATE;
  * Created by Cole on 9/11/2017.
  */
 
-public class Receiver extends JobService {
+public class Receiver extends BroadcastReceiver {
     @Override
+    public void onReceive(Context context, Intent intent) {
+        showNotification(context);
+    }
+
+    /*@Override
     public boolean onStartJob(JobParameters params) {
         Log.d("maybe work", "or not");
         showNotification(this);
-                return true;
+                return false;
     }
     @Override
     public boolean onStopJob(JobParameters params) {
         // whether or not you would like JobScheduler to automatically retry your failed job.
         return true;
     }
-
+*/
     public void showNotification(Context context) {
 
         final SharedPreferences mSharedPreference= PreferenceManager.getDefaultSharedPreferences(context);

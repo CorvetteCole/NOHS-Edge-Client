@@ -612,7 +612,13 @@ public class MainActivity extends AppCompatActivity {
         calendar3.set(Calendar.MINUTE, 15);
         calendar3.set(Calendar.SECOND, 0);
         calendar3.set(Calendar.AM_PM, Calendar.PM);
-        ComponentName component = new ComponentName(this, WeeklyReceiver.class);
+        if ((calendar3.getTimeInMillis() - System.currentTimeMillis()) > 0) {
+            Intent intent3 = new Intent(this, WeeklyReceiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
+                    REQUEST_CODE_WEEKLY, intent3, PendingIntent.FLAG_UPDATE_CURRENT);
+            AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);
+            am.setExact(AlarmManager.RTC_WAKEUP, calendar3.getTimeInMillis(), pendingIntent);
+        /*ComponentName component = new ComponentName(this, WeeklyReceiver.class);
         JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE_WEEKLY, component)
                 .setMinimumLatency(calendar3.getTimeInMillis() - System.currentTimeMillis())
                 .setPersisted(true)
@@ -620,25 +626,35 @@ public class MainActivity extends AppCompatActivity {
         JobScheduler jobScheduler = (JobScheduler) this.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         if (calendar3.getTimeInMillis() - System.currentTimeMillis() > 0){
             jobScheduler.schedule(builder.build());
+            */
         }
     }
 
     public void activateEdgeHelper() {
         int ONE_MIN = 60000;
-        //int ONE_DAY = 86400000;
+        int ONE_DAY = 86400000;
         Calendar calendar2 = Calendar.getInstance();
         calendar2.set(Calendar.HOUR, 1);
-        calendar2.set(Calendar.MINUTE, 1);
-        calendar2.set(Calendar.SECOND, 1);
+        calendar2.set(Calendar.MINUTE, 10);
+        calendar2.set(Calendar.SECOND, 0);
         calendar2.set(Calendar.AM_PM, Calendar.AM);
-        ComponentName component = new ComponentName(this, EdgeClassNotifHelper.class);
-        JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE, component)
+        //ComponentName component = new ComponentName(this, EdgeClassNotifHelper.class);
+        long activateTime = (calendar2.getTimeInMillis() + ONE_DAY);
+        Log.d("edgehelptime", (activateTime - System.currentTimeMillis()) + "");
+        if (((calendar2.getTimeInMillis() + ONE_DAY) - System.currentTimeMillis()) > 0) {
+            Intent intent2 = new Intent(this, EdgeClassNotifHelper.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
+                    REQUEST_CODE, intent2, PendingIntent.FLAG_UPDATE_CURRENT);
+            AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);
+            am.setInexactRepeating(AlarmManager.RTC_WAKEUP, activateTime, AlarmManager.INTERVAL_DAY, pendingIntent);
+        /*JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE, component)
                 .setPersisted(true)
                 .setMinimumLatency((calendar2.getTimeInMillis()) - System.currentTimeMillis())
                 .setOverrideDeadline(ONE_MIN * 180);
-        Log.d("edgehelptime", ((calendar2.getTimeInMillis()) - System.currentTimeMillis()) + "");
+
         JobScheduler jobScheduler = (JobScheduler) this.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        jobScheduler.schedule(builder.build());
+        jobScheduler.schedule(builder.build());*/
+        }
     }
 
     public void setEdgeNotifications(String EdgeTitle, String EdgeText, int EdgeSession, int DayofWeek) {
@@ -671,8 +687,17 @@ public class MainActivity extends AppCompatActivity {
             editor.putString("TITLE", EdgeTitle);
             editor.putString("TEXT", EdgeText);
             editor.commit();
-            ComponentName component = new ComponentName(this, Receiver.class);
-            JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE_EDGE, component)
+        Log.d("Notification set", EdgeTitle);
+        Log.d("edgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
+        if ((calendar.getTimeInMillis() - System.currentTimeMillis()) > 0) {
+            Intent intent1 = new Intent(this, Receiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
+                    REQUEST_CODE_EDGE, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
+            AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);
+            am.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+
+       /* ComponentName component = new ComponentName(this, Receiver.class);
+        JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE_EDGE, component)
                 .setMinimumLatency(calendar.getTimeInMillis() - System.currentTimeMillis())
                 .setPersisted(true)
                 .setOverrideDeadline((calendar.getTimeInMillis() - System.currentTimeMillis()) + 60000);
@@ -680,9 +705,10 @@ public class MainActivity extends AppCompatActivity {
             if (calendar.getTimeInMillis() - System.currentTimeMillis() > 0){
                 jobScheduler.schedule(builder.build());
             }
-            Log.d("Notification set", EdgeTitle);
-        Log.d("edgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
+            */
+
         }
+    }
 
 
     public void getEdgeClasses() {

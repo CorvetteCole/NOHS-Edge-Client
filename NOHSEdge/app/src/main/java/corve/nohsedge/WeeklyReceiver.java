@@ -21,8 +21,13 @@ import android.util.Log;
  * Created by Cole on 9/14/2017.
  */
 
-public class WeeklyReceiver extends JobService {
+public class WeeklyReceiver extends BroadcastReceiver {
     @Override
+    public void onReceive(Context context, Intent intent) {
+        showNotification(context);
+    }
+
+    /*@Override
     public boolean onStartJob(JobParameters params) {
         showNotification(this);
         return true;
@@ -32,6 +37,7 @@ public class WeeklyReceiver extends JobService {
         // whether or not you would like JobScheduler to automatically retry your failed job.
         return true;
     }
+    */
         private void showNotification(Context context){
         String Title="Schedule your NOHS classes today!";
         String Text="Get ahead of the crowd!";

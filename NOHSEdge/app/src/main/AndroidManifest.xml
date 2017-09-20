@@ -24,9 +24,9 @@
         </activity>
 
 
-        <service android:name="corve.nohsedge.Receiver"
+        <receiver android:name="corve.nohsedge.Receiver"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service android:name="corve.nohsedge.WeeklyReceiver"
+        <receiver android:name="corve.nohsedge.WeeklyReceiver"
             android:permission="android.permission.BIND_JOB_SERVICE"/>
         <service android:name="corve.nohsedge.EdgeClassNotifHelper"
             android:permission="android.permission.BIND_JOB_SERVICE"/>

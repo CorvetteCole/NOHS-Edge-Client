@@ -1,9 +1,12 @@
 package corve.nohsedge;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobParameters;
 import android.app.job.JobScheduler;
 import android.app.job.JobService;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +16,7 @@ import android.util.Log;
 
 import java.util.Calendar;
 
+import static android.content.Context.ALARM_SERVICE;
 import static corve.nohsedge.MainActivity.DefaultEdgeDay1Value;
 import static corve.nohsedge.MainActivity.DefaultEdgeDay2Value;
 import static corve.nohsedge.MainActivity.DefaultEdgeDay3Value;
@@ -31,13 +35,19 @@ import static corve.nohsedge.MainActivity.PREF_MIN;
  */
 
 
-public class EdgeClassNotifHelper extends JobService {
+public class EdgeClassNotifHelper extends BroadcastReceiver {
     private int notifyMinutes;
-
+    private Context context1;
     @Override
+    public void onReceive(Context context, Intent intent) {
+        setNewEdgeNotif();
+        context1 = context;
+
+    }
+    /*@Override
     public boolean onStartJob(JobParameters params) {
         Log.d("maybe it'll", "work");
-        setNewEdgeNotif();
+        //setNewEdgeNotif();
         return true;
     }
     @Override
@@ -46,14 +56,15 @@ public class EdgeClassNotifHelper extends JobService {
         // whether or not you would like JobScheduler to automatically retry your failed job.
         return true;
     }
+    */
     public void setNewEdgeNotif(){
         Log.d("!edgehelper worked", "im ok with life");
         loadPreferences();
 
     }
     public void loadPreferences() {
-        SharedPreferences settings = getSharedPreferences(MainActivity.PREFS_NAME,
-                Context.MODE_PRIVATE);
+        SharedPreferences settings = context1.getSharedPreferences(MainActivity.PREFS_NAME,
+                MainActivity.MODE_PRIVATE);
 
         // Get value
         String EdgeDay1Value = settings.getString(PREF_EDGE1, DefaultEdgeDay1Value);
@@ -74,7 +85,6 @@ public class EdgeClassNotifHelper extends JobService {
 
 
     public void setEdgeNotifications(String EdgeTitle, String EdgeText, int EdgeSession, int DayofWeek) {
-        Log.d("called from helper", "!h!");
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         int edgeMin1 = 43 - notifyMinutes;
@@ -99,22 +109,32 @@ public class EdgeClassNotifHelper extends JobService {
         calendar.set(Calendar.SECOND, 1);
         calendar.set(Calendar.AM_PM, Calendar.PM);
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context1);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("TITLE", EdgeTitle);
         editor.putString("TEXT", EdgeText);
         editor.commit();
-        ComponentName component = new ComponentName(this, Receiver.class);
-        JobInfo.Builder builder = new JobInfo.Builder(MainActivity.REQUEST_CODE_EDGE, component)
+        Log.d("Notification set", EdgeTitle);
+        Log.d("edgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
+        if ((calendar.getTimeInMillis() - System.currentTimeMillis()) > 0) {
+            Intent intent1 = new Intent(context1, Receiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context1,
+                    MainActivity.REQUEST_CODE_EDGE, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
+            AlarmManager am = (AlarmManager) context1.getSystemService(ALARM_SERVICE);
+            am.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+
+       /* ComponentName component = new ComponentName(this, Receiver.class);
+        JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE_EDGE, component)
                 .setMinimumLatency(calendar.getTimeInMillis() - System.currentTimeMillis())
                 .setPersisted(true)
                 .setOverrideDeadline((calendar.getTimeInMillis() - System.currentTimeMillis()) + 60000);
-        JobScheduler jobScheduler = (JobScheduler) this.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        if (calendar.getTimeInMillis() - System.currentTimeMillis() > 0){
-            jobScheduler.schedule(builder.build());
+            JobScheduler jobScheduler = (JobScheduler) this.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+            if (calendar.getTimeInMillis() - System.currentTimeMillis() > 0){
+                jobScheduler.schedule(builder.build());
+            }
+            */
+
         }
-        Log.d("Notification set", EdgeTitle);
-        Log.d("edgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
     }
 
     public void InterpretEdgeData(String consoleMessage){
