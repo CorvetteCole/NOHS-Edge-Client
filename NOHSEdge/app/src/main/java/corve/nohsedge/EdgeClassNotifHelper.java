@@ -40,8 +40,9 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
     private Context context1;
     @Override
     public void onReceive(Context context, Intent intent) {
-        setNewEdgeNotif();
         context1 = context;
+        setNewEdgeNotif();
+
 
     }
     /*@Override
@@ -115,6 +116,7 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
         editor.putString("TEXT", EdgeText);
         editor.commit();
         Log.d("Notification set", EdgeTitle);
+        Log.d("!helper!", "notification set");
         Log.d("edgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
         if ((calendar.getTimeInMillis() - System.currentTimeMillis()) > 0) {
             Intent intent1 = new Intent(context1, Receiver.class);
