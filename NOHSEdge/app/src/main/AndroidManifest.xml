@@ -24,6 +24,7 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
             <meta-data
@@ -40,6 +41,11 @@
         <receiver
             android:name=".EdgeClassNotifHelper"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <activity
+            android:name=".EdgeViewActivity"
+            android:label="@string/title_activity_edge_view"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
     </application>
 
 </manifest>
