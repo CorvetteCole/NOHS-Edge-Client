@@ -11,8 +11,8 @@
         android:icon="@drawable/icon">
 
         <intent
-            android:action="com.corve.nohsedge.custom.name"
-            android:targetPackage="com.corve.nohsedge"
-            android:targetClass="com.corve.nohsedge.Receiver"/>
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="corve.nohsedge"
+            android:targetClass="corve.nohsedge.EdgeViewActivity"/>
     </shortcut>
 </shortcuts>
