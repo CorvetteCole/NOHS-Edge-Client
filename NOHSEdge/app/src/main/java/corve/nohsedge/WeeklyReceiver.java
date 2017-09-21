@@ -60,7 +60,7 @@ public class WeeklyReceiver extends BroadcastReceiver {
             Notification notification = new Notification.Builder(context)
                     .setContentTitle(Title)
                     .setContentText(Text)
-                    .setSmallIcon(R.drawable.icon)
+                    .setSmallIcon(R.drawable.nohsnotif)
                     .setChannelId(channelId)
                     .setContentIntent(pi)
                     .setAutoCancel(true)

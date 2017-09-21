@@ -16,8 +16,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 
 import static corve.nohsedge.MainActivity.DefaultEdgeDay1Value;
 import static corve.nohsedge.MainActivity.DefaultEdgeDay2Value;
@@ -34,6 +36,8 @@ public class EdgeViewActivity extends AppCompatActivity {
     private String[] EdgeDay = new String[5];
     private ListView mList;
     private String[] EdgeTitle = new String[5];
+    private String[] EdgeText = new String[5];
+    private String[] EdgeTime = new String[5];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,9 +91,13 @@ public class EdgeViewActivity extends AppCompatActivity {
         while (i != 5) {
             if (EdgeDay[i] != null) {
                 EdgeTitle[i] = parseEdgeTitle(EdgeDay[i]);
+                EdgeText[i] = parseEdgeText(EdgeDay[i]);
+                EdgeTime[i] = parseEdgeTime(EdgeDay[i]);
             }
             else {
                 EdgeTitle[i] = "Not Scheduled";
+                EdgeTime[i] = "N/A";
+                EdgeText[i] = "Not Scheduled";
             }
             i++;
         }
@@ -130,8 +138,11 @@ public class EdgeViewActivity extends AppCompatActivity {
             Log.d("EdgeTitle" + i, EdgeTitle[i]);
             i++;
         }
-            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, EdgeTitle);
-            mList.setAdapter(adapter);
+        ArrayList<String> myList = new ArrayList<String>();
+        myList.addAll(Arrays.asList(new String[] {EdgeTitle[i], EdgeText[i], EdgeTime[i]}));
+        ArrayAdapter arrayAdapter = new ArrayAdapter(this, R.layout.list_item, myList);
+        mList.setAdapter(arrayAdapter);
+
         }
 
     }

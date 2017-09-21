@@ -3,5 +3,5 @@
 	<string name="edge_shortcut_short">Open Edge Schedule</string>
 	<string name="edge_shortcut_long">Open Edge Class Schedule</string>
 	<string name="edge_shortcut_disabled">Y  u disable me</string>
-    <string name="title_activity_edge_view">EdgeViewActivity</string>
+    <string name="title_activity_edge_view">Edge Schedule</string>
 </resources>
