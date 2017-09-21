@@ -24,13 +24,11 @@ import static corve.nohsedge.MainActivity.DefaultEdgeDay2Value;
 import static corve.nohsedge.MainActivity.DefaultEdgeDay3Value;
 import static corve.nohsedge.MainActivity.DefaultEdgeDay4Value;
 import static corve.nohsedge.MainActivity.DefaultEdgeDay5Value;
-import static corve.nohsedge.MainActivity.DefaultMinValue;
 import static corve.nohsedge.MainActivity.PREF_EDGE1;
 import static corve.nohsedge.MainActivity.PREF_EDGE2;
 import static corve.nohsedge.MainActivity.PREF_EDGE3;
 import static corve.nohsedge.MainActivity.PREF_EDGE4;
 import static corve.nohsedge.MainActivity.PREF_EDGE5;
-import static corve.nohsedge.MainActivity.PREF_MIN;
 
 public class EdgeViewActivity extends AppCompatActivity {
     private String[] EdgeDay = new String[5];
@@ -91,7 +89,7 @@ public class EdgeViewActivity extends AppCompatActivity {
                 EdgeTitle[i] = parseEdgeTitle(EdgeDay[i]);
             }
             else {
-                EdgeTitle[i] = "does not exist!";
+                EdgeTitle[i] = "Not Scheduled";
             }
             i++;
         }
@@ -104,7 +102,7 @@ public class EdgeViewActivity extends AppCompatActivity {
             EdgeString = EdgeString.substring(0, EdgeString.indexOf("</h3>"));
         }
         else {
-            EdgeString = "does not exist!";
+            EdgeString = "Not Scheduled";
         }
         return EdgeString;
     }
