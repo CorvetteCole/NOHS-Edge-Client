@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- SETTINGS SHORTCUT -->
+    <shortcut
+        android:shortcutId="edge_class"
+        android:enabled="true"
+        android:shortcutShortLabel="@string/edge_shortcut_short"
+        android:shortcutLongLabel="@string/edge_shortcut_long"
+        android:shortcutDisabledMessage="@string/edge_shortcut_disabled"
+        android:icon="@drawable/icon">
+
+        <intent
+            android:action="com.corve.nohsedge.custom.name"
+            android:targetPackage="com.corve.nohsedge"
+            android:targetClass="com.corve.nohsedge.Receiver"/>
+    </shortcut>
+</shortcuts>

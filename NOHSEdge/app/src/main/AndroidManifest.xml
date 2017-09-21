@@ -20,6 +20,9 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcut"/>
 
         </activity>
 
@@ -28,7 +31,7 @@
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <receiver android:name="corve.nohsedge.WeeklyReceiver"
             android:permission="android.permission.BIND_JOB_SERVICE"/>
-        <service android:name="corve.nohsedge.EdgeClassNotifHelper"
+        <receiver android:name="corve.nohsedge.EdgeClassNotifHelper"
             android:permission="android.permission.BIND_JOB_SERVICE"/>
 
     </application>

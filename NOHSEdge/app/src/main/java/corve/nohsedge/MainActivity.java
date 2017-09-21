@@ -1,12 +1,8 @@
 package corve.nohsedge;
 
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -40,7 +36,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -83,8 +79,6 @@ public class MainActivity extends AppCompatActivity {
     public static final int DefaultMinValue = 5;
     private int MinValue;
 
-    private String Title;
-    private String Text;
 
     public final static String DefaultEdgeDay1Value = "";
     public final static String DefaultEdgeDay2Value = "";
@@ -103,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     int x = 0;
     private WebView mLoginPage;
-    private String uuid;
     private TextView mUsername;
     private TextView mPassword;
     private CheckBox mRemember;
@@ -128,7 +121,6 @@ public class MainActivity extends AppCompatActivity {
     public int NotificationSet;
     public int notifyMinutes = 5;
     private boolean settingsOpen = false;
-    public static MainActivity activity;
     private NumberPicker mNumberPicker;
     private TextView mNumberPickerTextView;
 
@@ -198,7 +190,6 @@ public class MainActivity extends AppCompatActivity {
                     .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://kyede10.infinitecampus.org/campus/portal/oldham.jsp")))
                     .build();
             shortcutManager.setDynamicShortcuts(Arrays.asList(wNOHSShortcut, wCampusShortcut));
-
         }
             mActivateRegister.setOnClickListener(
                     new View.OnClickListener() {
