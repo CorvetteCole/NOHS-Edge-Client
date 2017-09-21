@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
                                         InputMethodManager.HIDE_NOT_ALWAYS);
                                 mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
                                 openLoginpage();
-
+                                getSupportActionBar().hide();
                             }
                         }
                     }
@@ -251,6 +251,7 @@ public class MainActivity extends AppCompatActivity {
             mLogout.setOnClickListener(
                     new View.OnClickListener() {
                         public void onClick(View view) {
+                            getSupportActionBar().show();
                             mLoginPage.setVisibility(View.INVISIBLE);
                             mSettings.setVisibility(View.INVISIBLE);
                             clearCookies(getBaseContext());
@@ -428,6 +429,7 @@ public class MainActivity extends AppCompatActivity {
                     mRemember.setVisibility(View.VISIBLE);
                     mUsername.setVisibility(View.VISIBLE);
                     mPassword.setVisibility(View.VISIBLE);
+                    getSupportActionBar().show();
                     //mLoadingText.setVisibility(View.INVISIBLE);
                     x = 0;
                 }
