@@ -96,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
     private String EdgeDay4Value;
     private String EdgeDay5Value;
     private String EdgeDay5CurValue;
+    private int getEdgeClassesRan = 0;
 
     Button mLogin;
     TextView mCredit;
@@ -239,6 +240,7 @@ public class MainActivity extends AppCompatActivity {
                             openLoginpage();
                             getSupportActionBar().hide();
                             currentSet = 0;
+                            savePreferences();
                         }
                     }
                 }
@@ -314,6 +316,7 @@ public class MainActivity extends AppCompatActivity {
                             mLoadingCircle.setVisibility(View.INVISIBLE);
                             mNumberPicker.setVisibility(View.INVISIBLE);
                             mNumberPickerTextView.setVisibility(View.INVISIBLE);
+                            savePreferences();
 
                         }
                     }
@@ -377,7 +380,7 @@ public class MainActivity extends AppCompatActivity {
         if (mLoginPage.canGoBack() && !settingsOpen) {
             mLoginPage.goBack();
             if (mLoginPage.getUrl().toLowerCase().contains("edgetime".toLowerCase())) {
-                Toast.makeText(this, "Double-Click to exit Edge", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Click again to exit Edge", Toast.LENGTH_SHORT).show();
             }
         } else if (settingsOpen) {
             mNotify.setVisibility(View.INVISIBLE);
@@ -443,7 +446,7 @@ public class MainActivity extends AppCompatActivity {
                     //mLoadingText.setVisibility(View.INVISIBLE);
                     x = 0;
                 }
-                if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(mUsername.getText().toString())) /*&& x == 1*/) {
+                if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(mUsername.getText().toString())&& x == 1)) {
                     if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
                         mLoadingCircle.setVisibility(View.INVISIBLE);
                         mLoginPage.setVisibility(View.VISIBLE);
@@ -459,9 +462,10 @@ public class MainActivity extends AppCompatActivity {
                 if (cm.message().toLowerCase().contains("RetrievedEdgeClass".toLowerCase()) && mNotify.isChecked()) {
                     InterpretEdgeData(cm.message());
                 }
-                if (cm.message().toLowerCase().contains("post_queue") && (cm.lineNumber() == 419)) {
+                if (cm.message().toLowerCase().contains("post_queue")/* && (cm.lineNumber() == 419)*/) {
                     mLoadingCircle.setVisibility(View.INVISIBLE);
                     mLoginPage.setVisibility(View.VISIBLE);
+                    getEdgeClasses();
                 }
                 return true;
             }
@@ -506,7 +510,6 @@ public class MainActivity extends AppCompatActivity {
                     mLoadingCircle.setVisibility(View.INVISIBLE);
                     mLoginPage.setVisibility(View.VISIBLE);
                     //mLoadingText.setVisibility(View.INVISIBLE);
-                    getEdgeClasses();
                 }
                 if (mLoginPage.getUrl().toLowerCase().contains("#homescreen".toLowerCase()) && mLoginPage.getVisibility() == View.VISIBLE) {
                     mSettings.setVisibility(View.VISIBLE);
@@ -843,12 +846,12 @@ public class MainActivity extends AppCompatActivity {
             Log.d("!test!", EdgeDay5Cur);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
                 setEdgeNotifications(parseEdgeTitle(EdgeDay5Cur), parseEdgeText(EdgeDay5Cur), parseEdgeSession(EdgeDay5Cur), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
+                SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_APPEND);
+                SharedPreferences.Editor editor = settings.edit();
+                EdgeDay5CurValue = EdgeDay5Cur;
+                editor.putString(PREF_EDGE5Cur, EdgeDay5CurValue);
+                editor.apply();
             }
-            SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_APPEND);
-            SharedPreferences.Editor editor = settings.edit();
-            EdgeDay5CurValue = EdgeDay5Cur;
-            editor.putString(PREF_EDGE5Cur, EdgeDay5CurValue);
-            editor.commit();
         }
     }
 }
