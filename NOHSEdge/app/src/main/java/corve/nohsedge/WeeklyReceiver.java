@@ -17,6 +17,8 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import static corve.nohsedge.R.attr.colorAccent;
+
 /**
  * Created by Cole on 9/14/2017.
  */
@@ -53,7 +55,7 @@ public class WeeklyReceiver extends BroadcastReceiver {
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel notificationChannel = new NotificationChannel(channelId, channelName, importance);
             notificationChannel.enableLights(true);
-            notificationChannel.setLightColor(Color.CYAN);
+            notificationChannel.setLightColor(colorAccent);
             notificationChannel.enableVibration(true);
             notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
             notificationManager.createNotificationChannel(notificationChannel);
