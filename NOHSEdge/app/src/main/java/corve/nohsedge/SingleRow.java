@@ -8,11 +8,13 @@ class SingleRow{
     String title;
     String text;
     String edgetime;
+    String edgedate;
 
-    SingleRow(String title, String text, String edgetime) {
+    SingleRow(String title, String text, String edgetime, String edgedate) {
         this.title = title;
         this.text = text;
         this.edgetime = edgetime;
+        this.edgedate = edgedate;
 
        }
     }

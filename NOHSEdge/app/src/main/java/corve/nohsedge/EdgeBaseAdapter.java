@@ -2,6 +2,7 @@ package corve.nohsedge;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +24,7 @@ public class EdgeBaseAdapter extends BaseAdapter {
         list = new ArrayList<SingleRow>();
         context = c;
         for(int i= 0; i< EdgeViewActivity.EdgeTitle.length; i++){
-            list.add(new SingleRow(EdgeViewActivity.EdgeTitle[i], EdgeViewActivity.EdgeText[i], EdgeViewActivity.EdgeTime[i]));
+            list.add(new SingleRow(EdgeViewActivity.EdgeTitle[i], EdgeViewActivity.EdgeText[i], EdgeViewActivity.EdgeTime[i], EdgeViewActivity.EdgeDate[i]));
         }
     }
     @Override
@@ -48,6 +49,7 @@ public class EdgeBaseAdapter extends BaseAdapter {
         TextView mText = (TextView)row.findViewById(R.id.edgesubtitle);
         TextView mTitle = (TextView)row.findViewById(R.id.edgetitle);
         TextView mTime = (TextView)row.findViewById(R.id.edgedetail);
+        TextView mDate = (TextView)row.findViewById(R.id.edgedate);
         ImageView mImage = (ImageView)row.findViewById(R.id.edgethumbnail);
 
         SingleRow contactrow = list.get(i);
@@ -55,6 +57,8 @@ public class EdgeBaseAdapter extends BaseAdapter {
         mTitle.setText(contactrow.title);
         mText.setText(contactrow.text);
         mTime.setText(contactrow.edgetime);
+        mDate.setText(contactrow.edgedate);
+        Log.d("edgedate", contactrow.edgedate);
         Drawable drawable = null;
         mImage.setImageDrawable(drawable);
 

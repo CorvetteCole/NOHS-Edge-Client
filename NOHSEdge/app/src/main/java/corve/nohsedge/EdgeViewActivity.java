@@ -38,6 +38,7 @@ public class EdgeViewActivity extends AppCompatActivity {
     public static String[] EdgeTitle = new String[5];
     public static String[] EdgeText = new String[5];
     public static String[] EdgeTime = new String[5];
+    public static String[] EdgeDate = new String[5];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,22 +74,27 @@ public class EdgeViewActivity extends AppCompatActivity {
         }
         if (consoleMessage.toLowerCase().contains("Tue".toLowerCase())) {
             EdgeDay[1] = consoleMessage;
+            EdgeDate[1] = "Tuesday";
             Log.d("Tuesday Edge Class", EdgeDay[1]);
         }
         if (consoleMessage.toLowerCase().contains("Wed".toLowerCase())) {
             EdgeDay[2] = consoleMessage;
+            EdgeDate[2] = "Wednesday";
             Log.d("Wednesday Edge Class", EdgeDay[2]);
         }
         if (consoleMessage.toLowerCase().contains("Thu".toLowerCase())) {
             EdgeDay[3] = consoleMessage;   //Thursday
+            EdgeDate[3] = "Thursday";
             Log.d("Thursday Edge Class", EdgeDay[3]);
         }
         if (consoleMessage.toLowerCase().contains("Fri".toLowerCase())) {
             EdgeDay[4] = consoleMessage;
+            EdgeDate[4] = "Friday";
             Log.d("Friday Edge Class", EdgeDay[4]);
         }
         int i = 0;
         while (i != 5) {
+            EdgeDate[i] = parseEdgeDate(i);
             if (EdgeDay[i] != null) {
                 EdgeTitle[i] = parseEdgeTitle(EdgeDay[i]);
                 EdgeText[i] = parseEdgeText(EdgeDay[i]);
@@ -104,6 +110,27 @@ public class EdgeViewActivity extends AppCompatActivity {
         setList();
     }
 
+    public String parseEdgeDate (int i){
+        String date = "N/A";
+        switch(i){
+            case 0:
+               date = "Monday";
+                break;
+            case 1:
+                date = "Tuesday";
+                break;
+            case 2:
+                date = "Wednesday";
+                break;
+            case 3:
+                date = "Thursday";
+                break;
+            case 4:
+                date = "Friday";
+                break;
+        }
+        return date;
+    }
     public String parseEdgeTitle(String EdgeString) {
         if (EdgeString.toLowerCase().contains("h3")) {
             EdgeString = EdgeString.substring(EdgeString.indexOf(">") + 1);
@@ -140,6 +167,7 @@ public class EdgeViewActivity extends AppCompatActivity {
         int i = 0;
         while (i <= 4) {
             Log.d("EdgeTitle" + i, EdgeTitle[i]);
+            Log.d("EdgeDate" + i, EdgeDate[i]);
             i++;
         }
 
