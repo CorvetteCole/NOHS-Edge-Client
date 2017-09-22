@@ -35,9 +35,9 @@ import static corve.nohsedge.MainActivity.PREF_EDGE5;
 public class EdgeViewActivity extends AppCompatActivity {
     private String[] EdgeDay = new String[5];
     private ListView mList;
-    private String[] EdgeTitle = new String[5];
-    private String[] EdgeText = new String[5];
-    private String[] EdgeTime = new String[5];
+    public static String[] EdgeTitle = new String[5];
+    public static String[] EdgeText = new String[5];
+    public static String[] EdgeTime = new String[5];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,8 +127,12 @@ public class EdgeViewActivity extends AppCompatActivity {
     }
 
     public String parseEdgeText(String EdgeString) {
-        EdgeString = EdgeString.substring(EdgeString.indexOf("g>") + 2);
-        EdgeString = EdgeString.substring(0, EdgeString.indexOf("</"));
+        if (EdgeString.toLowerCase().contains("g>")) {
+            EdgeString = EdgeString.substring(EdgeString.indexOf("g>") + 2);
+            EdgeString = EdgeString.substring(0, EdgeString.indexOf("</"));
+        } else {
+            EdgeString = "Not Scheduled";
+        }
         return EdgeString;
     }
 
@@ -138,10 +142,8 @@ public class EdgeViewActivity extends AppCompatActivity {
             Log.d("EdgeTitle" + i, EdgeTitle[i]);
             i++;
         }
-        ArrayList<String> myList = new ArrayList<String>();
-        myList.addAll(Arrays.asList(new String[] {EdgeTitle[i], EdgeText[i], EdgeTime[i]}));
-        ArrayAdapter arrayAdapter = new ArrayAdapter(this, R.layout.list_item, myList);
-        mList.setAdapter(arrayAdapter);
+
+        mList.setAdapter(new EdgeBaseAdapter(this));
 
         }
 
