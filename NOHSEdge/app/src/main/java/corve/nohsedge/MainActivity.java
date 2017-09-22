@@ -34,6 +34,8 @@ import android.widget.NumberPicker;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.util.Arrays;
 import java.util.Calendar;
 
@@ -53,9 +55,11 @@ public class MainActivity extends AppCompatActivity {
     public static final String PREF_EDGE5 = "Edge 5";
     public static final String PREF_CALLEDFOREIGN = "from mainactivity?";
     public static final String PREF_MIN = "Notify min";
+    public static final String PREF_EDGE5Cur = "Current Friday Edge Class";
     private String WrongPassword = "pass did not match";
     private String webUrl;
     String newUrl = "";
+    private int currentSet = 0;
 
 
     private final String DefaultUnameValue = "";
@@ -85,11 +89,13 @@ public class MainActivity extends AppCompatActivity {
     public final static String DefaultEdgeDay3Value = "";
     public final static String DefaultEdgeDay4Value = "";
     public final static String DefaultEdgeDay5Value = "";
+    public final static String DefaultEdgeDay5CurValue = "";
     private String EdgeDay1Value;
     private String EdgeDay2Value;
     private String EdgeDay3Value;
     private String EdgeDay4Value;
     private String EdgeDay5Value;
+    private String EdgeDay5CurValue;
 
     Button mLogin;
     TextView mCredit;
@@ -118,11 +124,13 @@ public class MainActivity extends AppCompatActivity {
     private String EdgeDay3;
     private String EdgeDay4;
     private String EdgeDay5;
+    private String EdgeDay5Cur;
     public int NotificationSet;
     public int notifyMinutes = 5;
     private boolean settingsOpen = false;
     private NumberPicker mNumberPicker;
     private TextView mNumberPickerTextView;
+    private String[] EdgeDay5Ar = new String[2];
 
 
     @Override
@@ -230,6 +238,7 @@ public class MainActivity extends AppCompatActivity {
                                 mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
                                 openLoginpage();
                                 getSupportActionBar().hide();
+                                currentSet = 0;
                             }
                         }
                     }
@@ -353,7 +362,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (mLoginPage.getUrl().toLowerCase().contains("edgetime".toLowerCase())){
+        /*if (mLoginPage.getUrl().toLowerCase().contains("edgetime".toLowerCase()) && mLoginPage.canGoBack()){
             mLoginPage.goBack();
             mLoadingText.setVisibility(View.VISIBLE);
             mLoadingText.setText("Loading homescreen...");
@@ -363,11 +372,14 @@ public class MainActivity extends AppCompatActivity {
             }
             mLoginPage.goBack();
             //mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen");
-        }
+        }*/
 
 
         if (mLoginPage.canGoBack() && !settingsOpen) {
             mLoginPage.goBack();
+            if (mLoginPage.getUrl().toLowerCase().contains("edgetime".toLowerCase())){
+                Toast.makeText(this, "Double-Click to exit Edge", Toast.LENGTH_SHORT).show();
+            }
         }
         else if (settingsOpen){
             mNotify.setVisibility(View.INVISIBLE);
@@ -567,6 +579,7 @@ public class MainActivity extends AppCompatActivity {
         EdgeDay3Value = EdgeDay3;
         EdgeDay4Value = EdgeDay4;
         EdgeDay5Value = EdgeDay5;
+        EdgeDay5CurValue = EdgeDay5Cur;
         MinValue = notifyMinutes;
         if (mRemember.isChecked()) {
             editor.putString(PREF_UNAME, UnameValue);
@@ -580,6 +593,7 @@ public class MainActivity extends AppCompatActivity {
         editor.putString(PREF_EDGE3, EdgeDay3Value);
         editor.putString(PREF_EDGE4, EdgeDay4Value);
         editor.putString(PREF_EDGE5, EdgeDay5Value);
+        editor.putString(PREF_EDGE5Cur, EdgeDay5CurValue);
         editor.putInt(PREF_MIN, MinValue);
         editor.apply();
     }
@@ -600,6 +614,7 @@ public class MainActivity extends AppCompatActivity {
         EdgeDay3Value = settings.getString(PREF_EDGE3, DefaultEdgeDay3Value);
         EdgeDay4Value = settings.getString(PREF_EDGE4, DefaultEdgeDay4Value);
         EdgeDay5Value = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
+        EdgeDay5CurValue = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
         MinValue = settings.getInt(PREF_MIN, DefaultMinValue);
         if (NotificationValue) {
                 Log.d("Setting notification", " ");
@@ -613,6 +628,7 @@ public class MainActivity extends AppCompatActivity {
         EdgeDay3 = EdgeDay3Value;
         EdgeDay4 = EdgeDay4Value;
         EdgeDay5 = EdgeDay5Value;
+        EdgeDay5Cur = EdgeDay5CurValue;
         notifyMinutes = MinValue;
         mNumberPicker.setValue((notifyMinutes + 1));
         mNumberPickerTextView.setText("Send notification " + (notifyMinutes) + " minutes before class");
@@ -808,15 +824,27 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         if (consoleMessage.toLowerCase().contains("Fri".toLowerCase())){
-            EdgeDay5 = consoleMessage;
-            Log.d("Friday Edge Class", EdgeDay5);
-
+            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) != Calendar.FRIDAY) {
+                EdgeDay5 = consoleMessage;
+                EdgeDay5Ar[0] = EdgeDay5;
+            }
+            //Log.d("Friday Edge Class", EdgeDay5);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY){
-                setEdgeNotifications(parseEdgeTitle(EdgeDay5), parseEdgeText(EdgeDay5), parseEdgeSession(EdgeDay5), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
+                if (currentSet == 0){
+                    EdgeDay5Ar[0] = consoleMessage;
+                    currentSet = 1;
+                }
+
+                if (!consoleMessage.toLowerCase().equals(EdgeDay5Ar[0].toLowerCase())){
+                    EdgeDay5Ar[1] = consoleMessage;
+                } else {
+                    EdgeDay5Ar[0] = consoleMessage;
+                    EdgeDay5Cur = EdgeDay5Ar[0];
+                }
+                Log.d("!test!", EdgeDay5Cur);
+                setEdgeNotifications(parseEdgeTitle(EdgeDay5Cur), parseEdgeText(EdgeDay5Cur), parseEdgeSession(EdgeDay5Cur), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
+                //savePreferences();
             }
         }
-        Log.d("!DAY", Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + "");
-        //Log.d("!!", parseEdgeText(EdgeDay5));
-
     }
 }
