@@ -173,11 +173,6 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
             }
         }
         if (consoleMessage.toLowerCase().contains("Fri".toLowerCase())){
-            String EdgeDay5;
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) != Calendar.FRIDAY) {
-                EdgeDay5 = consoleMessage;
-            }
-            //Log.d("Friday Edge Class", EdgeDay5);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY){
                 setEdgeNotifications(parseEdgeTitle(EdgeDay5Cur), parseEdgeText(EdgeDay5Cur), parseEdgeSession(EdgeDay5Cur), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
                 Log.d("Edge Notification set", EdgeDay5Cur);

@@ -97,7 +97,7 @@ public class EdgeViewActivity extends AppCompatActivity {
             }
             //Log.d("Friday Edge Class", EdgeDay5);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY){
-                Log.d("!test!", EdgeDay5Cur);
+                //Log.d("!test1!", EdgeDay5Cur);
                 EdgeDay[4] = EdgeDay5Cur;
             }
         }
