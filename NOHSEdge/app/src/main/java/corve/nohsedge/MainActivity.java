@@ -831,7 +831,7 @@ public class MainActivity extends AppCompatActivity {
         }
         if (consoleMessage.toLowerCase().contains("Fri".toLowerCase())) {
             EdgeDay5 = consoleMessage;
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY && currentSet == 0) {
+            if (currentSet == 0) {
                 EdgeDay5Ar[0] = consoleMessage;
                 currentSet = 1;
             }
@@ -839,7 +839,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("TRIGGERRRREEEDDD", "");
                 EdgeDay5Ar[1] = EdgeDay5;
             }
-            if (!consoleMessage.toLowerCase().contains(EdgeDay5Ar[0].toLowerCase())) {
+            if (!consoleMessage.contains(EdgeDay5Ar[0])) {
                 EdgeDay5Ar[1] = consoleMessage;
             }
             EdgeDay5Cur = EdgeDay5Ar[0];
