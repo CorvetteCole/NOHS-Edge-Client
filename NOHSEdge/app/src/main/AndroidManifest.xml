@@ -46,7 +46,7 @@
             android:name=".EdgeViewActivity"
             android:label="@string/title_activity_edge_view"
             android:theme="@style/Theme.AppCompat.DayNight"
-            android:noHistory="true">
+            >
 
         </activity>
     </application>
