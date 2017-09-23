@@ -46,11 +46,11 @@ public class EdgeBaseAdapter extends BaseAdapter {
 
         View row = inflater.inflate(R.layout.list_item,parent, false);
 
-        TextView mText = (TextView)row.findViewById(R.id.edgesubtitle);
-        TextView mTitle = (TextView)row.findViewById(R.id.edgetitle);
-        TextView mTime = (TextView)row.findViewById(R.id.edgedetail);
-        TextView mDate = (TextView)row.findViewById(R.id.edgedate);
-        ImageView mImage = (ImageView)row.findViewById(R.id.edgethumbnail);
+        TextView mText = row.findViewById(R.id.edgesubtitle);
+        TextView mTitle = row.findViewById(R.id.edgetitle);
+        TextView mTime = row.findViewById(R.id.edgedetail);
+        TextView mDate = row.findViewById(R.id.edgedate);
+        ImageView mImage = row.findViewById(R.id.edgethumbnail);
 
         SingleRow contactrow = list.get(i);
 

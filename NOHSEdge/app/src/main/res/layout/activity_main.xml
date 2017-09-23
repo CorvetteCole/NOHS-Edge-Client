@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/ActivityMain"
-    tools:context="corve.nohsedge.MainActivity">
+                                             tools:context="corve.nohsedge.MainActivity">
 
     <EditText
         android:id="@+id/usernameField"
