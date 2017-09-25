@@ -216,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
         mLogout.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
+                        AutologinValue = false;
                         setContentView(R.layout.activity_login);
                         Intent intent = new Intent(getBaseContext(), LoginActivity.class);
                         startActivity(intent);
