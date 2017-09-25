@@ -178,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
         mNumberPicker.setWrapSelectorWheel(true);
         mNumberPicker.setDisplayedValues(nums);
         if (calledForeign) {
+            getSupportActionBar().hide();
             if (Login == 1){
                 mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
                 openLoginpage();
@@ -215,6 +216,9 @@ public class MainActivity extends AppCompatActivity {
         mLogout.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
+                        setContentView(R.layout.activity_login);
+                        Intent intent = new Intent(getBaseContext(), LoginActivity.class);
+                        startActivity(intent);
                         Log.d("broken lol", "im not a god... yet");
                     }
                 });
@@ -388,7 +392,7 @@ public class MainActivity extends AppCompatActivity {
                     if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
                         mLoadingCircle.setVisibility(View.INVISIBLE);
                         mLoginPage.setVisibility(View.VISIBLE);
-                        getSupportActionBar().hide();
+
                         //THE KEY IS BELOW. THE KEY I TELL YOU!
                         //mLoginPage.loadUrl("https://api.superfanu.com/6.0.0/gen/link_track.php?platform=Web:%20chrome&uuid=" + getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID") + "&nid=305&lkey=nohsstampede-edgetime-module");
                         x = 2;
@@ -761,7 +765,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("TRIGGERRRREEEDDD", "");
                 EdgeDay5Ar[1] = EdgeDay5;
             }
-            if (!consoleMessage.contains(EdgeDay5Ar[0])) {
+            if (!consoleMessage.contains(EdgeDay5Ar[0]) && consoleMessage != null) {
                 EdgeDay5Ar[1] = consoleMessage;
             }
             EdgeDay5Cur = EdgeDay5Ar[0];

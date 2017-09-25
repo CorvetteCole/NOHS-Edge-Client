@@ -62,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
                 MainActivity.PRememValue = mRemember.isChecked();
                 startActivity(intent);
             }
-        
+
             mActivateRegister.setOnClickListener(
                     new View.OnClickListener() {
                         public void onClick(View view) {
