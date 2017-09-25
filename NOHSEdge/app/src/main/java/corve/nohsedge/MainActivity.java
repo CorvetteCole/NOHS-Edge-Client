@@ -1,12 +1,8 @@
 package corve.nohsedge;
 
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -38,9 +34,11 @@ import android.widget.NumberPicker;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -57,9 +55,11 @@ public class MainActivity extends AppCompatActivity {
     public static final String PREF_EDGE5 = "Edge 5";
     public static final String PREF_CALLEDFOREIGN = "from mainactivity?";
     public static final String PREF_MIN = "Notify min";
+    public static final String PREF_EDGE5Cur = "Current Friday Edge Class";
     private String WrongPassword = "pass did not match";
     private String webUrl;
     String newUrl = "";
+    private int currentSet = 0;
 
 
     private final String DefaultUnameValue = "";
@@ -83,19 +83,20 @@ public class MainActivity extends AppCompatActivity {
     public static final int DefaultMinValue = 5;
     private int MinValue;
 
-    private String Title;
-    private String Text;
 
     public final static String DefaultEdgeDay1Value = "";
     public final static String DefaultEdgeDay2Value = "";
     public final static String DefaultEdgeDay3Value = "";
     public final static String DefaultEdgeDay4Value = "";
     public final static String DefaultEdgeDay5Value = "";
+    public final static String DefaultEdgeDay5CurValue = "";
     private String EdgeDay1Value;
     private String EdgeDay2Value;
     private String EdgeDay3Value;
     private String EdgeDay4Value;
     private String EdgeDay5Value;
+    private String EdgeDay5CurValue;
+    private int getEdgeClassesRan = 0;
 
     Button mLogin;
     TextView mCredit;
@@ -103,7 +104,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     int x = 0;
     private WebView mLoginPage;
-    private String uuid;
     private TextView mUsername;
     private TextView mPassword;
     private CheckBox mRemember;
@@ -125,12 +125,13 @@ public class MainActivity extends AppCompatActivity {
     private String EdgeDay3;
     private String EdgeDay4;
     private String EdgeDay5;
+    private String EdgeDay5Cur;
     public int NotificationSet;
     public int notifyMinutes = 5;
     private boolean settingsOpen = false;
-    public static MainActivity activity;
     private NumberPicker mNumberPicker;
     private TextView mNumberPickerTextView;
+    private String[] EdgeDay5Ar = new String[2];
 
 
     @Override
@@ -148,35 +149,35 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_main);
-            mLogin = (Button) findViewById(R.id.loginButton);
-            mLoginPage = (WebView) findViewById(R.id.loginWebview);
-            mCredit = (TextView) findViewById(R.id.creditText);
-            mLoadingCircle = (ProgressBar) findViewById(R.id.progressBar);
-            mUsername = (TextView) findViewById(R.id.usernameField);
-            mPassword = (TextView) findViewById(R.id.passwordField);
-            mRemember = (CheckBox) findViewById(R.id.rememberPassword);
-            mLoadingText = (TextView) findViewById(R.id.LoadingText);
-            mRegister = (Button) findViewById(R.id.RegisterButton);
-            mEmail = (TextView) findViewById(R.id.emailField);
-            mActivateRegister = (TextView) findViewById(R.id.ActivateRegister);
-            mNotify = (Switch) findViewById(R.id.NotificationCheckbox);
-            mLogout = (Button) findViewById(R.id.logoutButton);
-            mAutoLogin = (Switch) findViewById(R.id.AutoLoginSwitch);
-            mSettings = (Button) findViewById(R.id.settingsButton);
-            mNumberPicker = (NumberPicker) findViewById(R.id.numberPicker);
-            mNumberPickerTextView = (TextView) findViewById(R.id.numberPickerTextView);
-            NotificationSet = 0;
-            String[] nums = new String[40];
-            for(int i=0; i<nums.length; i++)
-                nums[i] = Integer.toString(i);
+        setContentView(R.layout.activity_main);
+        mLogin = (Button) findViewById(R.id.loginButton);
+        mLoginPage = (WebView) findViewById(R.id.loginWebview);
+        mCredit = (TextView) findViewById(R.id.creditText);
+        mLoadingCircle = (ProgressBar) findViewById(R.id.progressBar);
+        mUsername = (TextView) findViewById(R.id.usernameField);
+        mPassword = (TextView) findViewById(R.id.passwordField);
+        mRemember = (CheckBox) findViewById(R.id.rememberPassword);
+        mLoadingText = (TextView) findViewById(R.id.LoadingText);
+        mRegister = (Button) findViewById(R.id.RegisterButton);
+        mEmail = (TextView) findViewById(R.id.emailField);
+        mActivateRegister = (TextView) findViewById(R.id.ActivateRegister);
+        mNotify = (Switch) findViewById(R.id.NotificationCheckbox);
+        mLogout = (Button) findViewById(R.id.logoutButton);
+        mAutoLogin = (Switch) findViewById(R.id.AutoLoginSwitch);
+        mSettings = (Button) findViewById(R.id.settingsButton);
+        mNumberPicker = (NumberPicker) findViewById(R.id.numberPicker);
+        mNumberPickerTextView = (TextView) findViewById(R.id.numberPickerTextView);
+        NotificationSet = 0;
+        String[] nums = new String[40];
+        for (int i = 0; i < nums.length; i++)
+            nums[i] = Integer.toString(i);
 
-            mNumberPicker.setMinValue(1);
-            mNumberPicker.setMaxValue(40);
-            mNumberPicker.setWrapSelectorWheel(true);
-            mNumberPicker.setDisplayedValues(nums);
+        mNumberPicker.setMinValue(1);
+        mNumberPicker.setMaxValue(40);
+        mNumberPicker.setWrapSelectorWheel(true);
+        mNumberPicker.setDisplayedValues(nums);
 
-            activateEdgeHelper();
+        activateEdgeHelper();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -198,130 +199,132 @@ public class MainActivity extends AppCompatActivity {
                     .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://kyede10.infinitecampus.org/campus/portal/oldham.jsp")))
                     .build();
             shortcutManager.setDynamicShortcuts(Arrays.asList(wNOHSShortcut, wCampusShortcut));
-
         }
-            mActivateRegister.setOnClickListener(
-                    new View.OnClickListener() {
-                        public void onClick(View view) {
-                            if (mActivateRegister.getText().equals("Back to login")) {
-                                a = 1;
-                            }
-                            if (mActivateRegister.getText().equals("Need to register?")) {
-                                a = 0;
-                            }
-
-                            if (a == 0) {
-                                mRegister.setVisibility(View.VISIBLE);
-                                mEmail.setVisibility(View.VISIBLE);
-                                mActivateRegister.setText("Back to login");
-                                mLogin.setVisibility(View.INVISIBLE);
-
-                            }
-                            if (a == 1) {
-                                mRegister.setVisibility(View.INVISIBLE);
-                                mEmail.setVisibility(View.INVISIBLE);
-                                mActivateRegister.setText("Need to register?");
-                                mLogin.setVisibility(View.VISIBLE);
-
-                            }
+        mActivateRegister.setOnClickListener(
+                new View.OnClickListener() {
+                    public void onClick(View view) {
+                        if (mActivateRegister.getText().equals("Back to login")) {
+                            a = 1;
                         }
-                    }
-            );
-
-            mLogin.setOnClickListener(
-                    new View.OnClickListener() {
-                        public void onClick(View view) {
-                            InputMethodManager inputManager = (InputMethodManager)
-                                    getSystemService(Context.INPUT_METHOD_SERVICE);
-                            if (getCurrentFocus() != null) {
-                                inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                                        InputMethodManager.HIDE_NOT_ALWAYS);
-                                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
-                                openLoginpage();
-
-                            }
+                        if (mActivateRegister.getText().equals("Need to register?")) {
+                            a = 0;
                         }
-                    }
-            );
-            mRegister.setOnClickListener(
-                    new View.OnClickListener() {
-                        public void onClick(View view) {
-                            InputMethodManager inputManager = (InputMethodManager)
-                                    getSystemService(Context.INPUT_METHOD_SERVICE);
-                            if (getCurrentFocus() != null) {
-                                inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                                        InputMethodManager.HIDE_NOT_ALWAYS);
-                            }
-                            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#register");
-                            openLoginpage();
+
+                        if (a == 0) {
+                            mRegister.setVisibility(View.VISIBLE);
+                            mEmail.setVisibility(View.VISIBLE);
+                            mActivateRegister.setText("Back to login");
+                            mLogin.setVisibility(View.INVISIBLE);
+
                         }
-                    }
-            );
-            mLogout.setOnClickListener(
-                    new View.OnClickListener() {
-                        public void onClick(View view) {
-                            mLoginPage.setVisibility(View.INVISIBLE);
-                            mSettings.setVisibility(View.INVISIBLE);
-                            clearCookies(getBaseContext());
+                        if (a == 1) {
+                            mRegister.setVisibility(View.INVISIBLE);
+                            mEmail.setVisibility(View.INVISIBLE);
+                            mActivateRegister.setText("Need to register?");
                             mLogin.setVisibility(View.VISIBLE);
-                            mUsername.setText("");
-                            mPassword.setText("");
-                            mRemember.setChecked(false);
-                            mUsername.setVisibility(View.VISIBLE);
-                            mPassword.setVisibility(View.VISIBLE);
-                            mRemember.setVisibility(View.VISIBLE);
-                            mLogout.setVisibility(View.INVISIBLE);
-                        }
-                    });
-            mSettings.setOnClickListener(
-                    new View.OnClickListener() {
-                        public void onClick(View view) {
-                            if (settingsOpen) {
-                                a = 1;
-                            }
-                            if (!settingsOpen) {
-                                a = 0;
-                            }
 
-                            if (a == 0) {
-                                mLoginPage.setVisibility(View.INVISIBLE);
-                                mNotify.setVisibility(View.VISIBLE);
-                                mAutoLogin.setVisibility(View.VISIBLE);
-                                mSettings.setText("Back");
-                                settingsOpen = true;
-                                mLoadingCircle.setVisibility(View.INVISIBLE);
-                                mNumberPicker.setVisibility(View.VISIBLE);
-                                mNumberPickerTextView.setVisibility(View.VISIBLE);
-                                mNumberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-                                    @Override
-                                    public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-
-
-                                        mNumberPickerTextView.setText("Send notification " + (newVal-1) + " minutes before class");
-                                        notifyMinutes = newVal-1;
-                                    }
-                                });
-
-
-                            }
-                            if (a == 1) {
-                                mLoginPage.setVisibility(View.VISIBLE);
-                                mNotify.setVisibility(View.INVISIBLE);
-                                mAutoLogin.setVisibility(View.INVISIBLE);
-                                mSettings.setText("Settings");
-                                settingsOpen = false;
-                                mLoadingCircle.setVisibility(View.INVISIBLE);
-                                mNumberPicker.setVisibility(View.INVISIBLE);
-                                mNumberPickerTextView.setVisibility(View.INVISIBLE);
-
-                            }
                         }
                     }
-            );
+                }
+        );
+
+        mLogin.setOnClickListener(
+                new View.OnClickListener() {
+                    public void onClick(View view) {
+                        InputMethodManager inputManager = (InputMethodManager)
+                                getSystemService(Context.INPUT_METHOD_SERVICE);
+                        if (getCurrentFocus() != null) {
+                            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                                    InputMethodManager.HIDE_NOT_ALWAYS);
+                            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
+                            openLoginpage();
+                            getSupportActionBar().hide();
+                            currentSet = 0;
+                            savePreferences();
+                        }
+                    }
+                }
+        );
+        mRegister.setOnClickListener(
+                new View.OnClickListener() {
+                    public void onClick(View view) {
+                        InputMethodManager inputManager = (InputMethodManager)
+                                getSystemService(Context.INPUT_METHOD_SERVICE);
+                        if (getCurrentFocus() != null) {
+                            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                                    InputMethodManager.HIDE_NOT_ALWAYS);
+                        }
+                        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#register");
+                        openLoginpage();
+                    }
+                }
+        );
+        mLogout.setOnClickListener(
+                new View.OnClickListener() {
+                    public void onClick(View view) {
+                        getSupportActionBar().show();
+                        mLoginPage.setVisibility(View.INVISIBLE);
+                        mSettings.setVisibility(View.INVISIBLE);
+                        clearCookies(getBaseContext());
+                        mLogin.setVisibility(View.VISIBLE);
+                        mUsername.setText("");
+                        mPassword.setText("");
+                        mRemember.setChecked(false);
+                        mUsername.setVisibility(View.VISIBLE);
+                        mPassword.setVisibility(View.VISIBLE);
+                        mRemember.setVisibility(View.VISIBLE);
+                        mLogout.setVisibility(View.INVISIBLE);
+                    }
+                });
+        mSettings.setOnClickListener(
+                new View.OnClickListener() {
+                    public void onClick(View view) {
+                        if (settingsOpen) {
+                            a = 1;
+                        }
+                        if (!settingsOpen) {
+                            a = 0;
+                        }
+
+                        if (a == 0) {
+                            mLoginPage.setVisibility(View.INVISIBLE);
+                            mNotify.setVisibility(View.VISIBLE);
+                            mAutoLogin.setVisibility(View.VISIBLE);
+                            mSettings.setText("Back");
+                            settingsOpen = true;
+                            mLoadingCircle.setVisibility(View.INVISIBLE);
+                            mNumberPicker.setVisibility(View.VISIBLE);
+                            mNumberPickerTextView.setVisibility(View.VISIBLE);
+                            mNumberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                                @Override
+                                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
 
 
-        }
+                                    mNumberPickerTextView.setText("Send notification " + (newVal - 1) + " minutes before class");
+                                    notifyMinutes = newVal - 1;
+                                }
+                            });
 
+
+                        }
+                        if (a == 1) {
+                            mLoginPage.setVisibility(View.VISIBLE);
+                            mNotify.setVisibility(View.INVISIBLE);
+                            mAutoLogin.setVisibility(View.INVISIBLE);
+                            mSettings.setText("Settings");
+                            settingsOpen = false;
+                            mLoadingCircle.setVisibility(View.INVISIBLE);
+                            mNumberPicker.setVisibility(View.INVISIBLE);
+                            mNumberPickerTextView.setVisibility(View.INVISIBLE);
+                            savePreferences();
+
+                        }
+                    }
+                }
+        );
+
+
+    }
 
 
     @SuppressWarnings("deprecation")
@@ -361,7 +364,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (mLoginPage.getUrl().toLowerCase().contains("edgetime".toLowerCase())){
+        /*if (mLoginPage.getUrl().toLowerCase().contains("edgetime".toLowerCase()) && mLoginPage.canGoBack()){
             mLoginPage.goBack();
             mLoadingText.setVisibility(View.VISIBLE);
             mLoadingText.setText("Loading homescreen...");
@@ -371,13 +374,15 @@ public class MainActivity extends AppCompatActivity {
             }
             mLoginPage.goBack();
             //mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen");
-        }
+        }*/
 
 
         if (mLoginPage.canGoBack() && !settingsOpen) {
             mLoginPage.goBack();
-        }
-        else if (settingsOpen){
+            if (mLoginPage.getUrl().toLowerCase().contains("edgetime".toLowerCase())) {
+                Toast.makeText(this, "Click again to exit Edge", Toast.LENGTH_SHORT).show();
+            }
+        } else if (settingsOpen) {
             mNotify.setVisibility(View.INVISIBLE);
             mAutoLogin.setVisibility(View.INVISIBLE);
             mLoginPage.setVisibility(View.VISIBLE);
@@ -386,8 +391,7 @@ public class MainActivity extends AppCompatActivity {
             settingsOpen = false;
             mNumberPicker.setVisibility(View.INVISIBLE);
             mNumberPickerTextView.setVisibility(View.INVISIBLE);
-        }
-        else {
+        } else {
             Log.d("not good", "kill me");
             super.onBackPressed();
         }
@@ -417,9 +421,9 @@ public class MainActivity extends AppCompatActivity {
         mLoginPage.clearHistory();
         clearCookies(this);
         mLoginPage.setWebChromeClient(new WebChromeClient() {
-            public void onProgressChanged(WebView view, int progress){
+            public void onProgressChanged(WebView view, int progress) {
                 mLoadingText.setText(progress + "%");
-                if (progress == 100){
+                if (progress == 100) {
                     mLoadingText.setVisibility(View.INVISIBLE);
                 } else {
                     mLoadingText.setVisibility(View.VISIBLE);
@@ -427,6 +431,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             }
+
             public boolean onConsoleMessage(ConsoleMessage cm) {
                 Log.d(TAG, cm.message() + " -- From line "
                         + cm.lineNumber() + " of "
@@ -437,10 +442,11 @@ public class MainActivity extends AppCompatActivity {
                     mRemember.setVisibility(View.VISIBLE);
                     mUsername.setVisibility(View.VISIBLE);
                     mPassword.setVisibility(View.VISIBLE);
+                    getSupportActionBar().show();
                     //mLoadingText.setVisibility(View.INVISIBLE);
                     x = 0;
                 }
-                if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(mUsername.getText().toString())) /*&& x == 1*/) {
+                if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(mUsername.getText().toString())&& x == 1)) {
                     if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
                         mLoadingCircle.setVisibility(View.INVISIBLE);
                         mLoginPage.setVisibility(View.VISIBLE);
@@ -453,12 +459,13 @@ public class MainActivity extends AppCompatActivity {
                         //confirmLogin();
                     }
                 }
-                if (cm.message().toLowerCase().contains("RetrievedEdgeClass".toLowerCase()) && mNotify.isChecked()){
+                if (cm.message().toLowerCase().contains("RetrievedEdgeClass".toLowerCase()) && mNotify.isChecked()) {
                     InterpretEdgeData(cm.message());
                 }
-                if(cm.message().toLowerCase().contains("post_queue") && (cm.lineNumber() == 419)){
+                if (cm.message().toLowerCase().contains("post_queue")/* && (cm.lineNumber() == 419)*/) {
                     mLoadingCircle.setVisibility(View.INVISIBLE);
                     mLoginPage.setVisibility(View.VISIBLE);
+                    getEdgeClasses();
                 }
                 return true;
             }
@@ -503,13 +510,15 @@ public class MainActivity extends AppCompatActivity {
                     mLoadingCircle.setVisibility(View.INVISIBLE);
                     mLoginPage.setVisibility(View.VISIBLE);
                     //mLoadingText.setVisibility(View.INVISIBLE);
-                    getEdgeClasses();
                 }
-                if (mLoginPage.getUrl().toLowerCase().contains("#homescreen".toLowerCase()) && mLoginPage.getVisibility() == View.VISIBLE){
+                if (mLoginPage.getUrl().toLowerCase().contains("#homescreen".toLowerCase()) && mLoginPage.getVisibility() == View.VISIBLE) {
                     mSettings.setVisibility(View.VISIBLE);
                     mLogout.setVisibility(View.VISIBLE);
+                    if (getSupportActionBar() != null) {
+                        getSupportActionBar().hide();
+                    }
                 }
-                if (!mLoginPage.getUrl().toLowerCase().contains("#homescreen".toLowerCase())){
+                if (!mLoginPage.getUrl().toLowerCase().contains("#homescreen".toLowerCase())) {
                     mSettings.setVisibility(View.INVISIBLE);
                     mLogout.setVisibility(View.INVISIBLE);
                 }
@@ -536,13 +545,13 @@ public class MainActivity extends AppCompatActivity {
                         newUrl = webUrl;
                     }
                 }
-                if (webUrl.toLowerCase().contains("#homescreen".toLowerCase()) && mLoadingCircle.getVisibility() == View.INVISIBLE){
+                if (webUrl.toLowerCase().contains("#homescreen".toLowerCase()) && mLoadingCircle.getVisibility() == View.INVISIBLE) {
                     if (mLoginPage.getVisibility() == View.VISIBLE) {
                         mSettings.setVisibility(View.VISIBLE);
                         mLogout.setVisibility(View.VISIBLE);
                     }
                 }
-                if (!webUrl.toLowerCase().contains("#homescreen".toLowerCase())){
+                if (!webUrl.toLowerCase().contains("#homescreen".toLowerCase())) {
                     mSettings.setVisibility(View.INVISIBLE);
                     mLogout.setVisibility(View.INVISIBLE);
                 }
@@ -571,6 +580,7 @@ public class MainActivity extends AppCompatActivity {
         EdgeDay3Value = EdgeDay3;
         EdgeDay4Value = EdgeDay4;
         EdgeDay5Value = EdgeDay5;
+        EdgeDay5CurValue = EdgeDay5Cur;
         MinValue = notifyMinutes;
         if (mRemember.isChecked()) {
             editor.putString(PREF_UNAME, UnameValue);
@@ -584,6 +594,7 @@ public class MainActivity extends AppCompatActivity {
         editor.putString(PREF_EDGE3, EdgeDay3Value);
         editor.putString(PREF_EDGE4, EdgeDay4Value);
         editor.putString(PREF_EDGE5, EdgeDay5Value);
+        editor.putString(PREF_EDGE5Cur, EdgeDay5CurValue);
         editor.putInt(PREF_MIN, MinValue);
         editor.apply();
     }
@@ -604,10 +615,11 @@ public class MainActivity extends AppCompatActivity {
         EdgeDay3Value = settings.getString(PREF_EDGE3, DefaultEdgeDay3Value);
         EdgeDay4Value = settings.getString(PREF_EDGE4, DefaultEdgeDay4Value);
         EdgeDay5Value = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
+        EdgeDay5CurValue = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
         MinValue = settings.getInt(PREF_MIN, DefaultMinValue);
         if (NotificationValue) {
-                Log.d("Setting notification", " ");
-                setWeeklyNotifications();
+            Log.d("Setting notification", " ");
+            setWeeklyNotifications();
         }
         mAutoLogin.setChecked(AutologinValue);
         mRemember.setChecked(PRememValue);
@@ -617,6 +629,7 @@ public class MainActivity extends AppCompatActivity {
         EdgeDay3 = EdgeDay3Value;
         EdgeDay4 = EdgeDay4Value;
         EdgeDay5 = EdgeDay5Value;
+        EdgeDay5Cur = EdgeDay5CurValue;
         notifyMinutes = MinValue;
         mNumberPicker.setValue((notifyMinutes + 1));
         mNumberPickerTextView.setText("Send notification " + (notifyMinutes) + " minutes before class");
@@ -626,6 +639,7 @@ public class MainActivity extends AppCompatActivity {
         InterpretEdgeData(EdgeDay3);
         InterpretEdgeData(EdgeDay4);
         InterpretEdgeData(EdgeDay5);
+        currentSet = 0;
 
         if (mRemember.isChecked()) {
             mUsername.setText(UnameValue);
@@ -634,14 +648,16 @@ public class MainActivity extends AppCompatActivity {
         if (mAutoLogin.isChecked() && !mUsername.getText().toString().equals("") && !mPassword.getText().toString().equals("") && !calledForeign) {
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
             openLoginpage();
+            getSupportActionBar().hide();
         }
 
     }
+
     private void setWeeklyNotifications() {
         Calendar calendar3 = Calendar.getInstance();
         calendar3.set(Calendar.DAY_OF_WEEK, 5); // Thursday
-        calendar3.set(Calendar.HOUR, 4);
-        calendar3.set(Calendar.MINUTE, 15);
+        calendar3.set(Calendar.HOUR, 5);
+        calendar3.set(Calendar.MINUTE, 0);
         calendar3.set(Calendar.SECOND, 0);
         calendar3.set(Calendar.AM_PM, Calendar.PM);
         if ((calendar3.getTimeInMillis() - System.currentTimeMillis()) > 0) {
@@ -681,12 +697,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Log.d("edgehelptime", (activateTime - System.currentTimeMillis()) + "");
-            Intent intent2 = new Intent(this, EdgeClassNotifHelper.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
-                    REQUEST_CODE, intent2, PendingIntent.FLAG_UPDATE_CURRENT);
-            AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);
-            //am.setInexactRepeating(AlarmManager.RTC_WAKEUP, activateTime, AlarmManager.INTERVAL_DAY, pendingIntent);
-            am.setExact(AlarmManager.RTC_WAKEUP, activateTime, pendingIntent);
+        Intent intent2 = new Intent(this, EdgeClassNotifHelper.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
+                REQUEST_CODE, intent2, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);
+        //am.setInexactRepeating(AlarmManager.RTC_WAKEUP, activateTime, AlarmManager.INTERVAL_DAY, pendingIntent);
+        am.setExact(AlarmManager.RTC_WAKEUP, activateTime, pendingIntent);
         /*JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE, component)
                 .setPersisted(true)
                 .setMinimumLatency((calendar2.getTimeInMillis()) - System.currentTimeMillis())
@@ -702,7 +718,7 @@ public class MainActivity extends AppCompatActivity {
         int edgeMin1 = 43 - notifyMinutes;
         int edgeMin2;
         int edgeHour2;
-        if (notifyMinutes > 4){
+        if (notifyMinutes > 4) {
             int x = notifyMinutes - 4;
             edgeMin2 = 60 - x;
             edgeHour2 = 0;
@@ -721,11 +737,11 @@ public class MainActivity extends AppCompatActivity {
         calendar.set(Calendar.SECOND, 1);
         calendar.set(Calendar.AM_PM, Calendar.PM);
 
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putString("TITLE", EdgeTitle);
-            editor.putString("TEXT", EdgeText);
-            editor.commit();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("TITLE", EdgeTitle);
+        editor.putString("TEXT", EdgeText);
+        editor.commit();
         Log.d("Notification set", EdgeTitle);
         Log.d("edgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
         if ((calendar.getTimeInMillis() - System.currentTimeMillis()) > 0) {
@@ -751,75 +767,94 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void getEdgeClasses() {
-            int ClassElement = 0;
-            while (ClassElement != 5) {
-                mLoginPage.loadUrl("javascript:(function(){" +
-                        "if (document.getElementsByClassName('class user-in-class')['" + ClassElement + "'] != undefined){" +
-                        "console.log('RetrievedEdgeClass' + document.getElementsByClassName('class user-in-class')['" + ClassElement + "'].innerHTML);}" +
-                        "})()");
+        int ClassElement = 0;
+        while (ClassElement != 5) {
+            mLoginPage.loadUrl("javascript:(function(){" +
+                    "if (document.getElementsByClassName('class user-in-class')['" + ClassElement + "'] != undefined){" +
+                    "console.log('RetrievedEdgeClass' + document.getElementsByClassName('class user-in-class')['" + ClassElement + "'].innerHTML);}" +
+                    "})()");
             ClassElement++;
-         }
+        }
     }
-    public String parseEdgeTitle(String EdgeString){
+
+    public String parseEdgeTitle(String EdgeString) {
         EdgeString = EdgeString.substring(EdgeString.indexOf(">") + 1);
         EdgeString = EdgeString.substring(0, EdgeString.indexOf("</h3>"));
         return EdgeString;
     }
 
-    public int parseEdgeSession(String EdgeString){
+    public int parseEdgeSession(String EdgeString) {
         int session = 0;
-        if (EdgeString.toLowerCase().contains("12:43")){
+        if (EdgeString.toLowerCase().contains("12:43")) {
             session = 1;
         }
-        if (EdgeString.toLowerCase().contains("1:09")){
+        if (EdgeString.toLowerCase().contains("1:09")) {
             session = 2;
         }
         return session;
     }
-    public String parseEdgeText(String EdgeString){
+
+    public String parseEdgeText(String EdgeString) {
         EdgeString = EdgeString.substring(EdgeString.indexOf("g>") + 2);
         EdgeString = EdgeString.substring(0, EdgeString.indexOf("</"));
         return EdgeString;
     }
-    public void InterpretEdgeData(String consoleMessage){
-        if (consoleMessage.toLowerCase().contains("Mon".toLowerCase())){
+
+    public void InterpretEdgeData(String consoleMessage) {
+        if (consoleMessage.toLowerCase().contains("Mon".toLowerCase())) {
             EdgeDay1 = consoleMessage;
             Log.d("Monday Edge Class", EdgeDay1);
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY){
+            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY) {
                 setEdgeNotifications(parseEdgeTitle(EdgeDay1), parseEdgeText(EdgeDay1), parseEdgeSession(EdgeDay1), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             }
         }
-        if (consoleMessage.toLowerCase().contains("Tue".toLowerCase())){
+        if (consoleMessage.toLowerCase().contains("Tue".toLowerCase())) {
             EdgeDay2 = consoleMessage;
             Log.d("Tuesday Edge Class", EdgeDay2);
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY){
+            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY) {
                 setEdgeNotifications(parseEdgeTitle(EdgeDay2), parseEdgeText(EdgeDay2), parseEdgeSession(EdgeDay2), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             }
         }
-        if (consoleMessage.toLowerCase().contains("Wed".toLowerCase())){
+        if (consoleMessage.toLowerCase().contains("Wed".toLowerCase())) {
             EdgeDay3 = consoleMessage;
             Log.d("Wednesday Edge Class", EdgeDay3);
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY){
+            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY) {
                 setEdgeNotifications(parseEdgeTitle(EdgeDay3), parseEdgeText(EdgeDay3), parseEdgeSession(EdgeDay3), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             }
         }
-        if (consoleMessage.toLowerCase().contains("Thu".toLowerCase())){
+        if (consoleMessage.toLowerCase().contains("Thu".toLowerCase())) {
             EdgeDay4 = consoleMessage;   //Thursday
             Log.d("Thursday Edge Class", EdgeDay4);
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY){
+            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY) {
                 setEdgeNotifications(parseEdgeTitle(EdgeDay4), parseEdgeText(EdgeDay4), parseEdgeSession(EdgeDay4), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             }
         }
-        if (consoleMessage.toLowerCase().contains("Fri".toLowerCase())){
+        if (consoleMessage.toLowerCase().contains("Fri".toLowerCase())) {
             EdgeDay5 = consoleMessage;
-            Log.d("Friday Edge Class", EdgeDay5);
-
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY){
-                setEdgeNotifications(parseEdgeTitle(EdgeDay5), parseEdgeText(EdgeDay5), parseEdgeSession(EdgeDay5), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
+            if (currentSet == 0) {
+                EdgeDay5Ar[0] = consoleMessage;
+                currentSet = 1;
+            }
+            else {
+                Log.d("TRIGGERRRREEEDDD", "");
+                EdgeDay5Ar[1] = EdgeDay5;
+            }
+            if (!consoleMessage.contains(EdgeDay5Ar[0])) {
+                EdgeDay5Ar[1] = consoleMessage;
+            }
+            EdgeDay5Cur = EdgeDay5Ar[0];
+            Log.d("!test!", EdgeDay5Cur);
+            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
+                setEdgeNotifications(parseEdgeTitle(EdgeDay5Cur), parseEdgeText(EdgeDay5Cur), parseEdgeSession(EdgeDay5Cur), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
+                SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_APPEND);
+                SharedPreferences.Editor editor = settings.edit();
+                EdgeDay5CurValue = EdgeDay5Cur;
+                editor.putString(PREF_EDGE5Cur, EdgeDay5CurValue);
+                editor.apply();
             }
         }
-        Log.d("!DAY", Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + "");
-        //Log.d("!!", parseEdgeText(EdgeDay5));
-
     }
 }
+
+
+

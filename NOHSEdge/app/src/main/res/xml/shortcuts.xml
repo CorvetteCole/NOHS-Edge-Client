@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/icon"
+        android:shortcutDisabledMessage="@string/edge_shortcut_disabled"
+        android:shortcutId="static"
+        android:shortcutLongLabel="@string/edge_shortcut_long"
+        android:shortcutShortLabel="@string/edge_shortcut_short">
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetClass="corve.nohsedge.MainActivity"
+            android:targetPackage="corve.nohsedge" />
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="corve.nohsedge.EdgeViewActivity"
+            android:targetPackage="corve.nohsedge" />
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+</shortcuts>

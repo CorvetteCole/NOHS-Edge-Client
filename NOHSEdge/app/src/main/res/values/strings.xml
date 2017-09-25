@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">NOHS Edge</string>
-	<string name="compose_shortcut_short_label1">Edge</string>
-	<string name="compose_shortcut_long_label1">Open Edge Selection Screen</string>
-	<string name="compose_disabled_message1">Edge...disabled?</string>
+	<string name="edge_shortcut_short">Edge Schedule</string>
+	<string name="edge_shortcut_long">Open Edge Schedule</string>
+	<string name="edge_shortcut_disabled">Y u disable me</string>
+    <string name="title_activity_edge_view">Edge Schedule</string>
 </resources>
