@@ -543,9 +543,11 @@ public class MainActivity extends AppCompatActivity {
                 Context.MODE_PRIVATE);
 
         // Get value
-        UnameValue = settings.getString(PREF_UNAME, DefaultUnameValue);
-        PasswordValue = settings.getString(PREF_PASSWORD, DefaultPasswordValue);
-        PRememValue = settings.getBoolean(PREF_PREMEM, DefaultPRememValue);
+        if (!calledForeign) {
+            UnameValue = settings.getString(PREF_UNAME, DefaultUnameValue);
+            PasswordValue = settings.getString(PREF_PASSWORD, DefaultPasswordValue);
+            PRememValue = settings.getBoolean(PREF_PREMEM, DefaultPRememValue);
+        }
         NotificationValue = settings.getBoolean(PREF_NOTIFY, DefaultNotificationValue);
         AutologinValue = settings.getBoolean(PREF_AUTOLOGIN, DefaultAutologinValue);
         EdgeDay1Value = settings.getString(PREF_EDGE1, DefaultEdgeDay1Value);
