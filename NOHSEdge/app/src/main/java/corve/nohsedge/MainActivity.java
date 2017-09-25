@@ -137,7 +137,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        loadPreferences();
+        if (!calledForeign){
+            loadPreferences();
+        }
     }
 
     @Override
@@ -554,7 +556,6 @@ public class MainActivity extends AppCompatActivity {
         }
         mAutoLogin.setChecked(AutologinValue);
         mNotify.setChecked(NotificationValue);
-        LoginActivity.rememberChecked = PRememValue;
         EdgeDay1 = EdgeDay1Value;
         EdgeDay2 = EdgeDay2Value;
         EdgeDay3 = EdgeDay3Value;

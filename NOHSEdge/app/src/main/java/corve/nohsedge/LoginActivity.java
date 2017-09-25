@@ -14,6 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import static corve.nohsedge.MainActivity.PRememValue;
 import static corve.nohsedge.MainActivity.PasswordValue;
 import static corve.nohsedge.MainActivity.UnameValue;
 
@@ -27,7 +28,6 @@ public class LoginActivity extends AppCompatActivity {
     private Button mLogin;
     private TextView mCredit;
     private int a = 0;
-    static boolean rememberChecked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +41,8 @@ public class LoginActivity extends AppCompatActivity {
         mRegister = (Button) findViewById(R.id.RegisterButton);
         mEmail = (TextView) findViewById(R.id.emailField);
         mActivateRegister = (TextView) findViewById(R.id.ActivateRegister);
-        mRemember.setChecked(rememberChecked);
-        if (rememberChecked) {
+        mRemember.setChecked(PRememValue);
+        if (PRememValue) {
             mUsername.setText(UnameValue);
             mPassword.setText(PasswordValue);
         }
