@@ -45,10 +45,8 @@
         <activity
             android:name=".EdgeViewActivity"
             android:label="@string/title_activity_edge_view"
-            android:theme="@style/Theme.AppCompat.DayNight"
-            >
-
-        </activity>
+            android:theme="@style/Theme.AppCompat.DayNight"></activity>
+        <activity android:name=".LoginActivity"></activity>
     </application>
 
 </manifest>

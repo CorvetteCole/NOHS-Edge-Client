@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">NOHS Edge</string>
-	<string name="edge_shortcut_short">Edge Schedule</string>
-	<string name="edge_shortcut_long">Open Edge Schedule</string>
-	<string name="edge_shortcut_disabled">Y u disable me</string>
+    <string name="edge_shortcut_short">Edge Schedule</string>
+    <string name="edge_shortcut_long">Open Edge Schedule</string>
+    <string name="edge_shortcut_disabled">Y u disable me</string>
     <string name="title_activity_edge_view">Edge Schedule</string>
 </resources>

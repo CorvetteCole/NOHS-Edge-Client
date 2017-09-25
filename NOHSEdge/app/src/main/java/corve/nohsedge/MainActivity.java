@@ -53,32 +53,28 @@ public class MainActivity extends AppCompatActivity {
     public static final String PREF_EDGE3 = "Edge 3";
     public static final String PREF_EDGE4 = "Edge 4";
     public static final String PREF_EDGE5 = "Edge 5";
-    public static final String PREF_CALLEDFOREIGN = "from mainactivity?";
     public static final String PREF_MIN = "Notify min";
     public static final String PREF_EDGE5Cur = "Current Friday Edge Class";
     private String WrongPassword = "pass did not match";
     private String webUrl;
     String newUrl = "";
-    private int currentSet = 0;
+    public static int currentSet = 0;
 
 
     private final String DefaultUnameValue = "";
-    private String UnameValue;
+    static String UnameValue;
 
     private final String DefaultPasswordValue = "";
-    private String PasswordValue;
+    static String PasswordValue;
 
     private final boolean DefaultPRememValue = false;
-    private boolean PRememValue;
+    static boolean PRememValue;
 
     private final boolean DefaultNotificationValue = true;
     private boolean NotificationValue;
 
     private final boolean DefaultAutologinValue = false;
     private boolean AutologinValue;
-
-    private final boolean DefaultCalledForeign = false;
-    private boolean calledForeign;
 
     public static final int DefaultMinValue = 5;
     private int MinValue;
@@ -97,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
     private String EdgeDay5Value;
     private String EdgeDay5CurValue;
     private int getEdgeClassesRan = 0;
+    static String EmailValue;
 
     Button mLogin;
     TextView mCredit;
@@ -132,6 +129,9 @@ public class MainActivity extends AppCompatActivity {
     private NumberPicker mNumberPicker;
     private TextView mNumberPickerTextView;
     private String[] EdgeDay5Ar = new String[2];
+    public static int Login = 0;
+    public static int Register = 0;
+    public static boolean calledForeign;
 
 
     @Override
@@ -149,18 +149,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (!calledForeign) {
+            setContentView(R.layout.activity_login);
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+        }
+
+
         setContentView(R.layout.activity_main);
-        mLogin = (Button) findViewById(R.id.loginButton);
         mLoginPage = (WebView) findViewById(R.id.loginWebview);
-        mCredit = (TextView) findViewById(R.id.creditText);
         mLoadingCircle = (ProgressBar) findViewById(R.id.progressBar);
-        mUsername = (TextView) findViewById(R.id.usernameField);
-        mPassword = (TextView) findViewById(R.id.passwordField);
-        mRemember = (CheckBox) findViewById(R.id.rememberPassword);
         mLoadingText = (TextView) findViewById(R.id.LoadingText);
-        mRegister = (Button) findViewById(R.id.RegisterButton);
-        mEmail = (TextView) findViewById(R.id.emailField);
-        mActivateRegister = (TextView) findViewById(R.id.ActivateRegister);
         mNotify = (Switch) findViewById(R.id.NotificationCheckbox);
         mLogout = (Button) findViewById(R.id.logoutButton);
         mAutoLogin = (Switch) findViewById(R.id.AutoLoginSwitch);
@@ -176,6 +175,17 @@ public class MainActivity extends AppCompatActivity {
         mNumberPicker.setMaxValue(40);
         mNumberPicker.setWrapSelectorWheel(true);
         mNumberPicker.setDisplayedValues(nums);
+
+        if (calledForeign) {
+            if (Login == 1){
+                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
+                openLoginpage();
+            }
+            if (Register == 1){
+                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#register");
+                openLoginpage();
+            }
+        }
 
         activateEdgeHelper();
 
@@ -200,80 +210,11 @@ public class MainActivity extends AppCompatActivity {
                     .build();
             shortcutManager.setDynamicShortcuts(Arrays.asList(wNOHSShortcut, wCampusShortcut));
         }
-        mActivateRegister.setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(View view) {
-                        if (mActivateRegister.getText().equals("Back to login")) {
-                            a = 1;
-                        }
-                        if (mActivateRegister.getText().equals("Need to register?")) {
-                            a = 0;
-                        }
 
-                        if (a == 0) {
-                            mRegister.setVisibility(View.VISIBLE);
-                            mEmail.setVisibility(View.VISIBLE);
-                            mActivateRegister.setText("Back to login");
-                            mLogin.setVisibility(View.INVISIBLE);
-
-                        }
-                        if (a == 1) {
-                            mRegister.setVisibility(View.INVISIBLE);
-                            mEmail.setVisibility(View.INVISIBLE);
-                            mActivateRegister.setText("Need to register?");
-                            mLogin.setVisibility(View.VISIBLE);
-
-                        }
-                    }
-                }
-        );
-
-        mLogin.setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(View view) {
-                        InputMethodManager inputManager = (InputMethodManager)
-                                getSystemService(Context.INPUT_METHOD_SERVICE);
-                        if (getCurrentFocus() != null) {
-                            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                                    InputMethodManager.HIDE_NOT_ALWAYS);
-                            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
-                            openLoginpage();
-                            getSupportActionBar().hide();
-                            currentSet = 0;
-                            savePreferences();
-                        }
-                    }
-                }
-        );
-        mRegister.setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(View view) {
-                        InputMethodManager inputManager = (InputMethodManager)
-                                getSystemService(Context.INPUT_METHOD_SERVICE);
-                        if (getCurrentFocus() != null) {
-                            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                                    InputMethodManager.HIDE_NOT_ALWAYS);
-                        }
-                        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#register");
-                        openLoginpage();
-                    }
-                }
-        );
         mLogout.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        getSupportActionBar().show();
-                        mLoginPage.setVisibility(View.INVISIBLE);
-                        mSettings.setVisibility(View.INVISIBLE);
-                        clearCookies(getBaseContext());
-                        mLogin.setVisibility(View.VISIBLE);
-                        mUsername.setText("");
-                        mPassword.setText("");
-                        mRemember.setChecked(false);
-                        mUsername.setVisibility(View.VISIBLE);
-                        mPassword.setVisibility(View.VISIBLE);
-                        mRemember.setVisibility(View.VISIBLE);
-                        mLogout.setVisibility(View.INVISIBLE);
+                        Log.d("broken lol", "im not a god... yet");
                     }
                 });
         mSettings.setOnClickListener(
@@ -399,12 +340,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void openLoginpage() {
-        mActivateRegister.setVisibility(View.GONE);
-        mEmail.setVisibility(View.INVISIBLE);
-        mRegister.setVisibility(View.GONE);
-        mLogin.setVisibility(View.INVISIBLE);
-        mCredit.setVisibility(View.INVISIBLE);
-        mRemember.setVisibility(View.INVISIBLE);
         mLoadingCircle.setVisibility(View.VISIBLE);
         mLoadingText.setText("Checking login details...");
         //mLoadingText.setVisibility(View.VISIBLE);
@@ -439,11 +374,9 @@ public class MainActivity extends AppCompatActivity {
                         + cm.sourceId());
                 if (cm.message().toLowerCase().contains(WrongPassword.toLowerCase())) {
                     mLoadingCircle.setVisibility(View.INVISIBLE);
-                    mLogin.setVisibility(View.VISIBLE);
-                    mRemember.setVisibility(View.VISIBLE);
-                    mUsername.setVisibility(View.VISIBLE);
-                    mPassword.setVisibility(View.VISIBLE);
-                    getSupportActionBar().show();
+                    //***REALLY****
+                    //Add code to switch back to other activity here
+                    //getSupportActionBar().show();
                     //mLoadingText.setVisibility(View.INVISIBLE);
                     x = 0;
                 }
@@ -451,10 +384,6 @@ public class MainActivity extends AppCompatActivity {
                     if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
                         mLoadingCircle.setVisibility(View.INVISIBLE);
                         mLoginPage.setVisibility(View.VISIBLE);
-                        mUsername.setVisibility(View.GONE);
-                        mPassword.setVisibility(View.GONE);
-                        mRemember.setVisibility(View.GONE);
-                        mEmail.setVisibility(View.GONE);
                         //THE KEY IS BELOW. THE KEY I TELL YOU!
                         //mLoginPage.loadUrl("https://api.superfanu.com/6.0.0/gen/link_track.php?platform=Web:%20chrome&uuid=" + getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID") + "&nid=305&lkey=nohsstampede-edgetime-module");
                         x = 2;
@@ -481,8 +410,8 @@ public class MainActivity extends AppCompatActivity {
                 super.onPageFinished(view, url);
                 if (mLoginPage.getUrl().contains("login")) {
                     mLoginPage.loadUrl("javascript:(function(){" +
-                            "document.getElementById('login-username').value = '" + mUsername.getText().toString() + "';" +
-                            "document.getElementById('login-password').value = '" + mPassword.getText().toString() + "';" +
+                            "document.getElementById('login-username').value = '" + UnameValue + "';" +
+                            "document.getElementById('login-password').value = '" + PasswordValue + "';" +
                             "l=document.getElementById('login-btn');" +
                             "e=document.createEvent('HTMLEvents');" +
                             "e.initEvent('click',true,true);" +
@@ -492,9 +421,9 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (mLoginPage.getUrl().contains("register")) {
                     mLoginPage.loadUrl("javascript:(function(){" +
-                            "document.getElementById('register-username').value = '" + mUsername.getText().toString() + "';" +
-                            "document.getElementById('register-password').value = '" + mPassword.getText().toString() + "';" +
-                            "document.getElementById('register-email').value = '" + mEmail.getText().toString() + "';" +
+                            "document.getElementById('register-username').value = '" + UnameValue + "';" +
+                            "document.getElementById('register-password').value = '" + PasswordValue + "';" +
+                            "document.getElementById('register-email').value = '" + EmailValue + "';" +
                             "l=document.getElementById('register-btn');" +
                             "e=document.createEvent('HTMLEvents');" +
                             "e.initEvent('click',true,true);" +
@@ -583,7 +512,7 @@ public class MainActivity extends AppCompatActivity {
         EdgeDay5Value = EdgeDay5;
         EdgeDay5CurValue = EdgeDay5Cur;
         MinValue = notifyMinutes;
-        if (mRemember.isChecked()) {
+        if (PRememValue) {
             editor.putString(PREF_UNAME, UnameValue);
             editor.putString(PREF_PASSWORD, PasswordValue);
         }
@@ -646,7 +575,7 @@ public class MainActivity extends AppCompatActivity {
             mUsername.setText(UnameValue);
             mPassword.setText(PasswordValue);
         }
-        if (mAutoLogin.isChecked() && !mUsername.getText().toString().equals("") && !mPassword.getText().toString().equals("") && !calledForeign) {
+        if (mAutoLogin.isChecked() && !mUsername.getText().toString().equals("") && !mPassword.getText().toString().equals("")) {
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
             openLoginpage();
             getSupportActionBar().hide();
