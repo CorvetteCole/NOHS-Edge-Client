@@ -172,7 +172,7 @@ public class EdgeViewActivity extends AppCompatActivity {
             i++;
         }
 
-        mList.setAdapter(new EdgeBaseAdapter(this));
+        mList.setAdapter(new EdgeBaseAdapter(this, EdgeTitle, EdgeText, EdgeTime, EdgeDate));
 
         }
 
