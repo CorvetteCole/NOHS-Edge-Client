@@ -418,6 +418,7 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setAllowFileAccessFromFileURLs(true);
         webSettings.setAppCacheEnabled(true);
         webSettings.setDatabaseEnabled(true);
+        //webSettings.setLoadsImagesAutomatically(false);
         mLoginPage.clearHistory();
         clearCookies(this);
         mLoginPage.setWebChromeClient(new WebChromeClient() {
@@ -454,9 +455,9 @@ public class MainActivity extends AppCompatActivity {
                         mPassword.setVisibility(View.GONE);
                         mRemember.setVisibility(View.GONE);
                         mEmail.setVisibility(View.GONE);
-                        //mLoadingText.setVisibility(View.INVISIBLE);
+                        //THE KEY IS BELOW. THE KEY I TELL YOU!
+                        //mLoginPage.loadUrl("https://api.superfanu.com/6.0.0/gen/link_track.php?platform=Web:%20chrome&uuid=" + getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID") + "&nid=305&lkey=nohsstampede-edgetime-module");
                         x = 2;
-                        //confirmLogin();
                     }
                 }
                 if (cm.message().toLowerCase().contains("RetrievedEdgeClass".toLowerCase()) && mNotify.isChecked()) {
