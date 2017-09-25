@@ -46,77 +46,92 @@ public class LoginActivity extends AppCompatActivity {
             mUsername.setText(UnameValue);
             mPassword.setText(PasswordValue);
         }
-        mActivateRegister.setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(View view) {
-                        if (mActivateRegister.getText().equals("Back to login")) {
-                            a = 1;
-                        }
-                        if (mActivateRegister.getText().equals("Need to register?")) {
-                            a = 0;
-                        }
+        if (MainActivity.AutologinValue) {
+            InputMethodManager inputManager = (InputMethodManager)
+                    getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (getCurrentFocus() != null) {
+                inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
+            }
+                MainActivity.currentSet = 0;
+                Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                MainActivity.Login = 1;
+                MainActivity.calledForeign = true;
+                UnameValue = mUsername.getText().toString();
+                PasswordValue = mPassword.getText().toString();
+                MainActivity.PRememValue = mRemember.isChecked();
+                startActivity(intent);
+            }
+        
+            mActivateRegister.setOnClickListener(
+                    new View.OnClickListener() {
+                        public void onClick(View view) {
+                            if (mActivateRegister.getText().equals("Back to login")) {
+                                a = 1;
+                            }
+                            if (mActivateRegister.getText().equals("Need to register?")) {
+                                a = 0;
+                            }
 
-                        if (a == 0) {
-                            mRegister.setVisibility(View.VISIBLE);
-                            mEmail.setVisibility(View.VISIBLE);
-                            mActivateRegister.setText("Back to login");
-                            mLogin.setVisibility(View.INVISIBLE);
+                            if (a == 0) {
+                                mRegister.setVisibility(View.VISIBLE);
+                                mEmail.setVisibility(View.VISIBLE);
+                                mActivateRegister.setText("Back to login");
+                                mLogin.setVisibility(View.INVISIBLE);
 
-                        }
-                        if (a == 1) {
-                            mRegister.setVisibility(View.INVISIBLE);
-                            mEmail.setVisibility(View.INVISIBLE);
-                            mActivateRegister.setText("Need to register?");
-                            mLogin.setVisibility(View.VISIBLE);
+                            }
+                            if (a == 1) {
+                                mRegister.setVisibility(View.INVISIBLE);
+                                mEmail.setVisibility(View.INVISIBLE);
+                                mActivateRegister.setText("Need to register?");
+                                mLogin.setVisibility(View.VISIBLE);
 
+                            }
                         }
                     }
-                }
-        );
+            );
 
-        mLogin.setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(View view) {
-                        InputMethodManager inputManager = (InputMethodManager)
-                                getSystemService(Context.INPUT_METHOD_SERVICE);
-                        if (getCurrentFocus() != null) {
-                            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                                    InputMethodManager.HIDE_NOT_ALWAYS);
+            mLogin.setOnClickListener(
+                    new View.OnClickListener() {
+                        public void onClick(View view) {
+                            InputMethodManager inputManager = (InputMethodManager)
+                                    getSystemService(Context.INPUT_METHOD_SERVICE);
+                            if (getCurrentFocus() != null) {
+                                inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                                        InputMethodManager.HIDE_NOT_ALWAYS);
 
+                                MainActivity.currentSet = 0;
+                                Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                                MainActivity.Login = 1;
+                                MainActivity.calledForeign = true;
+                                UnameValue = mUsername.getText().toString();
+                                PasswordValue = mPassword.getText().toString();
+                                MainActivity.PRememValue = mRemember.isChecked();
+                                startActivity(intent);
+                            }
+                        }
+                    }
+            );
+            mRegister.setOnClickListener(
+                    new View.OnClickListener() {
+                        public void onClick(View view) {
+                            InputMethodManager inputManager = (InputMethodManager)
+                                    getSystemService(Context.INPUT_METHOD_SERVICE);
+                            if (getCurrentFocus() != null) {
+                                inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                                        InputMethodManager.HIDE_NOT_ALWAYS);
+                            }
                             MainActivity.currentSet = 0;
-                            setContentView(R.layout.activity_login);
                             Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                            MainActivity.Login = 1;
+                            MainActivity.Register = 1;
                             MainActivity.calledForeign = true;
                             UnameValue = mUsername.getText().toString();
                             PasswordValue = mPassword.getText().toString();
                             MainActivity.PRememValue = mRemember.isChecked();
+                            MainActivity.EmailValue = mEmail.getText().toString();
                             startActivity(intent);
                         }
                     }
-                }
-        );
-        mRegister.setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(View view) {
-                        InputMethodManager inputManager = (InputMethodManager)
-                                getSystemService(Context.INPUT_METHOD_SERVICE);
-                        if (getCurrentFocus() != null) {
-                            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                                    InputMethodManager.HIDE_NOT_ALWAYS);
-                        }
-                        MainActivity.currentSet = 0;
-                        setContentView(R.layout.activity_login);
-                        Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                        MainActivity.Register = 1;
-                        MainActivity.calledForeign = true;
-                        UnameValue = mUsername.getText().toString();
-                        PasswordValue = mPassword.getText().toString();
-                        MainActivity.PRememValue = mRemember.isChecked();
-                        MainActivity.EmailValue = mEmail.getText().toString();
-                        startActivity(intent);
-                    }
-                }
-        );
+            );
+        }
     }
-}

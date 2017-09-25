@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean NotificationValue;
 
     private final boolean DefaultAutologinValue = false;
-    private boolean AutologinValue;
+    static boolean AutologinValue;
 
     public static final int DefaultMinValue = 5;
     private int MinValue;
@@ -137,9 +137,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if (!calledForeign){
+        //if (!calledForeign){
             loadPreferences();
-        }
+        //}
     }
 
     @Override
@@ -177,7 +177,6 @@ public class MainActivity extends AppCompatActivity {
         mNumberPicker.setMaxValue(40);
         mNumberPicker.setWrapSelectorWheel(true);
         mNumberPicker.setDisplayedValues(nums);
-
         if (calledForeign) {
             if (Login == 1){
                 mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
@@ -395,7 +394,7 @@ public class MainActivity extends AppCompatActivity {
                         x = 2;
                     }
                 }
-                if (cm.message().toLowerCase().contains("RetrievedEdgeClass".toLowerCase()) && mNotify.isChecked()) {
+                if (cm.message().toLowerCase().contains("RetrievedEdgeClass".toLowerCase()) && NotificationValue) {
                     InterpretEdgeData(cm.message());
                 }
                 if (cm.message().toLowerCase().contains("post_queue")/* && (cm.lineNumber() == 419)*/) {
@@ -506,8 +505,10 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = settings.edit();
 
         // Edit and commit
-        NotificationValue = mNotify.isChecked();
-        AutologinValue = mAutoLogin.isChecked();
+        if (mLoginPage.getUrl() != null) {
+            NotificationValue = mNotify.isChecked();
+            AutologinValue = mAutoLogin.isChecked();
+        }
         EdgeDay1Value = EdgeDay1;
         EdgeDay2Value = EdgeDay2;
         EdgeDay3Value = EdgeDay3;
@@ -572,13 +573,6 @@ public class MainActivity extends AppCompatActivity {
         InterpretEdgeData(EdgeDay4);
         InterpretEdgeData(EdgeDay5);
         currentSet = 0;
-
-        if (mAutoLogin.isChecked() && !mUsername.getText().toString().equals("") && !mPassword.getText().toString().equals("")) {
-            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
-            openLoginpage();
-            getSupportActionBar().hide();
-        }
-
     }
 
     private void setWeeklyNotifications() {
