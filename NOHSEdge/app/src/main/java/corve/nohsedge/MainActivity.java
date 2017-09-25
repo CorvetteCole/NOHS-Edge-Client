@@ -376,7 +376,10 @@ public class MainActivity extends AppCompatActivity {
                     mLoadingCircle.setVisibility(View.INVISIBLE);
                     //***REALLY****
                     //Add code to switch back to other activity here
-                    //getSupportActionBar().show();
+                    setContentView(R.layout.activity_login);
+                    Intent intent = new Intent(getBaseContext(), LoginActivity.class);
+                    startActivity(intent);
+
                     //mLoadingText.setVisibility(View.INVISIBLE);
                     x = 0;
                 }
@@ -384,6 +387,7 @@ public class MainActivity extends AppCompatActivity {
                     if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
                         mLoadingCircle.setVisibility(View.INVISIBLE);
                         mLoginPage.setVisibility(View.VISIBLE);
+                        getSupportActionBar().hide();
                         //THE KEY IS BELOW. THE KEY I TELL YOU!
                         //mLoginPage.loadUrl("https://api.superfanu.com/6.0.0/gen/link_track.php?platform=Web:%20chrome&uuid=" + getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID") + "&nid=305&lkey=nohsstampede-edgetime-module");
                         x = 2;
