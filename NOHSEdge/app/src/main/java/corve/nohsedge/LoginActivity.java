@@ -14,6 +14,9 @@ import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import static corve.nohsedge.MainActivity.PasswordValue;
+import static corve.nohsedge.MainActivity.UnameValue;
+
 public class LoginActivity extends AppCompatActivity {
     private TextView mUsername;
     private TextView mPassword;
@@ -24,6 +27,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button mLogin;
     private TextView mCredit;
     private int a = 0;
+    static boolean rememberChecked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +41,11 @@ public class LoginActivity extends AppCompatActivity {
         mRegister = (Button) findViewById(R.id.RegisterButton);
         mEmail = (TextView) findViewById(R.id.emailField);
         mActivateRegister = (TextView) findViewById(R.id.ActivateRegister);
+        mRemember.setChecked(rememberChecked);
+        if (rememberChecked) {
+            mUsername.setText(UnameValue);
+            mPassword.setText(PasswordValue);
+        }
         mActivateRegister.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
@@ -79,8 +88,8 @@ public class LoginActivity extends AppCompatActivity {
                             Intent intent = new Intent(getBaseContext(), MainActivity.class);
                             MainActivity.Login = 1;
                             MainActivity.calledForeign = true;
-                            MainActivity.UnameValue = mUsername.getText().toString();
-                            MainActivity.PasswordValue = mPassword.getText().toString();
+                            UnameValue = mUsername.getText().toString();
+                            PasswordValue = mPassword.getText().toString();
                             MainActivity.PRememValue = mRemember.isChecked();
                             startActivity(intent);
                         }
@@ -101,8 +110,8 @@ public class LoginActivity extends AppCompatActivity {
                         Intent intent = new Intent(getBaseContext(), MainActivity.class);
                         MainActivity.Register = 1;
                         MainActivity.calledForeign = true;
-                        MainActivity.UnameValue = mUsername.getText().toString();
-                        MainActivity.PasswordValue = mPassword.getText().toString();
+                        UnameValue = mUsername.getText().toString();
+                        PasswordValue = mPassword.getText().toString();
                         MainActivity.PRememValue = mRemember.isChecked();
                         MainActivity.EmailValue = mEmail.getText().toString();
                         startActivity(intent);

@@ -380,7 +380,7 @@ public class MainActivity extends AppCompatActivity {
                     //mLoadingText.setVisibility(View.INVISIBLE);
                     x = 0;
                 }
-                if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(mUsername.getText().toString())&& x == 1)) {
+                if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(UnameValue)&& x == 1)) {
                     if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
                         mLoadingCircle.setVisibility(View.INVISIBLE);
                         mLoginPage.setVisibility(View.VISIBLE);
@@ -500,9 +500,6 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = settings.edit();
 
         // Edit and commit
-        UnameValue = mUsername.getText().toString();
-        PasswordValue = mPassword.getText().toString();
-        PRememValue = mRemember.isChecked();
         NotificationValue = mNotify.isChecked();
         AutologinValue = mAutoLogin.isChecked();
         EdgeDay1Value = EdgeDay1;
@@ -552,8 +549,8 @@ public class MainActivity extends AppCompatActivity {
             setWeeklyNotifications();
         }
         mAutoLogin.setChecked(AutologinValue);
-        mRemember.setChecked(PRememValue);
         mNotify.setChecked(NotificationValue);
+        LoginActivity.rememberChecked = PRememValue;
         EdgeDay1 = EdgeDay1Value;
         EdgeDay2 = EdgeDay2Value;
         EdgeDay3 = EdgeDay3Value;
@@ -571,10 +568,6 @@ public class MainActivity extends AppCompatActivity {
         InterpretEdgeData(EdgeDay5);
         currentSet = 0;
 
-        if (mRemember.isChecked()) {
-            mUsername.setText(UnameValue);
-            mPassword.setText(PasswordValue);
-        }
         if (mAutoLogin.isChecked() && !mUsername.getText().toString().equals("") && !mPassword.getText().toString().equals("")) {
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
             openLoginpage();
