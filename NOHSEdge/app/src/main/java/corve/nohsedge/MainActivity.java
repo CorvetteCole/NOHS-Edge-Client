@@ -179,7 +179,6 @@ public class MainActivity extends AppCompatActivity {
         mDrawerView = (PlaceHolderView)findViewById(R.id.drawerView);
         mToolbar = (Toolbar)findViewById(R.id.toolbar);
         mGalleryView = (PlaceHolderView)findViewById(R.id.galleryView);
-        setupDrawer();
         NotificationSet = 0;
         String[] nums = new String[40];
         for (int i = 0; i < nums.length; i++)
@@ -191,6 +190,7 @@ public class MainActivity extends AppCompatActivity {
         mNumberPicker.setDisplayedValues(nums);
         if (calledForeign) {
             //getSupportActionBar().hide();
+            setupDrawer();
             if (Login == 1){
                 mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
                 openLoginpage();
