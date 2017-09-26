@@ -180,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
         mToolbar = (Toolbar)findViewById(R.id.toolbar);
         mGalleryView = (PlaceHolderView)findViewById(R.id.galleryView);
         NotificationSet = 0;
+        setupDrawer();
         String[] nums = new String[40];
         for (int i = 0; i < nums.length; i++)
             nums[i] = Integer.toString(i);
@@ -188,9 +189,10 @@ public class MainActivity extends AppCompatActivity {
         mNumberPicker.setMaxValue(40);
         mNumberPicker.setWrapSelectorWheel(true);
         mNumberPicker.setDisplayedValues(nums);
+
         if (calledForeign) {
             //getSupportActionBar().hide();
-            setupDrawer();
+
             if (Login == 1){
                 mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
                 openLoginpage();
@@ -232,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
                         setContentView(R.layout.activity_login);
                         Intent intent = new Intent(getBaseContext(), LoginActivity.class);
                         startActivity(intent);
-                        Log.d("broken lol", "im not a god... yet");
+                        //Log.d("broken lol", "im not a god... yet");
                     }
                 });
         /*mSettings.setOnClickListener(

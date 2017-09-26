@@ -1,6 +1,7 @@
 package corve.nohsedge;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -86,6 +87,7 @@ public class DrawerMenuItem {
             case DRAWER_MENU_ITEM_PROFILE:
                 Toast.makeText(mContext, "Profile", Toast.LENGTH_SHORT).show();
                 if(mCallBack != null)mCallBack.onProfileMenuSelected();
+                Log.d("ayy", "lmao");
                 break;
             case DRAWER_MENU_ITEM_REQUESTS:
                 Toast.makeText(mContext, "Requests", Toast.LENGTH_SHORT).show();
