@@ -380,14 +380,12 @@ public class MainActivity extends AppCompatActivity {
                         + cm.sourceId());
                 if (cm.message().toLowerCase().contains(WrongPassword.toLowerCase())) {
                     mLoadingCircle.setVisibility(View.INVISIBLE);
-                    //***REALLY****
-                    //Add code to switch back to other activity here
-                    setContentView(R.layout.activity_login);
+                    //setContentView(R.layout.activity_login);
+                    LoginActivity.invalid = true;
+                    x = 0;
                     Intent intent = new Intent(getBaseContext(), LoginActivity.class);
                     startActivity(intent);
-
-                    //mLoadingText.setVisibility(View.INVISIBLE);
-                    x = 0;
+                    mLoadingText.setVisibility(View.INVISIBLE);
                 }
                 if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(UnameValue)&& x == 1)) {
                     if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {

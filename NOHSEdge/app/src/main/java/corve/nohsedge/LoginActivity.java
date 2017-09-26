@@ -28,6 +28,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button mLogin;
     private TextView mCredit;
     private int a = 0;
+    static boolean invalid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +46,10 @@ public class LoginActivity extends AppCompatActivity {
         if (PRememValue) {
             mUsername.setText(UnameValue);
             mPassword.setText(PasswordValue);
+        }
+        if (invalid) {
+            TextView mInvalid = (TextView) findViewById(R.id.invalidLogin);
+            mInvalid.setVisibility(View.VISIBLE);
         }
         if (MainActivity.AutologinValue) {
             InputMethodManager inputManager = (InputMethodManager)

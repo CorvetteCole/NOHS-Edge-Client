@@ -66,7 +66,6 @@ public class EdgeBaseAdapter extends BaseAdapter {
         mText.setText(contactrow.text);
         mTime.setText(contactrow.edgetime);
         mDate.setText(contactrow.edgedate);
-        Log.d("edgedate", contactrow.edgedate);
         Drawable drawable = null;
         mImage.setImageDrawable(drawable);
 
