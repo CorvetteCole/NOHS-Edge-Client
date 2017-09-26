@@ -13,11 +13,8 @@ import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -38,8 +35,6 @@ import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.mindorks.placeholderview.PlaceHolderView;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -116,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView mActivateRegister;
     private Switch mNotify;
     private Switch mAutoLogin;
+    private Button mSettings;
     int a = 0;
     static int REQUEST_CODE = 0;
     static int REQUEST_CODE_EDGE = 1;
@@ -136,10 +132,6 @@ public class MainActivity extends AppCompatActivity {
     public static int Login = 0;
     public static int Register = 0;
     public static boolean calledForeign;
-    private PlaceHolderView mDrawerView;
-    private DrawerLayout mDrawer;
-    private Toolbar mToolbar;
-    private PlaceHolderView mGalleryView;
 
 
     @Override
@@ -173,14 +165,10 @@ public class MainActivity extends AppCompatActivity {
         mNotify = (Switch) findViewById(R.id.NotificationCheckbox);
         mLogout = (Button) findViewById(R.id.logoutButton);
         mAutoLogin = (Switch) findViewById(R.id.AutoLoginSwitch);
+        mSettings = (Button) findViewById(R.id.settingsButton);
         mNumberPicker = (NumberPicker) findViewById(R.id.numberPicker);
         mNumberPickerTextView = (TextView) findViewById(R.id.numberPickerTextView);
-        mDrawer = (DrawerLayout)findViewById(R.id.drawerLayout);
-        mDrawerView = (PlaceHolderView)findViewById(R.id.drawerView);
-        mToolbar = (Toolbar)findViewById(R.id.toolbar);
-        mGalleryView = (PlaceHolderView)findViewById(R.id.galleryView);
         NotificationSet = 0;
-        setupDrawer();
         String[] nums = new String[40];
         for (int i = 0; i < nums.length; i++)
             nums[i] = Integer.toString(i);
@@ -189,10 +177,8 @@ public class MainActivity extends AppCompatActivity {
         mNumberPicker.setMaxValue(40);
         mNumberPicker.setWrapSelectorWheel(true);
         mNumberPicker.setDisplayedValues(nums);
-
         if (calledForeign) {
-            //getSupportActionBar().hide();
-
+            getSupportActionBar().hide();
             if (Login == 1){
                 mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
                 openLoginpage();
@@ -234,10 +220,10 @@ public class MainActivity extends AppCompatActivity {
                         setContentView(R.layout.activity_login);
                         Intent intent = new Intent(getBaseContext(), LoginActivity.class);
                         startActivity(intent);
-                        //Log.d("broken lol", "im not a god... yet");
+                        Log.d("broken lol", "im not a god... yet");
                     }
                 });
-        /*mSettings.setOnClickListener(
+        mSettings.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
                         if (settingsOpen) {
@@ -282,37 +268,11 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }
-        );*/
+        );
 
 
     }
 
-    private void setupDrawer(){
-        mDrawerView
-                .addView(new DrawerHeader())
-                .addView(new DrawerMenuItem(this.getApplicationContext(), DrawerMenuItem.DRAWER_MENU_ITEM_PROFILE))
-                .addView(new DrawerMenuItem(this.getApplicationContext(), DrawerMenuItem.DRAWER_MENU_ITEM_REQUESTS))
-                .addView(new DrawerMenuItem(this.getApplicationContext(), DrawerMenuItem.DRAWER_MENU_ITEM_MESSAGE))
-                .addView(new DrawerMenuItem(this.getApplicationContext(), DrawerMenuItem.DRAWER_MENU_ITEM_GROUPS))
-                .addView(new DrawerMenuItem(this.getApplicationContext(), DrawerMenuItem.DRAWER_MENU_ITEM_NOTIFICATIONS))
-                .addView(new DrawerMenuItem(this.getApplicationContext(), DrawerMenuItem.DRAWER_MENU_ITEM_TERMS))
-                .addView(new DrawerMenuItem(this.getApplicationContext(), DrawerMenuItem.DRAWER_MENU_ITEM_SETTINGS))
-                .addView(new DrawerMenuItem(this.getApplicationContext(), DrawerMenuItem.DRAWER_MENU_ITEM_LOGOUT));
-
-        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, mDrawer, mToolbar, R.string.open_drawer, R.string.close_drawer){
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-            }
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-            }
-        };
-
-        mDrawer.addDrawerListener(drawerToggle);
-        drawerToggle.syncState();
-    }
 
     @SuppressWarnings("deprecation")
     public static void clearCookies(Context context) {
@@ -369,7 +329,7 @@ public class MainActivity extends AppCompatActivity {
             if (mLoginPage.getUrl().toLowerCase().contains("edgetime".toLowerCase())) {
                 Toast.makeText(this, "Click again to exit Edge", Toast.LENGTH_SHORT).show();
             }
-        } /*else if (settingsOpen) {
+        } else if (settingsOpen) {
             mNotify.setVisibility(View.INVISIBLE);
             mAutoLogin.setVisibility(View.INVISIBLE);
             mLoginPage.setVisibility(View.VISIBLE);
@@ -378,7 +338,7 @@ public class MainActivity extends AppCompatActivity {
             settingsOpen = false;
             mNumberPicker.setVisibility(View.INVISIBLE);
             mNumberPickerTextView.setVisibility(View.INVISIBLE);
-        } */else {
+        } else {
             Log.d("not good", "kill me");
             super.onBackPressed();
         }
@@ -490,14 +450,14 @@ public class MainActivity extends AppCompatActivity {
                     //mLoadingText.setVisibility(View.INVISIBLE);
                 }
                 if (mLoginPage.getUrl().toLowerCase().contains("#homescreen".toLowerCase()) && mLoginPage.getVisibility() == View.VISIBLE) {
-                    //mSettings.setVisibility(View.VISIBLE);
+                    mSettings.setVisibility(View.VISIBLE);
                     mLogout.setVisibility(View.VISIBLE);
-                    /*if (getSupportActionBar() != null) {
+                    if (getSupportActionBar() != null) {
                         getSupportActionBar().hide();
-                    }*/
+                    }
                 }
                 if (!mLoginPage.getUrl().toLowerCase().contains("#homescreen".toLowerCase())) {
-                    //mSettings.setVisibility(View.INVISIBLE);
+                    mSettings.setVisibility(View.INVISIBLE);
                     mLogout.setVisibility(View.INVISIBLE);
                 }
             }
@@ -525,12 +485,12 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (webUrl.toLowerCase().contains("#homescreen".toLowerCase()) && mLoadingCircle.getVisibility() == View.INVISIBLE) {
                     if (mLoginPage.getVisibility() == View.VISIBLE) {
-                        //mSettings.setVisibility(View.VISIBLE);
+                        mSettings.setVisibility(View.VISIBLE);
                         mLogout.setVisibility(View.VISIBLE);
                     }
                 }
                 if (!webUrl.toLowerCase().contains("#homescreen".toLowerCase())) {
-                    //mSettings.setVisibility(View.INVISIBLE);
+                    mSettings.setVisibility(View.INVISIBLE);
                     mLogout.setVisibility(View.INVISIBLE);
                 }
                 //if (webUrl.toLowerCase().contains("#login".toLowerCase())){

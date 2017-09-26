@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="corve.nohsedge">
+    package="corve.nohsedge">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -15,43 +15,38 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
+        android:theme="@style/Theme.AppCompat.DayNight">
         <activity
             android:name=".MainActivity"
             android:configChanges="keyboardHidden"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
             <meta-data
                 android:name="android.app.shortcuts"
-                android:resource="@xml/shortcuts"/>
+                android:resource="@xml/shortcuts" />
         </activity>
 
         <receiver
             android:name=".Receiver"
-            android:permission="android.permission.BIND_JOB_SERVICE"/>
+            android:permission="android.permission.BIND_JOB_SERVICE" />
         <receiver
             android:name=".WeeklyReceiver"
-            android:permission="android.permission.BIND_JOB_SERVICE"/>
+            android:permission="android.permission.BIND_JOB_SERVICE" />
         <receiver
             android:name=".EdgeClassNotifHelper"
-            android:permission="android.permission.BIND_JOB_SERVICE"/>
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <activity
             android:name=".EdgeViewActivity"
             android:label="@string/title_activity_edge_view"
-            android:theme="@style/Theme.AppCompat.DayNight"/>
-        <activity android:name=".LoginActivity"/>
-        <activity
-            android:name=".NavigationDrawer"
-            android:label="@string/title_activity_navigation_drawer"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
-        </activity>
+            android:theme="@style/Theme.AppCompat.DayNight"></activity>
+        <activity android:name=".LoginActivity"></activity>
     </application>
 
 </manifest>
