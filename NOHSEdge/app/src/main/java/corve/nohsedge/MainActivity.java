@@ -116,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView mActivateRegister;
     private Switch mNotify;
     private Switch mAutoLogin;
-    private Button mSettings;
     int a = 0;
     static int REQUEST_CODE = 0;
     static int REQUEST_CODE_EDGE = 1;
@@ -174,7 +173,6 @@ public class MainActivity extends AppCompatActivity {
         mNotify = (Switch) findViewById(R.id.NotificationCheckbox);
         mLogout = (Button) findViewById(R.id.logoutButton);
         mAutoLogin = (Switch) findViewById(R.id.AutoLoginSwitch);
-        mSettings = (Button) findViewById(R.id.settingsButton);
         mNumberPicker = (NumberPicker) findViewById(R.id.numberPicker);
         mNumberPickerTextView = (TextView) findViewById(R.id.numberPickerTextView);
         mDrawer = (DrawerLayout)findViewById(R.id.drawerLayout);
@@ -237,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("broken lol", "im not a god... yet");
                     }
                 });
-        mSettings.setOnClickListener(
+        /*mSettings.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
                         if (settingsOpen) {
@@ -282,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }
-        );
+        );*/
 
 
     }
@@ -369,7 +367,7 @@ public class MainActivity extends AppCompatActivity {
             if (mLoginPage.getUrl().toLowerCase().contains("edgetime".toLowerCase())) {
                 Toast.makeText(this, "Click again to exit Edge", Toast.LENGTH_SHORT).show();
             }
-        } else if (settingsOpen) {
+        } /*else if (settingsOpen) {
             mNotify.setVisibility(View.INVISIBLE);
             mAutoLogin.setVisibility(View.INVISIBLE);
             mLoginPage.setVisibility(View.VISIBLE);
@@ -378,7 +376,7 @@ public class MainActivity extends AppCompatActivity {
             settingsOpen = false;
             mNumberPicker.setVisibility(View.INVISIBLE);
             mNumberPickerTextView.setVisibility(View.INVISIBLE);
-        } else {
+        } */else {
             Log.d("not good", "kill me");
             super.onBackPressed();
         }
@@ -490,14 +488,14 @@ public class MainActivity extends AppCompatActivity {
                     //mLoadingText.setVisibility(View.INVISIBLE);
                 }
                 if (mLoginPage.getUrl().toLowerCase().contains("#homescreen".toLowerCase()) && mLoginPage.getVisibility() == View.VISIBLE) {
-                    mSettings.setVisibility(View.VISIBLE);
+                    //mSettings.setVisibility(View.VISIBLE);
                     mLogout.setVisibility(View.VISIBLE);
                     /*if (getSupportActionBar() != null) {
                         getSupportActionBar().hide();
                     }*/
                 }
                 if (!mLoginPage.getUrl().toLowerCase().contains("#homescreen".toLowerCase())) {
-                    mSettings.setVisibility(View.INVISIBLE);
+                    //mSettings.setVisibility(View.INVISIBLE);
                     mLogout.setVisibility(View.INVISIBLE);
                 }
             }
@@ -525,12 +523,12 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (webUrl.toLowerCase().contains("#homescreen".toLowerCase()) && mLoadingCircle.getVisibility() == View.INVISIBLE) {
                     if (mLoginPage.getVisibility() == View.VISIBLE) {
-                        mSettings.setVisibility(View.VISIBLE);
+                        //mSettings.setVisibility(View.VISIBLE);
                         mLogout.setVisibility(View.VISIBLE);
                     }
                 }
                 if (!webUrl.toLowerCase().contains("#homescreen".toLowerCase())) {
-                    mSettings.setVisibility(View.INVISIBLE);
+                    //mSettings.setVisibility(View.INVISIBLE);
                     mLogout.setVisibility(View.INVISIBLE);
                 }
                 //if (webUrl.toLowerCase().contains("#login".toLowerCase())){
