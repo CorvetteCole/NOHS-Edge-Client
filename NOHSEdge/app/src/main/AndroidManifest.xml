@@ -46,7 +46,8 @@
 
         <activity
             android:name=".EdgeViewActivity"
-            android:label="@string/title_activity_edge_view">
+            android:label="@string/title_activity_edge_view"
+            android:parentActivityName=".MainActivity">
         </activity>
         <activity android:name=".LoginActivity"/>
         <activity android:name=".SettingsActivity"
