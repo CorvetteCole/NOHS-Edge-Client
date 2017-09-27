@@ -8,9 +8,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -23,6 +26,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,12 +42,18 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Calendar;
 
@@ -141,6 +151,8 @@ public class MainActivity extends AppCompatActivity
     public static int Login = 0;
     public static int Register = 0;
     public static boolean calledForeign;
+    static TextView mHeaderName;
+    static TextView mHeaderEmail;
 
 
     @Override
@@ -165,29 +177,9 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
+        setupDrawer();
 
 
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
         mLoginPage = (WebView) findViewById(R.id.loginWebview);
         mLoadingCircle = (ProgressBar) findViewById(R.id.progressBar);
         mLoadingText = (TextView) findViewById(R.id.LoadingText);
@@ -300,6 +292,29 @@ public class MainActivity extends AppCompatActivity
         );
 
 
+    }
+    private void setupDrawer(){
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });*/
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
     }
 
 
@@ -469,6 +484,7 @@ public class MainActivity extends AppCompatActivity
                 if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(UnameValue)&& x == 1)) {
                     if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
                         mLoadingCircle.setVisibility(View.INVISIBLE);
+                        setHeaderDetails(cm.message());
                         mLoginPage.setVisibility(View.VISIBLE);
 
                         //THE KEY IS BELOW. THE KEY I TELL YOU!
@@ -659,6 +675,7 @@ public class MainActivity extends AppCompatActivity
         currentSet = 0;
     }
 
+
     private void setWeeklyNotifications() {
         Calendar calendar3 = Calendar.getInstance();
         calendar3.set(Calendar.DAY_OF_WEEK, 5); // Thursday
@@ -806,6 +823,43 @@ public class MainActivity extends AppCompatActivity
         return EdgeString;
     }
 
+    private void setHeaderDetails(String message){
+
+        LayoutInflater inflater = (LayoutInflater)this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View hView =  navigationView.getHeaderView(0);
+        TextView nav_user = hView.findViewById(R.id.HeaderName);
+        TextView nav_username = hView.findViewById(R.id.HeaderUsername);
+        ImageView nav_image = hView.findViewById(R.id.HeaderImage);
+        String name;
+        String username;
+        String imageurl;
+        name = message.substring(message.indexOf("\"name\":\"") + 8);
+        name = name.substring(0, name.indexOf("\","));
+        Log.d("name", name);
+        nav_user.setText(name);
+        username = message.substring(message.indexOf("\"username\":\"") + 12);
+        username = username.substring(0, username.indexOf("\","));
+        Log.d("username", username);
+        nav_username.setText(username);
+        imageurl = message.substring(message.indexOf("\"profile_pic\":\"") + 15);
+        imageurl = imageurl.substring(0, imageurl.indexOf("\","));
+
+
+        imageurl = imageurl.replace("/","");
+        Log.d("imageurl", imageurl);
+        imageurl = "http://objects-us-west-1.dream.io/sfu-profiles/default.jpg";
+        //Picasso.with(this).load(imageurl).into(nav_image);
+
+        new DownloadImageTask(nav_image)
+                .execute(imageurl);
+
+
+        //mHeaderName.setText(name);
+        //mHeaderEmail.setText(email);
+    }
+
     public void InterpretEdgeData(String consoleMessage) {
         if (consoleMessage.toLowerCase().contains("Mon".toLowerCase())) {
             EdgeDay1 = consoleMessage;
@@ -858,6 +912,30 @@ public class MainActivity extends AppCompatActivity
                 editor.putString(PREF_EDGE5Cur, EdgeDay5CurValue);
                 editor.apply();
             }
+        }
+    }
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
         }
     }
 }
