@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="preferences">
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="Notify"
+        android:title="Enable Notifications"/>
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="AutoLogin"
+        android:title="Enable Automatic Login"/>
+</PreferenceScreen>

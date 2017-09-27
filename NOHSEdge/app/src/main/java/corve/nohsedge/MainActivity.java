@@ -57,8 +57,8 @@ public class MainActivity extends AppCompatActivity
     private static final String PREF_UNAME = "Username";
     private static final String PREF_PASSWORD = "Password";
     private static final String PREF_PREMEM = "RememPass";
-    static final String PREF_NOTIFY = "NOTIFICATIONS";
-    static final String PREF_AUTOLOGIN = "Autologin";
+    static final String PREF_NOTIFY = "Notify";
+    static final String PREF_AUTOLOGIN = "AutoLogin";
     public static final String PREF_EDGE1 = "Edge 1";
     public static final String PREF_EDGE2 = "Edge 2";
     public static final String PREF_EDGE3 = "Edge 3";
@@ -377,8 +377,10 @@ public class MainActivity extends AppCompatActivity
             mLoginPage.setVisibility(VISIBLE);
             setWelcomeVisible(false);
         } else if (id == R.id.nav_settings) {
-            Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
-            startActivity(intent);
+            Intent i = new Intent(this, PreferencesActivity.class);
+            startActivity(i);
+            /*Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
+            startActivity(intent);*/
             drawerClose = false;
         } else if (id == R.id.nav_homescreen){
             mLoginPage.setVisibility(View.INVISIBLE);
@@ -414,8 +416,7 @@ public class MainActivity extends AppCompatActivity
             EdgeDay4 = "";
             EdgeDay5 = "";
             EdgeDay5Cur = "";
-            SharedPreferences settings = getSharedPreferences(PREFS_NAME,
-                    Context.MODE_APPEND);
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             SharedPreferences.Editor editor = settings.edit();
             editor.putString(PREF_EDGE1, "");
             editor.putString(PREF_EDGE2, "");
@@ -589,8 +590,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void savePreferences() {
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
-                Context.MODE_APPEND);
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         SharedPreferences.Editor editor = settings.edit();
 
         // Edit and commit
@@ -620,8 +620,9 @@ public class MainActivity extends AppCompatActivity
 
     public void loadPreferences() {
 
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
-                Context.MODE_PRIVATE);
+        /*SharedPreferences settings = getSharedPreferences(PREFS_NAME,
+                Context.MODE_PRIVATE);*/
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
         // Get value
         if (!calledForeign) {

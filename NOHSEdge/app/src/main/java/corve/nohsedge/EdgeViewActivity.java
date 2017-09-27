@@ -2,6 +2,7 @@ package corve.nohsedge;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ListView;
@@ -46,8 +47,7 @@ public class EdgeViewActivity extends AppCompatActivity {
     }
 
     public void loadPreferences() {
-        SharedPreferences settings = getSharedPreferences(MainActivity.PREFS_NAME,
-                MainActivity.MODE_PRIVATE);
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
         // Get value
         EdgeDay[0] = settings.getString(PREF_EDGE1, DefaultEdgeDay1Value);
