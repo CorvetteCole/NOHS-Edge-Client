@@ -349,6 +349,7 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(getBaseContext(), EdgeViewActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_signup) {
+            EdgeSignupActivity.showPage = true;
             drawerClose = false;
             uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
             Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
@@ -367,7 +368,6 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_homescreen){
-            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen");
             mLoginPage.setVisibility(View.INVISIBLE);
             mEdgeMessage.setVisibility(View.VISIBLE);
             mWelcome.setVisibility(View.VISIBLE);

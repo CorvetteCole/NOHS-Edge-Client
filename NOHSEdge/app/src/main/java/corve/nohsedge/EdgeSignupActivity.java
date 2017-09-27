@@ -17,7 +17,11 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.util.Calendar;
 
@@ -52,13 +56,20 @@ public class EdgeSignupActivity extends AppCompatActivity {
 
     private WebView mEdgePage;
     private final String TAG = "EdgeSignupActivity";
+    private TextView mLoadingText;
+    private ProgressBar mLoadingCircle;
+    static boolean showPage = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (showPage){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
         setContentView(R.layout.activity_edge_signup);
         mEdgePage = (WebView) findViewById(R.id.edgePage);
+        mLoadingText = (TextView) findViewById(R.id.LoadingTextEdge);
+        mLoadingCircle = (ProgressBar) findViewById(R.id.LoadingCircleEdge);
         MainActivity.calledForeign = true;
         openEdgepage();
     }
@@ -80,8 +91,11 @@ public class EdgeSignupActivity extends AppCompatActivity {
     }
 
     private void openEdgepage() {
-        //mLoadingText.setVisibility(View.VISIBLE);
-        mEdgePage.setVisibility(View.VISIBLE);
+        mLoadingText.setVisibility(View.VISIBLE);
+        mLoadingCircle.setVisibility(View.VISIBLE);
+        if(showPage) {
+            mEdgePage.setVisibility(View.VISIBLE);
+        }
         mEdgePage.loadUrl("https://api.superfanu.com/6.0.0/gen/link_track.php?platform=Web:%20chrome&uuid=" + uuid + "&nid=305&lkey=nohsstampede-edgetime-module");
         WebSettings webSettings = mEdgePage.getSettings();
         webSettings.setDomStorageEnabled(true);
@@ -116,8 +130,10 @@ public class EdgeSignupActivity extends AppCompatActivity {
                     InterpretEdgeData(cm.message());
                 }
                 if (cm.message().toLowerCase().contains("post_queue")/* && (cm.lineNumber() == 419)*/) {
-                    //mLoadingCircle.setVisibility(View.INVISIBLE);
-                    mEdgePage.setVisibility(View.VISIBLE);
+                    if (showPage) {
+                        mEdgePage.setVisibility(View.VISIBLE);
+                        mLoadingCircle.setVisibility(View.INVISIBLE);
+                    }
                     getEdgeClasses();
                 }
                 return true;
@@ -144,8 +160,10 @@ public class EdgeSignupActivity extends AppCompatActivity {
                 String webUrl = mEdgePage.getUrl();
                 Log.d("!URL", webUrl);
                 if (webUrl.toLowerCase().contains("edgetime".toLowerCase())) {
-                    //mLoadingCircle.setVisibility(View.VISIBLE);
-                    mEdgePage.setVisibility(View.INVISIBLE);
+                    if (showPage) {
+                        mLoadingCircle.setVisibility(View.VISIBLE);
+                        mEdgePage.setVisibility(View.INVISIBLE);
+                    }
                 }
             }
         });
@@ -212,6 +230,10 @@ public class EdgeSignupActivity extends AppCompatActivity {
                     "console.log('RetrievedEdgeClass' + document.getElementsByClassName('class user-in-class')['" + ClassElement + "'].innerHTML);}" +
                     "})()");
             ClassElement++;
+        }
+        if (!showPage) {
+            savePreferences();
+            super.onBackPressed();
         }
     }
     private void savePreferences() {
