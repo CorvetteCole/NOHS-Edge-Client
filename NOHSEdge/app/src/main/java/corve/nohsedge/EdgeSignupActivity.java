@@ -1,12 +1,15 @@
 package corve.nohsedge;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.ConsoleMessage;
 import android.webkit.GeolocationPermissions;
@@ -19,14 +22,30 @@ import android.widget.Toast;
 import java.util.Calendar;
 
 import static corve.nohsedge.MainActivity.EdgeDay1;
+import static corve.nohsedge.MainActivity.EdgeDay1Value;
 import static corve.nohsedge.MainActivity.EdgeDay2;
+import static corve.nohsedge.MainActivity.EdgeDay2Value;
 import static corve.nohsedge.MainActivity.EdgeDay3;
+import static corve.nohsedge.MainActivity.EdgeDay3Value;
 import static corve.nohsedge.MainActivity.EdgeDay4;
+import static corve.nohsedge.MainActivity.EdgeDay4Value;
 import static corve.nohsedge.MainActivity.EdgeDay5;
 import static corve.nohsedge.MainActivity.EdgeDay5Ar;
 import static corve.nohsedge.MainActivity.EdgeDay5Cur;
+import static corve.nohsedge.MainActivity.EdgeDay5CurValue;
+import static corve.nohsedge.MainActivity.EdgeDay5Value;
 import static corve.nohsedge.MainActivity.NotificationValue;
+import static corve.nohsedge.MainActivity.PREFS_NAME;
+import static corve.nohsedge.MainActivity.PREF_EDGE1;
+import static corve.nohsedge.MainActivity.PREF_EDGE2;
+import static corve.nohsedge.MainActivity.PREF_EDGE3;
+import static corve.nohsedge.MainActivity.PREF_EDGE4;
+import static corve.nohsedge.MainActivity.PREF_EDGE5;
+import static corve.nohsedge.MainActivity.PREF_EDGE5Cur;
+import static corve.nohsedge.MainActivity.PRememValue;
+import static corve.nohsedge.MainActivity.UnameValue;
 import static corve.nohsedge.MainActivity.currentSet;
+import static corve.nohsedge.MainActivity.notifyMinutes;
 import static corve.nohsedge.MainActivity.uuid;
 
 public class EdgeSignupActivity extends AppCompatActivity {
@@ -40,6 +59,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setContentView(R.layout.activity_edge_signup);
         mEdgePage = (WebView) findViewById(R.id.edgePage);
+        MainActivity.calledForeign = true;
         openEdgepage();
     }
     @Override
@@ -47,8 +67,16 @@ public class EdgeSignupActivity extends AppCompatActivity {
         if (mEdgePage.canGoBack()) {
             mEdgePage.goBack();
         }  else {
+            savePreferences();
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        savePreferences();
+        super.onBackPressed();
+        return(super.onOptionsItemSelected(item));
     }
 
     private void openEdgepage() {
@@ -172,7 +200,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
                 /*setEdgeMessage(consoleMessage);
                 setEdgeNotifications(parseEdgeTitle(EdgeDay5Cur), parseEdgeText(EdgeDay5Cur), parseEdgeSession(EdgeDay5Cur), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));*/
-                MainActivity.EdgeDay5CurValue = EdgeDay5Cur;
+                EdgeDay5CurValue = EdgeDay5Cur;
             }
         }
     }
@@ -185,5 +213,25 @@ public class EdgeSignupActivity extends AppCompatActivity {
                     "})()");
             ClassElement++;
         }
+    }
+    private void savePreferences() {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
+                Context.MODE_APPEND);
+        SharedPreferences.Editor editor = settings.edit();
+
+        // Edit and commit
+        EdgeDay1Value = EdgeDay1;
+        EdgeDay2Value = EdgeDay2;
+        EdgeDay3Value = EdgeDay3;
+        EdgeDay4Value = EdgeDay4;
+        EdgeDay5Value = EdgeDay5;
+        EdgeDay5CurValue = EdgeDay5Cur;
+        editor.putString(PREF_EDGE1, EdgeDay1Value);
+        editor.putString(PREF_EDGE2, EdgeDay2Value);
+        editor.putString(PREF_EDGE3, EdgeDay3Value);
+        editor.putString(PREF_EDGE4, EdgeDay4Value);
+        editor.putString(PREF_EDGE5, EdgeDay5Value);
+        editor.putString(PREF_EDGE5Cur, EdgeDay5CurValue);
+        editor.commit();
     }
 }

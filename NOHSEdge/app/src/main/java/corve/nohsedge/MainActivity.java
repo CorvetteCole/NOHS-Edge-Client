@@ -95,11 +95,11 @@ public class MainActivity extends AppCompatActivity
     public final static String DefaultEdgeDay4Value = "";
     public final static String DefaultEdgeDay5Value = "";
     public final static String DefaultEdgeDay5CurValue = "";
-    private String EdgeDay1Value;
-    private String EdgeDay2Value;
-    private String EdgeDay3Value;
-    private String EdgeDay4Value;
-    private String EdgeDay5Value;
+    static String EdgeDay1Value;
+    static String EdgeDay2Value;
+    static String EdgeDay3Value;
+    static String EdgeDay4Value;
+    static String EdgeDay5Value;
     static String EdgeDay5CurValue;
     private int getEdgeClassesRan = 0;
     static String EmailValue;
