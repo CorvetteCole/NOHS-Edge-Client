@@ -144,6 +144,7 @@ public class MainActivity extends AppCompatActivity
     private TextView mWelcome;
     private TextView mEdgeMessage;
     private String edgePage;
+    private int id;
 
 
     @Override
@@ -338,7 +339,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        id = item.getItemId();
         boolean logout = false;
 
         if (id == R.id.nav_schedule) {
@@ -529,6 +530,9 @@ public class MainActivity extends AppCompatActivity
                     mLoadingCircle.setVisibility(View.INVISIBLE);
                     mLoginPage.setVisibility(View.VISIBLE);
                     //mLoadingText.setVisibility(View.INVISIBLE);
+                }
+                if (mLoginPage.getUrl().contains("homescreen") && id != R.id.nav_homescreen && edgePage != null){
+                    mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + edgePage);
                 }
 
             }
