@@ -14,13 +14,13 @@ import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -46,6 +46,8 @@ import android.widget.Toast;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Calendar;
+
+import static android.view.View.VISIBLE;
 
 
 public class MainActivity extends AppCompatActivity
@@ -142,11 +144,16 @@ public class MainActivity extends AppCompatActivity
     public static int Register = 0;
     public static boolean calledForeign;
     private TextView mWelcome;
-    private TextView mEdgeMessage;
     private String edgePage;
     private int id;
     private Context MainActivityContext = this;
     static String uuid;
+    private TextView mEdgeTitle;
+    private TextView mEdgeText;
+    private TextView mEdgeTime;
+    private TextView mEdgeTitleConst;
+    private TextView mEdgeTextConst;
+    private TextView mEdgeTimeConst;
 
 
     @Override
@@ -177,7 +184,13 @@ public class MainActivity extends AppCompatActivity
             mLoadingCircle = (ProgressBar) findViewById(R.id.progressBar);
             mLoadingText = (TextView) findViewById(R.id.LoadingText);
             mWelcome = (TextView) findViewById(R.id.helloTextView);
-            mEdgeMessage = (TextView) findViewById(R.id.edgeClasstextView);
+            mEdgeTitle = (TextView) findViewById(R.id.edgeClassTitle);
+            mEdgeText = (TextView) findViewById(R.id.edgeClassText);
+            mEdgeTime = (TextView) findViewById(R.id.edgeClassTime);
+            mEdgeTitleConst = (TextView) findViewById(R.id.edgeTitleTextView);
+            mEdgeTextConst = (TextView) findViewById(R.id.edgeTextTextView);
+            mEdgeTimeConst = (TextView) findViewById(R.id.edgeTimeTextView);
+
 
             NotificationSet = 0;
             //getSupportActionBar().hide();
@@ -361,40 +374,34 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_profile) {
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#profile-edit");
             edgePage = "profile-edit";
-            mLoginPage.setVisibility(View.VISIBLE);
-            mEdgeMessage.setVisibility(View.INVISIBLE);
-            mWelcome.setVisibility(View.INVISIBLE);
+            mLoginPage.setVisibility(VISIBLE);
+            setWelcomeVisible(false);
         } else if (id == R.id.nav_settings) {
             Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_homescreen){
             mLoginPage.setVisibility(View.INVISIBLE);
-            mEdgeMessage.setVisibility(View.VISIBLE);
-            mWelcome.setVisibility(View.VISIBLE);
+            setWelcomeVisible(true);
         } else if (id == R.id.nav_notifications){
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#notifications");
             edgePage = "notifications";
-            mLoginPage.setVisibility(View.VISIBLE);
-            mEdgeMessage.setVisibility(View.INVISIBLE);
-            mWelcome.setVisibility(View.INVISIBLE);
+            mLoginPage.setVisibility(VISIBLE);
+            setWelcomeVisible(false);
         } else if (id == R.id.nav_events){
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#events");
-            mLoginPage.setVisibility(View.VISIBLE);
+            mLoginPage.setVisibility(VISIBLE);
             edgePage = "events";
-            mEdgeMessage.setVisibility(View.INVISIBLE);
-            mWelcome.setVisibility(View.INVISIBLE);
+            setWelcomeVisible(false);
         } else if (id == R.id.nav_leaderboard){
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#leaderboard");
-            mLoginPage.setVisibility(View.VISIBLE);
+            mLoginPage.setVisibility(VISIBLE);
             edgePage = "leaderboard";
-            mEdgeMessage.setVisibility(View.INVISIBLE);
-            mWelcome.setVisibility(View.INVISIBLE);
+            setWelcomeVisible(false);
         } else if (id == R.id.nav_fancam){
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#fancam");
-            mLoginPage.setVisibility(View.VISIBLE);
+            mLoginPage.setVisibility(VISIBLE);
             edgePage = "fancam";
-            mEdgeMessage.setVisibility(View.INVISIBLE);
-            mWelcome.setVisibility(View.INVISIBLE);
+            setWelcomeVisible(false);
         } else if (id == R.id.nav_logout){
             AutologinValue = false;
             PRememValue = false;
@@ -431,7 +438,7 @@ public class MainActivity extends AppCompatActivity
 
 
     private void openLoginpage() {
-        mLoadingCircle.setVisibility(View.VISIBLE);
+        mLoadingCircle.setVisibility(VISIBLE);
         mLoadingText.setText("Checking login details...");
         //mLoadingText.setVisibility(View.VISIBLE);
         WebSettings webSettings = mLoginPage.getSettings();
@@ -453,8 +460,8 @@ public class MainActivity extends AppCompatActivity
                 if (progress == 100) {
                     mLoadingText.setVisibility(View.INVISIBLE);
                 } else {
-                    mLoadingText.setVisibility(View.VISIBLE);
-                    mLoadingCircle.setVisibility(View.VISIBLE);
+                    mLoadingText.setVisibility(VISIBLE);
+                    mLoadingCircle.setVisibility(VISIBLE);
                 }
 
             }
@@ -476,8 +483,7 @@ public class MainActivity extends AppCompatActivity
                     if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
                         mLoadingCircle.setVisibility(View.INVISIBLE);
                         setHeaderDetails(cm.message());
-                        mWelcome.setVisibility(View.VISIBLE);
-                        mEdgeMessage.setVisibility(View.VISIBLE);
+                        setWelcomeVisible(true);
 
                         // /mLoginPage.setVisibility(View.VISIBLE);
 
@@ -491,7 +497,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 if (cm.message().toLowerCase().contains("post_queue")/* && (cm.lineNumber() == 419)*/) {
                     mLoadingCircle.setVisibility(View.INVISIBLE);
-                    mLoginPage.setVisibility(View.VISIBLE);
+                    mLoginPage.setVisibility(VISIBLE);
                     getEdgeClasses();
                 }
                 return true;
@@ -535,7 +541,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 if ((mLoginPage.getUrl().contains("edgetime")) && (x == 2)) {
                     mLoadingCircle.setVisibility(View.INVISIBLE);
-                    mLoginPage.setVisibility(View.VISIBLE);
+                    mLoginPage.setVisibility(VISIBLE);
                     //mLoadingText.setVisibility(View.INVISIBLE);
                 }
                 if (mLoginPage.getUrl().contains("homescreen") && id != R.id.nav_homescreen && edgePage != null){
@@ -551,7 +557,7 @@ public class MainActivity extends AppCompatActivity
                 Log.d("!URL", webUrl);
                 if ((webUrl.toLowerCase().contains("edgetime".toLowerCase())) && (x == 2)) {
                     edgeUrl = webUrl;
-                    mLoadingCircle.setVisibility(View.VISIBLE);
+                    mLoadingCircle.setVisibility(VISIBLE);
                     //mLoginPage.setVisibility(View.INVISIBLE);
                     mLoadingText.setText("Retrieving Edge Classes...");
                     //mLoadingText.setVisibility(View.VISIBLE);
@@ -889,9 +895,31 @@ public class MainActivity extends AppCompatActivity
         return time;
     }
 
+    private void setWelcomeVisible(Boolean visible){
+        if (!visible) {
+            mEdgeTitleConst.setVisibility(View.INVISIBLE);
+            mEdgeTimeConst.setVisibility(View.INVISIBLE);
+            mEdgeTextConst.setVisibility(View.INVISIBLE);
+            mWelcome.setVisibility(View.INVISIBLE);
+            mEdgeTitle.setVisibility(View.INVISIBLE);
+            mEdgeText.setVisibility(View.INVISIBLE);
+            mEdgeTime.setVisibility(View.INVISIBLE);
+        }
+        if (visible) {
+            mEdgeTitleConst.setVisibility(View.VISIBLE);
+            mEdgeTimeConst.setVisibility(View.VISIBLE);
+            mEdgeTextConst.setVisibility(View.INVISIBLE);
+            mWelcome.setVisibility(View.VISIBLE);
+            mEdgeTitle.setVisibility(View.VISIBLE);
+            mEdgeText.setVisibility(View.VISIBLE);
+            mEdgeTime.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void setEdgeMessage(String consoleMessage){
-        mEdgeMessage.setText("Your Edge class for today is " + parseEdgeTitle(consoleMessage) +" with " + parseEdgeText(consoleMessage) + ". It starts at " + parseEdgeTime(consoleMessage) + ".");
-        //Your Edge class for today is edgeTitle with edgeText. It starts at edgeTime.
+        mEdgeTitle.setText(parseEdgeTitle(consoleMessage));
+        mEdgeText.setText(parseEdgeText(consoleMessage));
+        mEdgeTime.setText(parseEdgeTime(consoleMessage));
     }
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;

@@ -133,6 +133,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
                     if (showPage) {
                         mEdgePage.setVisibility(View.VISIBLE);
                         mLoadingCircle.setVisibility(View.INVISIBLE);
+                        mLoadingText.setVisibility(View.INVISIBLE);
                     }
                     getEdgeClasses();
                 }
@@ -163,6 +164,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
                     if (showPage) {
                         mLoadingCircle.setVisibility(View.VISIBLE);
                         mEdgePage.setVisibility(View.INVISIBLE);
+                        mLoadingText.setVisibility(View.VISIBLE);
                     }
                 }
             }
