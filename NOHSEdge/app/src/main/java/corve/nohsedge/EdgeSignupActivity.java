@@ -215,12 +215,22 @@ public class EdgeSignupActivity extends AppCompatActivity {
             if (!consoleMessage.contains(EdgeDay5Ar[0]) && consoleMessage != null) {
                 EdgeDay5Ar[1] = consoleMessage;
             }
+            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) != Calendar.FRIDAY) {
+                if (!showPage) {
+                    savePreferences();
+                    super.onBackPressed();
+                }
+            }
             EdgeDay5Cur = EdgeDay5Ar[0];
             Log.d("!test!", EdgeDay5Cur);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
                 /*setEdgeMessage(consoleMessage);
                 setEdgeNotifications(parseEdgeTitle(EdgeDay5Cur), parseEdgeText(EdgeDay5Cur), parseEdgeSession(EdgeDay5Cur), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));*/
                 EdgeDay5CurValue = EdgeDay5Cur;
+                if (!showPage) {
+                    savePreferences();
+                    super.onBackPressed();
+                }
             }
         }
     }
@@ -232,10 +242,6 @@ public class EdgeSignupActivity extends AppCompatActivity {
                     "console.log('RetrievedEdgeClass' + document.getElementsByClassName('class user-in-class')['" + ClassElement + "'].innerHTML);}" +
                     "})()");
             ClassElement++;
-        }
-        if (!showPage) {
-            savePreferences();
-            super.onBackPressed();
         }
     }
     private void savePreferences() {

@@ -484,6 +484,12 @@ public class MainActivity extends AppCompatActivity
                         mLoadingCircle.setVisibility(View.INVISIBLE);
                         setHeaderDetails(cm.message());
                         setWelcomeVisible(true);
+                        if (!EdgeDay5Value.toLowerCase().contains("Fri".toLowerCase())){
+                            EdgeSignupActivity.showPage = false;
+                            uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
+                            Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
+                            startActivity(intent);
+                        }
 
                         // /mLoginPage.setVisibility(View.VISIBLE);
 
