@@ -23,12 +23,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
@@ -144,8 +141,9 @@ public class MainActivity extends AppCompatActivity
     public static int Login = 0;
     public static int Register = 0;
     public static boolean calledForeign;
-    static TextView mHeaderName;
-    static TextView mHeaderEmail;
+    private TextView mWelcome;
+    private TextView mEdgeMessage;
+    private String edgePage;
 
 
     @Override
@@ -170,49 +168,48 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
-        setupDrawer();
-
-
-        mLoginPage = (WebView) findViewById(R.id.loginWebview);
-        mLoadingCircle = (ProgressBar) findViewById(R.id.progressBar);
-        mLoadingText = (TextView) findViewById(R.id.LoadingText);
-        NotificationSet = 0;
-
         if (calledForeign) {
+            setupDrawer();
+            mLoginPage = (WebView) findViewById(R.id.loginWebview);
+            mLoadingCircle = (ProgressBar) findViewById(R.id.progressBar);
+            mLoadingText = (TextView) findViewById(R.id.LoadingText);
+            mWelcome = (TextView) findViewById(R.id.helloTextView);
+            mEdgeMessage = (TextView) findViewById(R.id.edgeClasstextView);
+
+            NotificationSet = 0;
             //getSupportActionBar().hide();
-            if (Login == 1){
+            if (Login == 1) {
                 mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
                 openLoginpage();
             }
-            if (Register == 1){
+            if (Register == 1) {
                 mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#register");
                 openLoginpage();
             }
-        }
 
-        activateEdgeHelper();
+            activateEdgeHelper();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            //window.setStatusBarColor(Color.BLACK);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
-            ShortcutInfo wNOHSShortcut = new ShortcutInfo.Builder(this, "shortcut_web")
-                    .setShortLabel("NOHS Website")
-                    .setLongLabel("Open NOHS Website")
-                    .setIcon(Icon.createWithResource(this, R.drawable.nohs))
-                    .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.oldham.kyschools.us/nohs/")))
-                    .build();
-            ShortcutInfo wCampusShortcut = new ShortcutInfo.Builder(this, "shortcut_dynamic")
-                    .setShortLabel("Campus Portal")
-                    .setLongLabel("Open Campus Portal")
-                    .setIcon(Icon.createWithResource(this, R.drawable.infinitecampus))
-                    .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://kyede10.infinitecampus.org/campus/portal/oldham.jsp")))
-                    .build();
-            shortcutManager.setDynamicShortcuts(Arrays.asList(wNOHSShortcut, wCampusShortcut));
-        }
+            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Window window = getWindow();
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                //window.setStatusBarColor(Color.BLACK);
+            }*/
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+                ShortcutInfo wNOHSShortcut = new ShortcutInfo.Builder(this, "shortcut_nohs")
+                        .setShortLabel("NOHS Website")
+                        .setLongLabel("Open NOHS Website")
+                        .setIcon(Icon.createWithResource(this, R.drawable.nohs))
+                        .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.oldham.kyschools.us/nohs/")))
+                        .build();
+                ShortcutInfo wCampusShortcut = new ShortcutInfo.Builder(this, "shortcut_campus")
+                        .setShortLabel("Campus Portal")
+                        .setLongLabel("Open Campus Portal")
+                        .setIcon(Icon.createWithResource(this, R.drawable.infinitecampus))
+                        .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://kyede10.infinitecampus.org/campus/portal/oldham.jsp")))
+                        .build();
+                shortcutManager.setDynamicShortcuts(Arrays.asList(wNOHSShortcut, wCampusShortcut));
+            }
 
         /*mLogout.setOnClickListener(
                 new View.OnClickListener() {
@@ -224,6 +221,7 @@ public class MainActivity extends AppCompatActivity
                         Log.d("broken lol", "im not a god... yet");
                     }
                 });*/
+        }
     }
     private void setupDrawer(){
         setContentView(R.layout.activity_main);
@@ -348,26 +346,58 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
         } else if (id == R.id.nav_signup) {
             mLoginPage.loadUrl("https://api.superfanu.com/6.0.0/gen/link_track.php?platform=Web:%20chrome&uuid=" + getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID") + "&nid=305&lkey=nohsstampede-edgetime-module");
+            mLoginPage.setVisibility(View.VISIBLE);
+            mEdgeMessage.setVisibility(View.INVISIBLE);
+            mWelcome.setVisibility(View.INVISIBLE);
         } else if (id == R.id.nav_profile) {
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#profile-edit");
+            edgePage = "profile-edit";
+            mLoginPage.setVisibility(View.VISIBLE);
+            mEdgeMessage.setVisibility(View.INVISIBLE);
+            mWelcome.setVisibility(View.INVISIBLE);
         } else if (id == R.id.nav_settings) {
             Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_homescreen){
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen");
+            mLoginPage.setVisibility(View.INVISIBLE);
+            mEdgeMessage.setVisibility(View.VISIBLE);
+            mWelcome.setVisibility(View.VISIBLE);
         } else if (id == R.id.nav_notifications){
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#notifications");
+            edgePage = "notifications";
+            mLoginPage.setVisibility(View.VISIBLE);
+            mEdgeMessage.setVisibility(View.INVISIBLE);
+            mWelcome.setVisibility(View.INVISIBLE);
         } else if (id == R.id.nav_events){
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#events");
+            mLoginPage.setVisibility(View.VISIBLE);
+            edgePage = "events";
+            mEdgeMessage.setVisibility(View.INVISIBLE);
+            mWelcome.setVisibility(View.INVISIBLE);
         } else if (id == R.id.nav_leaderboard){
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#leaderboard");
+            mLoginPage.setVisibility(View.VISIBLE);
+            edgePage = "leaderboard";
+            mEdgeMessage.setVisibility(View.INVISIBLE);
+            mWelcome.setVisibility(View.INVISIBLE);
         } else if (id == R.id.nav_fancam){
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#fancam");
+            mLoginPage.setVisibility(View.VISIBLE);
+            edgePage = "fancam";
+            mEdgeMessage.setVisibility(View.INVISIBLE);
+            mWelcome.setVisibility(View.INVISIBLE);
         } else if (id == R.id.nav_logout){
             AutologinValue = false;
             PRememValue = false;
             UnameValue = "";
             PasswordValue = "";
+            EdgeDay1 = "";
+            EdgeDay2 = "";
+            EdgeDay3 = "";
+            EdgeDay4 = "";
+            EdgeDay5 = "";
+            EdgeDay5Cur = "";
             SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                     Context.MODE_APPEND);
             SharedPreferences.Editor editor = settings.edit();
@@ -438,7 +468,10 @@ public class MainActivity extends AppCompatActivity
                     if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
                         mLoadingCircle.setVisibility(View.INVISIBLE);
                         setHeaderDetails(cm.message());
-                        mLoginPage.setVisibility(View.VISIBLE);
+                        mWelcome.setVisibility(View.VISIBLE);
+                        mEdgeMessage.setVisibility(View.VISIBLE);
+
+                        // /mLoginPage.setVisibility(View.VISIBLE);
 
                         //THE KEY IS BELOW. THE KEY I TELL YOU!
                         //mLoginPage.loadUrl("https://api.superfanu.com/6.0.0/gen/link_track.php?platform=Web:%20chrome&uuid=" + getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID") + "&nid=305&lkey=nohsstampede-edgetime-module");
@@ -489,7 +522,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 if ((mLoginPage.getUrl().contains("nohsstampede")) && (x == 2)) {
                     mLoadingCircle.setVisibility(View.INVISIBLE);
-                    mLoginPage.setVisibility(View.VISIBLE);
+                    //mLoginPage.setVisibility(View.VISIBLE);
                     newUrl = "";
                 }
                 if ((mLoginPage.getUrl().contains("edgetime")) && (x == 2)) {
@@ -508,13 +541,13 @@ public class MainActivity extends AppCompatActivity
                 if ((webUrl.toLowerCase().contains("edgetime".toLowerCase())) && (x == 2)) {
                     edgeUrl = webUrl;
                     mLoadingCircle.setVisibility(View.VISIBLE);
-                    mLoginPage.setVisibility(View.INVISIBLE);
+                    //mLoginPage.setVisibility(View.INVISIBLE);
                     mLoadingText.setText("Retrieving Edge Classes...");
                     //mLoadingText.setVisibility(View.VISIBLE);
                 }
                 if ((!webUrl.toLowerCase().contains("edgetime".toLowerCase())) && (!webUrl.toLowerCase().contains("nohs".toLowerCase()))) {
                     //check to make sure web page hasn't been opened already (avoids opening 20+ chrome tabs upon one button click)
-                    mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen");
+                    mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + edgePage);
                     if (!webUrl.equals(newUrl)) {
                         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webUrl));
                         startActivity(browserIntent);
@@ -548,16 +581,16 @@ public class MainActivity extends AppCompatActivity
             editor.putString(PREF_UNAME, UnameValue);
             editor.putString(PREF_PASSWORD, PasswordValue);
         }
-        editor.putBoolean(PREF_NOTIFY, NotificationValue);
+        //editor.putBoolean(PREF_NOTIFY, NotificationValue);
         editor.putBoolean(PREF_PREMEM, PRememValue);
-        editor.putBoolean(PREF_AUTOLOGIN, AutologinValue);
+        //editor.putBoolean(PREF_AUTOLOGIN, AutologinValue);
         editor.putString(PREF_EDGE1, EdgeDay1Value);
         editor.putString(PREF_EDGE2, EdgeDay2Value);
         editor.putString(PREF_EDGE3, EdgeDay3Value);
         editor.putString(PREF_EDGE4, EdgeDay4Value);
         editor.putString(PREF_EDGE5, EdgeDay5Value);
         editor.putString(PREF_EDGE5Cur, EdgeDay5CurValue);
-        editor.putInt(PREF_MIN, MinValue);
+        //editor.putInt(PREF_MIN, MinValue);
         editor.apply();
     }
 
@@ -581,11 +614,11 @@ public class MainActivity extends AppCompatActivity
         EdgeDay5Value = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
         EdgeDay5CurValue = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
         MinValue = settings.getInt(PREF_MIN, DefaultMinValue);
-        if (NotificationValue) {
+        Log.d("NotificationValue", NotificationValue + "");
+        if (NotificationValue == true) {
             Log.d("Setting notification", " ");
             setWeeklyNotifications();
         }
-
         EdgeDay1 = EdgeDay1Value;
         EdgeDay2 = EdgeDay2Value;
         EdgeDay3 = EdgeDay3Value;
@@ -593,13 +626,13 @@ public class MainActivity extends AppCompatActivity
         EdgeDay5 = EdgeDay5Value;
         EdgeDay5Cur = EdgeDay5CurValue;
         notifyMinutes = MinValue;
-
-
-        InterpretEdgeData(EdgeDay1);
-        InterpretEdgeData(EdgeDay2);
-        InterpretEdgeData(EdgeDay3);
-        InterpretEdgeData(EdgeDay4);
-        InterpretEdgeData(EdgeDay5);
+        if (calledForeign) {
+            InterpretEdgeData(EdgeDay1);
+            InterpretEdgeData(EdgeDay2);
+            InterpretEdgeData(EdgeDay3);
+            InterpretEdgeData(EdgeDay4);
+            InterpretEdgeData(EdgeDay5);
+        }
         currentSet = 0;
     }
 
@@ -752,9 +785,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setHeaderDetails(String message){
-
-        LayoutInflater inflater = (LayoutInflater)this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View hView =  navigationView.getHeaderView(0);
         TextView nav_user = hView.findViewById(R.id.HeaderName);
@@ -767,19 +797,17 @@ public class MainActivity extends AppCompatActivity
         name = name.substring(0, name.indexOf("\","));
         Log.d("name", name);
         nav_user.setText(name);
+        mWelcome.setText("Hello, " + name);
         username = message.substring(message.indexOf("\"username\":\"") + 12);
         username = username.substring(0, username.indexOf("\","));
         Log.d("username", username);
         nav_username.setText(username);
         imageurl = message.substring(message.indexOf("\"profile_pic\":\"") + 15);
         imageurl = imageurl.substring(0, imageurl.indexOf("\","));
-
-
         imageurl = imageurl.replace("/","");
         Log.d("imageurl", imageurl);
         imageurl = "http://objects-us-west-1.dream.io/sfu-profiles/default.jpg";
         //Picasso.with(this).load(imageurl).into(nav_image);
-
         new DownloadImageTask(nav_image)
                 .execute(imageurl);
 
@@ -793,6 +821,7 @@ public class MainActivity extends AppCompatActivity
             EdgeDay1 = consoleMessage;
             Log.d("Monday Edge Class", EdgeDay1);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY) {
+                setEdgeMessage(consoleMessage);
                 setEdgeNotifications(parseEdgeTitle(EdgeDay1), parseEdgeText(EdgeDay1), parseEdgeSession(EdgeDay1), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             }
         }
@@ -800,6 +829,7 @@ public class MainActivity extends AppCompatActivity
             EdgeDay2 = consoleMessage;
             Log.d("Tuesday Edge Class", EdgeDay2);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY) {
+                setEdgeMessage(consoleMessage);
                 setEdgeNotifications(parseEdgeTitle(EdgeDay2), parseEdgeText(EdgeDay2), parseEdgeSession(EdgeDay2), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             }
         }
@@ -807,6 +837,7 @@ public class MainActivity extends AppCompatActivity
             EdgeDay3 = consoleMessage;
             Log.d("Wednesday Edge Class", EdgeDay3);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY) {
+                setEdgeMessage(consoleMessage);
                 setEdgeNotifications(parseEdgeTitle(EdgeDay3), parseEdgeText(EdgeDay3), parseEdgeSession(EdgeDay3), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             }
         }
@@ -814,6 +845,7 @@ public class MainActivity extends AppCompatActivity
             EdgeDay4 = consoleMessage;   //Thursday
             Log.d("Thursday Edge Class", EdgeDay4);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY) {
+                setEdgeMessage(consoleMessage);
                 setEdgeNotifications(parseEdgeTitle(EdgeDay4), parseEdgeText(EdgeDay4), parseEdgeSession(EdgeDay4), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             }
         }
@@ -833,6 +865,7 @@ public class MainActivity extends AppCompatActivity
             EdgeDay5Cur = EdgeDay5Ar[0];
             Log.d("!test!", EdgeDay5Cur);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
+                setEdgeMessage(consoleMessage);
                 setEdgeNotifications(parseEdgeTitle(EdgeDay5Cur), parseEdgeText(EdgeDay5Cur), parseEdgeSession(EdgeDay5Cur), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
                 SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_APPEND);
                 SharedPreferences.Editor editor = settings.edit();
@@ -841,6 +874,21 @@ public class MainActivity extends AppCompatActivity
                 editor.apply();
             }
         }
+    }
+    public String parseEdgeTime(String EdgeString) {
+        String time = "";
+        if (EdgeString.toLowerCase().contains("12:43")) {
+            time = "12:43";
+        }
+        if (EdgeString.toLowerCase().contains("1:09")) {
+            time = "1:09";
+        }
+        return time;
+    }
+
+    private void setEdgeMessage(String consoleMessage){
+        mEdgeMessage.setText("Your Edge class for today is " + parseEdgeTitle(consoleMessage) +" with " + parseEdgeText(consoleMessage) + ". It starts at " + parseEdgeTime(consoleMessage) + ".");
+        //Your Edge class for today is edgeTitle with edgeText. It starts at edgeTime.
     }
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
