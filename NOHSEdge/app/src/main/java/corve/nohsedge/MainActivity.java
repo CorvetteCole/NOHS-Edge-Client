@@ -379,6 +379,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_settings) {
             Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
             startActivity(intent);
+            drawerClose = false;
         } else if (id == R.id.nav_homescreen){
             mLoginPage.setVisibility(View.INVISIBLE);
             setWelcomeVisible(true);

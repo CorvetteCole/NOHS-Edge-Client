@@ -7,8 +7,8 @@ android {
         applicationId "corve.nohsedge"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 24
-        versionName "1.9.9.6"
+        versionCode 26
+        versionName "1.9.9.8"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
