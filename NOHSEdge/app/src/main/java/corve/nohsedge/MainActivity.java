@@ -908,7 +908,7 @@ public class MainActivity extends AppCompatActivity
         if (visible) {
             mEdgeTitleConst.setVisibility(View.VISIBLE);
             mEdgeTimeConst.setVisibility(View.VISIBLE);
-            mEdgeTextConst.setVisibility(View.INVISIBLE);
+            mEdgeTextConst.setVisibility(View.VISIBLE);
             mWelcome.setVisibility(View.VISIBLE);
             mEdgeTitle.setVisibility(View.VISIBLE);
             mEdgeText.setVisibility(View.VISIBLE);
