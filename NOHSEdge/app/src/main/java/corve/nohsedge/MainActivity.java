@@ -340,9 +340,10 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         id = item.getItemId();
-        boolean logout = false;
+        boolean drawerClose = true;
 
         if (id == R.id.nav_schedule) {
+            drawerClose = false;
             Intent intent = new Intent(getBaseContext(), EdgeViewActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_signup) {
@@ -413,9 +414,9 @@ public class MainActivity extends AppCompatActivity
             setContentView(R.layout.activity_login);
             Intent intent = new Intent(getBaseContext(), LoginActivity.class);
             startActivity(intent);
-            logout = true;
+            drawerClose = false;
         }
-        if (!logout) {
+        if (drawerClose) {
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
         }
@@ -793,7 +794,7 @@ public class MainActivity extends AppCompatActivity
         View hView =  navigationView.getHeaderView(0);
         TextView nav_user = hView.findViewById(R.id.HeaderName);
         TextView nav_username = hView.findViewById(R.id.HeaderUsername);
-        ImageView nav_image = hView.findViewById(R.id.HeaderImage);
+        //ImageView nav_image = hView.findViewById(R.id.HeaderImage);
         String name;
         String username;
         String imageurl;
@@ -801,7 +802,7 @@ public class MainActivity extends AppCompatActivity
         name = name.substring(0, name.indexOf("\","));
         Log.d("name", name);
         nav_user.setText(name);
-        mWelcome.setText("Hello, " + name);
+        mWelcome.setText("Hello " + name);
         username = message.substring(message.indexOf("\"username\":\"") + 12);
         username = username.substring(0, username.indexOf("\","));
         Log.d("username", username);
@@ -811,13 +812,8 @@ public class MainActivity extends AppCompatActivity
         imageurl = imageurl.replace("/","");
         Log.d("imageurl", imageurl);
         imageurl = "http://objects-us-west-1.dream.io/sfu-profiles/default.jpg";
-        //Picasso.with(this).load(imageurl).into(nav_image);
-        new DownloadImageTask(nav_image)
-                .execute(imageurl);
-
-
-        //mHeaderName.setText(name);
-        //mHeaderEmail.setText(email);
+        /*new DownloadImageTask(nav_image)
+                .execute(imageurl);*/
     }
 
     public void InterpretEdgeData(String consoleMessage) {

@@ -106,12 +106,12 @@ public class LoginActivity extends AppCompatActivity {
                                         InputMethodManager.HIDE_NOT_ALWAYS);
 
                                 MainActivity.currentSet = 0;
-                                Intent intent = new Intent(getBaseContext(), MainActivity.class);
                                 MainActivity.Login = 1;
                                 MainActivity.calledForeign = true;
                                 UnameValue = mUsername.getText().toString();
                                 PasswordValue = mPassword.getText().toString();
                                 MainActivity.PRememValue = mRemember.isChecked();
+                                Intent intent = new Intent(getBaseContext(), MainActivity.class);
                                 startActivity(intent);
                             }
                         }
@@ -127,13 +127,13 @@ public class LoginActivity extends AppCompatActivity {
                                         InputMethodManager.HIDE_NOT_ALWAYS);
                             }
                             MainActivity.currentSet = 0;
-                            Intent intent = new Intent(getBaseContext(), MainActivity.class);
                             MainActivity.Register = 1;
                             MainActivity.calledForeign = true;
                             UnameValue = mUsername.getText().toString();
                             PasswordValue = mPassword.getText().toString();
                             MainActivity.PRememValue = mRemember.isChecked();
                             MainActivity.EmailValue = mEmail.getText().toString();
+                            Intent intent = new Intent(getBaseContext(), MainActivity.class);
                             startActivity(intent);
                         }
                     }
