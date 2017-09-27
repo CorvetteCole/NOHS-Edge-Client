@@ -348,12 +348,14 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_signup) {
             mLoginPage.loadUrl("https://api.superfanu.com/6.0.0/gen/link_track.php?platform=Web:%20chrome&uuid=" + getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID") + "&nid=305&lkey=nohsstampede-edgetime-module");
         } else if (id == R.id.nav_profile) {
-            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#profile");
-        } else if (id == R.id.nav_manage) {
+            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#profile-edit");
+        } else if (id == R.id.nav_settings) {
             Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_homescreen){
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen");
+        } else if (id == R.id.nav_notifications){
+            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#notifications");
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

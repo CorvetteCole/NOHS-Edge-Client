@@ -15,13 +15,21 @@
             android:icon="@drawable/ic_update"
             android:title="Edge Signup"/>
         <item
-            android:id="@+id/nav_profile"
-            android:icon="@drawable/ic_account_circle"
-            android:title="Profile"/>
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_settings"
-            android:title="Settings"/>
+            android:id="@+id/nav_notifications"
+            android:icon="@drawable/ic_notifications"
+            android:title="Notifications"/>
+        <item android:title="Preferences">
+                    <menu>
+                        <item
+                            android:id="@+id/nav_profile"
+                            android:icon="@drawable/ic_account_circle"
+                            android:title="Edit Profile"/>
+                        <item
+                            android:id="@+id/nav_settings"
+                            android:icon="@drawable/ic_menu_settings"
+                            android:title="Settings"/>
+                    </menu>
+                </item>
     </group>
 
 </menu>
