@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.NumberPicker;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -19,6 +20,7 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setContentView(R.layout.activity_settings);
         mNumberPicker = (NumberPicker) findViewById(R.id.numberPicker);
         mNotify = (Switch) findViewById(R.id.NotificationCheckbox);
@@ -52,6 +54,21 @@ public class SettingsActivity extends AppCompatActivity {
         savePreferences();
         super.onBackPressed();
     }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        MainActivity.AutologinValue = mAutoLogin.isChecked();
+        MainActivity.NotificationValue = mNotify.isChecked();
+        savePreferences();
+        super.onBackPressed();
+        /*switch (item.getItemId()) {
+            case android.R.id.home:
+                // do something useful
+                return(true);
+        }*/
+
+        return(super.onOptionsItemSelected(item));
+    }
+
 
     private void savePreferences() {
         SharedPreferences settings = getSharedPreferences(MainActivity.PREFS_NAME,
