@@ -341,6 +341,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        boolean logout = false;
 
         if (id == R.id.nav_schedule) {
             Intent intent = new Intent(getBaseContext(), EdgeViewActivity.class);
@@ -356,17 +357,37 @@ public class MainActivity extends AppCompatActivity
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen");
         } else if (id == R.id.nav_notifications){
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#notifications");
+        } else if (id == R.id.nav_events){
+            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#events");
+        } else if (id == R.id.nav_leaderboard){
+            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#leaderboard");
+        } else if (id == R.id.nav_fancam){
+            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#fancam");
         } else if (id == R.id.nav_logout){
             AutologinValue = false;
+            PRememValue = false;
             UnameValue = "";
             PasswordValue = "";
+            SharedPreferences settings = getSharedPreferences(PREFS_NAME,
+                    Context.MODE_APPEND);
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putString(PREF_EDGE1, "");
+            editor.putString(PREF_EDGE2, "");
+            editor.putString(PREF_EDGE3, "");
+            editor.putString(PREF_EDGE4, "");
+            editor.putString(PREF_EDGE5, "");
+            editor.putString(PREF_EDGE5Cur, "");
+            editor.putInt(PREF_MIN, 5);
+            editor.commit();
             setContentView(R.layout.activity_login);
             Intent intent = new Intent(getBaseContext(), LoginActivity.class);
             startActivity(intent);
+            logout = true;
         }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        if (!logout) {
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+        }
         return true;
     }
 
@@ -405,13 +426,13 @@ public class MainActivity extends AppCompatActivity
                         + cm.lineNumber() + " of "
                         + cm.sourceId());
                 if (cm.message().toLowerCase().contains(WrongPassword.toLowerCase())) {
-                    mLoadingCircle.setVisibility(View.INVISIBLE);
-                    //setContentView(R.layout.activity_login);
+                    AutologinValue = false;
+                    PRememValue = false;
+                    UnameValue = "";
+                    PasswordValue = "";
                     LoginActivity.invalid = true;
-                    x = 0;
                     Intent intent = new Intent(getBaseContext(), LoginActivity.class);
                     startActivity(intent);
-                    mLoadingText.setVisibility(View.INVISIBLE);
                 }
                 if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(UnameValue)&& x == 1)) {
                     if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {

@@ -7,6 +7,11 @@
             android:icon="@drawable/ic_home"
             android:title="Home"/>
         <item
+            android:id="@+id/nav_notifications"
+            android:icon="@drawable/ic_notifications"
+            android:title="Notifications"/>
+
+        <item
             android:id="@+id/nav_schedule"
             android:icon="@drawable/ic_schedule"
             android:title="Edge Schedule"/>
@@ -15,9 +20,17 @@
             android:icon="@drawable/ic_update"
             android:title="Edge Signup"/>
         <item
-            android:id="@+id/nav_notifications"
-            android:icon="@drawable/ic_notifications"
-            android:title="Notifications"/>
+            android:id="@+id/nav_events"
+            android:icon="@drawable/ic_event"
+            android:title="Events"/>
+        <item
+            android:id="@+id/nav_leaderboard"
+            android:icon="@drawable/ic_leaderboard"
+            android:title="Leaderboard"/>
+        <item
+            android:id="@+id/nav_fancam"
+            android:icon="@drawable/ic_photo"
+            android:title="Fancam"/>
         <item android:title="Preferences">
                     <menu>
                         <item
