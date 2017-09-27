@@ -356,6 +356,13 @@ public class MainActivity extends AppCompatActivity
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen");
         } else if (id == R.id.nav_notifications){
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#notifications");
+        } else if (id == R.id.nav_logout){
+            AutologinValue = false;
+            UnameValue = "";
+            PasswordValue = "";
+            setContentView(R.layout.activity_login);
+            Intent intent = new Intent(getBaseContext(), LoginActivity.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
