@@ -58,8 +58,8 @@ public class MainActivity extends AppCompatActivity
     private static final String PREF_UNAME = "Username";
     private static final String PREF_PASSWORD = "Password";
     private static final String PREF_PREMEM = "RememPass";
-    private static final String PREF_NOTIFY = "NOTIFICATIONS";
-    private static final String PREF_AUTOLOGIN = "Autologin";
+    static final String PREF_NOTIFY = "NOTIFICATIONS";
+    static final String PREF_AUTOLOGIN = "Autologin";
     public static final String PREF_EDGE1 = "Edge 1";
     public static final String PREF_EDGE2 = "Edge 2";
     public static final String PREF_EDGE3 = "Edge 3";
@@ -83,13 +83,13 @@ public class MainActivity extends AppCompatActivity
     static boolean PRememValue;
 
     private final boolean DefaultNotificationValue = true;
-    private boolean NotificationValue;
+    static boolean NotificationValue;
 
     private final boolean DefaultAutologinValue = false;
     static boolean AutologinValue;
 
     public static final int DefaultMinValue = 5;
-    private int MinValue;
+    static int MinValue;
 
 
     public final static String DefaultEdgeDay1Value = "";
@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity
     private String EdgeDay5;
     private String EdgeDay5Cur;
     public int NotificationSet;
-    public int notifyMinutes = 5;
+    static int notifyMinutes = 5;
     private boolean settingsOpen = false;
     private NumberPicker mNumberPicker;
     private TextView mNumberPickerTextView;
@@ -176,21 +176,8 @@ public class MainActivity extends AppCompatActivity
         mLoginPage = (WebView) findViewById(R.id.loginWebview);
         mLoadingCircle = (ProgressBar) findViewById(R.id.progressBar);
         mLoadingText = (TextView) findViewById(R.id.LoadingText);
-        mNotify = (Switch) findViewById(R.id.NotificationCheckbox);
-        mLogout = (Button) findViewById(R.id.logoutButton);
-        mAutoLogin = (Switch) findViewById(R.id.AutoLoginSwitch);
-        mSettings = (Button) findViewById(R.id.settingsButton);
-        mNumberPicker = (NumberPicker) findViewById(R.id.numberPicker);
-        mNumberPickerTextView = (TextView) findViewById(R.id.numberPickerTextView);
         NotificationSet = 0;
-        String[] nums = new String[40];
-        for (int i = 0; i < nums.length; i++)
-            nums[i] = Integer.toString(i);
 
-        mNumberPicker.setMinValue(1);
-        mNumberPicker.setMaxValue(40);
-        mNumberPicker.setWrapSelectorWheel(true);
-        mNumberPicker.setDisplayedValues(nums);
         if (calledForeign) {
             //getSupportActionBar().hide();
             if (Login == 1){
@@ -227,7 +214,7 @@ public class MainActivity extends AppCompatActivity
             shortcutManager.setDynamicShortcuts(Arrays.asList(wNOHSShortcut, wCampusShortcut));
         }
 
-        mLogout.setOnClickListener(
+        /*mLogout.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
                         AutologinValue = false;
@@ -236,55 +223,7 @@ public class MainActivity extends AppCompatActivity
                         startActivity(intent);
                         Log.d("broken lol", "im not a god... yet");
                     }
-                });
-        mSettings.setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(View view) {
-                        if (settingsOpen) {
-                            a = 1;
-                        }
-                        if (!settingsOpen) {
-                            a = 0;
-                        }
-
-                        if (a == 0) {
-                            mLoginPage.setVisibility(View.INVISIBLE);
-                            mNotify.setVisibility(View.VISIBLE);
-                            mAutoLogin.setVisibility(View.VISIBLE);
-                            mSettings.setText("Back");
-                            settingsOpen = true;
-                            mLoadingCircle.setVisibility(View.INVISIBLE);
-                            mNumberPicker.setVisibility(View.VISIBLE);
-                            mNumberPickerTextView.setVisibility(View.VISIBLE);
-                            mNumberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-                                @Override
-                                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-
-
-                                    mNumberPickerTextView.setText("Send notification " + (newVal - 1) + " minutes before class");
-                                    notifyMinutes = newVal - 1;
-                                }
-                            });
-
-
-                        }
-                        if (a == 1) {
-                            mLoginPage.setVisibility(View.VISIBLE);
-                            mNotify.setVisibility(View.INVISIBLE);
-                            mAutoLogin.setVisibility(View.INVISIBLE);
-                            mSettings.setText("Settings");
-                            settingsOpen = false;
-                            mLoadingCircle.setVisibility(View.INVISIBLE);
-                            mNumberPicker.setVisibility(View.INVISIBLE);
-                            mNumberPickerTextView.setVisibility(View.INVISIBLE);
-                            savePreferences();
-
-                        }
-                    }
-                }
-        );
-
-
+                });*/
     }
     private void setupDrawer(){
         setContentView(R.layout.activity_main);
@@ -369,16 +308,7 @@ public class MainActivity extends AppCompatActivity
             if (mLoginPage.getUrl().toLowerCase().contains("edgetime".toLowerCase())) {
                 Toast.makeText(this, "Click again to exit Edge", Toast.LENGTH_SHORT).show();
             }
-        } else if (settingsOpen) {
-            mNotify.setVisibility(View.INVISIBLE);
-            mAutoLogin.setVisibility(View.INVISIBLE);
-            mLoginPage.setVisibility(View.VISIBLE);
-            mSettings.setText("Settings");
-            mLoadingCircle.setVisibility(View.INVISIBLE);
-            settingsOpen = false;
-            mNumberPicker.setVisibility(View.INVISIBLE);
-            mNumberPickerTextView.setVisibility(View.INVISIBLE);
-        } else {
+        }  else {
             Log.d("not good", "kill me");
             super.onBackPressed();
         }
@@ -420,7 +350,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_profile) {
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#profile");
         } else if (id == R.id.nav_manage) {
-            
+            Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_homescreen){
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen");
         }
@@ -536,17 +467,7 @@ public class MainActivity extends AppCompatActivity
                     mLoginPage.setVisibility(View.VISIBLE);
                     //mLoadingText.setVisibility(View.INVISIBLE);
                 }
-                if (mLoginPage.getUrl().toLowerCase().contains("#homescreen".toLowerCase()) && mLoginPage.getVisibility() == View.VISIBLE) {
-                    mSettings.setVisibility(View.VISIBLE);
-                    mLogout.setVisibility(View.VISIBLE);
-                    /*if (getSupportActionBar() != null) {
-                        getSupportActionBar().hide();
-                    }*/
-                }
-                if (!mLoginPage.getUrl().toLowerCase().contains("#homescreen".toLowerCase())) {
-                    mSettings.setVisibility(View.INVISIBLE);
-                    mLogout.setVisibility(View.INVISIBLE);
-                }
+
             }
 
             @Override
@@ -570,16 +491,7 @@ public class MainActivity extends AppCompatActivity
                         newUrl = webUrl;
                     }
                 }
-                if (webUrl.toLowerCase().contains("#homescreen".toLowerCase()) && mLoadingCircle.getVisibility() == View.INVISIBLE) {
-                    if (mLoginPage.getVisibility() == View.VISIBLE) {
-                        mSettings.setVisibility(View.VISIBLE);
-                        mLogout.setVisibility(View.VISIBLE);
-                    }
-                }
-                if (!webUrl.toLowerCase().contains("#homescreen".toLowerCase())) {
-                    mSettings.setVisibility(View.INVISIBLE);
-                    mLogout.setVisibility(View.INVISIBLE);
-                }
+
                 //if (webUrl.toLowerCase().contains("#login".toLowerCase())){
                 //    mLoginPage.setVisibility(View.INVISIBLE);
                 //    mLoadingCircle.setVisibility(View.VISIBLE);
@@ -589,16 +501,12 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    public void savePreferences() {
+    private void savePreferences() {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                 Context.MODE_APPEND);
         SharedPreferences.Editor editor = settings.edit();
 
         // Edit and commit
-        if (mLoginPage.getUrl() != null) {
-            NotificationValue = mNotify.isChecked();
-            AutologinValue = mAutoLogin.isChecked();
-        }
         EdgeDay1Value = EdgeDay1;
         EdgeDay2Value = EdgeDay2;
         EdgeDay3Value = EdgeDay3;
@@ -647,8 +555,7 @@ public class MainActivity extends AppCompatActivity
             Log.d("Setting notification", " ");
             setWeeklyNotifications();
         }
-        mAutoLogin.setChecked(AutologinValue);
-        mNotify.setChecked(NotificationValue);
+
         EdgeDay1 = EdgeDay1Value;
         EdgeDay2 = EdgeDay2Value;
         EdgeDay3 = EdgeDay3Value;
@@ -656,8 +563,7 @@ public class MainActivity extends AppCompatActivity
         EdgeDay5 = EdgeDay5Value;
         EdgeDay5Cur = EdgeDay5CurValue;
         notifyMinutes = MinValue;
-        mNumberPicker.setValue((notifyMinutes + 1));
-        mNumberPickerTextView.setText("Send notification " + (notifyMinutes) + " minutes before class");
+
 
         InterpretEdgeData(EdgeDay1);
         InterpretEdgeData(EdgeDay2);
