@@ -600,7 +600,6 @@ public class MainActivity extends AppCompatActivity
         EdgeDay4Value = EdgeDay4;
         EdgeDay5Value = EdgeDay5;
         EdgeDay5CurValue = EdgeDay5Cur;
-        MinValue = notifyMinutes;
         if (PRememValue) {
             editor.putString(PREF_UNAME, UnameValue);
             editor.putString(PREF_PASSWORD, PasswordValue);
