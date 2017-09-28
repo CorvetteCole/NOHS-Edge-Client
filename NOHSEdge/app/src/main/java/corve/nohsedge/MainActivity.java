@@ -469,6 +469,7 @@ public class MainActivity extends AppCompatActivity
 
 
     private void openLoginpage() {
+        //mLoginPage.setVisibility(VISIBLE);
         mLoadingCircle.setVisibility(VISIBLE);
         mLoadingText.setText("Checking login details...");
         //mLoadingText.setVisibility(View.VISIBLE);
@@ -511,7 +512,7 @@ public class MainActivity extends AppCompatActivity
                     Intent intent = new Intent(getBaseContext(), LoginActivity.class);
                     startActivity(intent);
                 }
-                if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(UnameValue)&& x == 1)) {
+                if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(UnameValue.toLowerCase())&& x == 1)) {
                     if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
                         mLoadingCircle.setVisibility(View.INVISIBLE);
                         setHeaderDetails(cm.message());
@@ -667,7 +668,7 @@ public class MainActivity extends AppCompatActivity
         EdgeDay4Value = settings.getString(PREF_EDGE4, DefaultEdgeDay4Value);
         EdgeDay5Value = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
         EdgeDay5CurValue = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
-        FirstLoadValue = settings.getBoolean(PREF_FIRSTLOAD, DefaultFirstLoadVaue);
+        //FirstLoadValue = settings.getBoolean(PREF_FIRSTLOAD, DefaultFirstLoadVaue);
         MinValue = settings.getInt(PREF_MIN, DefaultMinValue);
         ImageLoadOnWiFiValue = settings.getBoolean("ImageLoad", false);
         Log.d("LoadImagesOnWiFi", ImageLoadOnWiFiValue + "");
@@ -690,7 +691,7 @@ public class MainActivity extends AppCompatActivity
             InterpretEdgeData(EdgeDay4);
             InterpretEdgeData(EdgeDay5);
         }
-        if (FirstLoadValue){
+        /*if (FirstLoadValue){
             SharedPreferences oldSettings = getSharedPreferences("preferences",
                     Context.MODE_PRIVATE);
             UnameValue = oldSettings.getString(PREF_UNAME, DefaultUnameValue);
@@ -711,7 +712,7 @@ public class MainActivity extends AppCompatActivity
             editor.putBoolean(PREF_FIRSTLOAD, FirstLoadValue);
             editor.putInt(PREF_MIN, MinValue);
             editor.apply();
-        }
+        }*/
         currentSet = 0;
     }
 
