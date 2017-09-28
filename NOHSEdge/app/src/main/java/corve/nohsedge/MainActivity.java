@@ -374,6 +374,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_leaderboard){
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#leaderboard");
             mLoginPage.setVisibility(VISIBLE);
+            deleteBanner();
             edgePage = "leaderboard";
             setWelcomeVisible(false);
         } else if (id == R.id.nav_fancam){
@@ -746,6 +747,16 @@ public class MainActivity extends AppCompatActivity
             ClassElement++;
         }
     }
+
+    private void deleteBanner() {
+        /*mLoginPage.loadUrl(
+                "javascript:(function() { " +
+                        "var element = document.getElementById('tab-form');"
+                        + "element.parentNode.removeChild(element);" +
+                        "})()");*/
+    }
+
+
 
     public static String parseEdgeTitle(String EdgeString) {
         EdgeString = EdgeString.substring(EdgeString.indexOf(">") + 1);
