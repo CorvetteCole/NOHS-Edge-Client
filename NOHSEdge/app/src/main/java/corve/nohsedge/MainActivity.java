@@ -46,6 +46,8 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Calendar;
 
+import de.cketti.mailto.EmailIntentBuilder;
+
 import static android.view.View.VISIBLE;
 
 
@@ -341,6 +343,12 @@ public class MainActivity extends AppCompatActivity
             drawerClose = false;
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://sideline.bsnsports.com/schools/kentucky/goshen/north-oldham-high-school"));
             startActivity(browserIntent);
+        } else if (id == R.id.nav_feedback){
+            Intent emailIntent = EmailIntentBuilder.from(this)
+                    .to("corvettecole@gmail.com")
+                    .subject("NOHS Stampede App")
+                    .build();
+            startActivity(emailIntent);
         } else if (id == R.id.nav_profile) {
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#profile-edit");
             edgePage = "profile-edit";

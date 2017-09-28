@@ -46,13 +46,17 @@
         <item android:title="Options">
                     <menu>
                         <item
+                            android:id="@+id/nav_logout"
+                            android:icon="@drawable/ic_logout"
+                            android:title="Logout"/>
+                        <item
                             android:id="@+id/nav_settings"
                             android:icon="@drawable/ic_menu_settings"
                             android:title="Settings"/>
                         <item
-                            android:id="@+id/nav_logout"
-                            android:icon="@drawable/ic_logout"
-                            android:title="Logout"/>
+                            android:id="@+id/nav_feedback"
+                            android:icon="@drawable/ic_feedback"
+                            android:title="Feedback"/>
                     </menu>
                 </item>
     </group>

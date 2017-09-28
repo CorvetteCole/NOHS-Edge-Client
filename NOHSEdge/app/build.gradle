@@ -29,4 +29,5 @@ dependencies {
     compile 'com.android.support:design:26.+'
     compile 'com.android.support:preference-v7:26.+'
     compile 'com.android.support:preference-v14:26.+'
+    compile 'de.cketti.mailto:email-intent-builder:1.0.0'
 }
