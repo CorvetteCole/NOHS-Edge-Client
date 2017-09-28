@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity
     String newUrl = "";
     public static int currentSet = 0;
 
-    static boolean ImageLoadValue;
+    static boolean ImageLoadOnWiFiValue;
 
     private final String DefaultUnameValue = "";
     static String UnameValue;
@@ -366,13 +366,20 @@ public class MainActivity extends AppCompatActivity
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
         boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
-
-        if (ImageLoadValue && isWiFi){
+        Log.d("isWiFi?", isWiFi + "");
+        if (!ImageLoadOnWiFiValue){
             WebSettings webSettings = mLoginPage.getSettings();
             webSettings.setLoadsImagesAutomatically(true);
-        } else if (!ImageLoadValue){
+            Log.d("ImgLoadStatus", "Cell");
+        }
+        if (ImageLoadOnWiFiValue && isWiFi){
             WebSettings webSettings = mLoginPage.getSettings();
             webSettings.setLoadsImagesAutomatically(true);
+            Log.d("ImgLoadStatus", "WiFi");
+        } else {
+            WebSettings webSettings = mLoginPage.getSettings();
+            webSettings.setLoadsImagesAutomatically(false);
+            Log.d("ImgLoadStatus", "Disabled");
         }
 
         if (id == R.id.nav_schedule) {
@@ -657,7 +664,8 @@ public class MainActivity extends AppCompatActivity
         EdgeDay5Value = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
         EdgeDay5CurValue = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
         MinValue = settings.getInt(PREF_MIN, DefaultMinValue);
-        ImageLoadValue = settings.getBoolean(PREF_IMAGELOAD, false);
+        ImageLoadOnWiFiValue = settings.getBoolean("ImageLoad", false);
+        Log.d("LoadImagesOnWiFi", ImageLoadOnWiFiValue + "");
         Log.d("NotificationValue", NotificationValue + "");
         if (NotificationValue) {
             Log.d("Setting notification", " ");
