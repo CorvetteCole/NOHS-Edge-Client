@@ -144,6 +144,7 @@ public class MainActivity extends AppCompatActivity
     private TextView mEdgeTitleConst;
     private TextView mEdgeTextConst;
     private TextView mEdgeTimeConst;
+    private ConnectivityManager cm;
 
 
     @Override
@@ -163,6 +164,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (!calledForeign) {
             setContentView(R.layout.activity_login);
             Intent intent = new Intent(this, LoginActivity.class);
@@ -180,10 +182,7 @@ public class MainActivity extends AppCompatActivity
             mEdgeTitleConst = (TextView) findViewById(R.id.edgeTitleTextView);
             mEdgeTextConst = (TextView) findViewById(R.id.edgeTextTextView);
             mEdgeTimeConst = (TextView) findViewById(R.id.edgeTimeTextView);
-
-
             NotificationSet = 0;
-            //getSupportActionBar().hide();
             if (Login == 1) {
                 mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
                 openLoginpage();
@@ -194,12 +193,6 @@ public class MainActivity extends AppCompatActivity
             }
 
             activateEdgeHelper();
-
-            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Window window = getWindow();
-                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                //window.setStatusBarColor(Color.BLACK);
-            }*/
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
                 ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
                 ShortcutInfo wNOHSShortcut = new ShortcutInfo.Builder(this, "shortcut_nohs")
@@ -216,33 +209,12 @@ public class MainActivity extends AppCompatActivity
                         .build();
                 shortcutManager.setDynamicShortcuts(Arrays.asList(wNOHSShortcut, wCampusShortcut));
             }
-
-        /*mLogout.setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(View view) {
-                        AutologinValue = false;
-                        setContentView(R.layout.activity_login);
-                        Intent intent = new Intent(getBaseContext(), LoginActivity.class);
-                        startActivity(intent);
-                        Log.d("broken lol", "im not a god... yet");
-                    }
-                });*/
         }
     }
     private void setupDrawer(){
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -291,18 +263,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        /*if (mLoginPage.getUrl().toLowerCase().contains("edgetime".toLowerCase()) && mLoginPage.canGoBack()){
-            mLoginPage.goBack();
-            mLoadingText.setVisibility(View.VISIBLE);
-            mLoadingText.setText("Loading homescreen...");
-            int t = 0;
-            while (t < 1000){
-                t++;
-            }
-            mLoginPage.goBack();
-            //mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen");
-        }*/
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -346,9 +306,6 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         id = item.getItemId();
         boolean drawerClose = true;
-        ConnectivityManager cm =
-                (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         //boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
         boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
@@ -356,7 +313,7 @@ public class MainActivity extends AppCompatActivity
         if (!ImageLoadOnWiFiValue){
             WebSettings webSettings = mLoginPage.getSettings();
             webSettings.setLoadsImagesAutomatically(true);
-            Log.d("ImgLoadStatus", "Cell");
+            Log.d("ImgLoadStatus", "Cell&WiFi");
         }
         if (ImageLoadOnWiFiValue && isWiFi){
             WebSettings webSettings = mLoginPage.getSettings();
