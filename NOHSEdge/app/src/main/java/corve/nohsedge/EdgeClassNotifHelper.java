@@ -32,6 +32,7 @@ import static corve.nohsedge.MainActivity.PREF_EDGE4;
 import static corve.nohsedge.MainActivity.PREF_EDGE5;
 import static corve.nohsedge.MainActivity.PREF_EDGE5Cur;
 import static corve.nohsedge.MainActivity.PREF_MIN;
+import static corve.nohsedge.MainActivity.PREF_NOTIFYEDGE;
 
 /**
  * Created by Cole on 9/18/2017.
@@ -42,6 +43,7 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
     private int notifyMinutes;
     private Context context1;
     private String EdgeDay5Cur;
+    private Boolean NotificationEnabled;
     @Override
     public void onReceive(Context context, Intent intent) {
         context1 = context;
@@ -49,19 +51,6 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
 
 
     }
-    /*@Override
-    public boolean onStartJob(JobParameters params) {
-        Log.d("maybe it'll", "work");
-        //setNewEdgeNotif();
-        return true;
-    }
-    @Override
-    public boolean onStopJob(JobParameters params) {
-        Log.d("please kill me", "death");
-        // whether or not you would like JobScheduler to automatically retry your failed job.
-        return true;
-    }
-    */
     public void setNewEdgeNotif(){
         Log.d("!edgehelper worked", "im ok with life");
         loadPreferences();
@@ -79,6 +68,7 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
         String EdgeDay5Value = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
         EdgeDay5Cur = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
         notifyMinutes = settings.getInt(PREF_MIN, DefaultMinValue);
+        NotificationEnabled = settings.getBoolean(PREF_NOTIFYEDGE, true);
 
         InterpretEdgeData(EdgeDay1Value);
         InterpretEdgeData(EdgeDay2Value);
@@ -123,7 +113,7 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
         Log.d("Notification set", EdgeTitle);
         Log.d("!helper!", "notification set");
         Log.d("edgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
-        if ((calendar.getTimeInMillis() - System.currentTimeMillis()) > 0) {
+        if ((calendar.getTimeInMillis() - System.currentTimeMillis()) > 0 && NotificationEnabled) {
             Intent intent1 = new Intent(context1, Receiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context1,
                     MainActivity.REQUEST_CODE_EDGE, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
