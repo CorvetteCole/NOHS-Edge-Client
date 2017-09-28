@@ -294,9 +294,9 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        //if (id == R.id.action_settings) {
+        //    return true;
+        //}
 
         return super.onOptionsItemSelected(item);
     }
@@ -328,6 +328,7 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_schedule) {
             drawerClose = false;
+            uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
             Intent intent = new Intent(getBaseContext(), EdgeViewActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_signup) {
