@@ -79,15 +79,15 @@ public class EdgeSignupActivity extends AppCompatActivity {
         if (mEdgePage.canGoBack()) {
             mEdgePage.goBack();
         }  else {
-            savePreferences();
-            super.onBackPressed();
+            showPage = false;
+            getEdgeClasses();
         }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        savePreferences();
-        super.onBackPressed();
+        showPage = false;
+        getEdgeClasses();
         return(super.onOptionsItemSelected(item));
     }
 
