@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity
     public static final String PREF_EDGE3 = "Edge 3";
     public static final String PREF_EDGE4 = "Edge 4";
     public static final String PREF_EDGE5 = "Edge 5";
-    public static final String PREF_MIN = "Notify min";
+    public static final String PREF_MIN = "Notify_min";
     public static final String PREF_EDGE5Cur = "Current Friday Edge Class";
     private String WrongPassword = "pass did not match";
     private String webUrl;
@@ -822,7 +822,7 @@ public class MainActivity extends AppCompatActivity
         name = name.substring(0, name.indexOf("\","));
         Log.d("name", name);
         nav_user.setText(name);
-        mWelcome.setText("Hello " + name);
+        mWelcome.setText("Hello, " + name);
         username = message.substring(message.indexOf("\"username\":\"") + 12);
         username = username.substring(0, username.indexOf("\","));
         Log.d("username", username);
