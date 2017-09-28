@@ -500,7 +500,7 @@ public class MainActivity extends AppCompatActivity
                         x = 2;
                     }
                 }
-                if (cm.message().toLowerCase().contains("RetrievedEdgeClass".toLowerCase()) && NotificationValue) {
+                if (cm.message().toLowerCase().contains("RetrievedEdgeClass".toLowerCase())) {
                     InterpretEdgeData(cm.message());
                 }
                 if (cm.message().toLowerCase().contains("post_queue")/* && (cm.lineNumber() == 419)*/) {
@@ -752,7 +752,7 @@ public class MainActivity extends AppCompatActivity
         editor.commit();
         Log.d("Notification set", EdgeTitle);
         Log.d("edgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
-        if ((calendar.getTimeInMillis() - System.currentTimeMillis()) > 0) {
+        if ((calendar.getTimeInMillis() - System.currentTimeMillis()) > 0 && NotificationValue) {
             Intent intent1 = new Intent(this, Receiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
                     REQUEST_CODE_EDGE, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -882,7 +882,7 @@ public class MainActivity extends AppCompatActivity
                 EdgeDay5Ar[1] = consoleMessage;
             }
             EdgeDay5Cur = EdgeDay5Ar[0];
-            Log.d("!test!", EdgeDay5Cur);
+            Log.d("Cur Friday Edge Class", EdgeDay5Cur);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
                 setEdgeMessage(consoleMessage);
                 setEdgeNotifications(parseEdgeTitle(EdgeDay5Cur), parseEdgeText(EdgeDay5Cur), parseEdgeSession(EdgeDay5Cur), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
