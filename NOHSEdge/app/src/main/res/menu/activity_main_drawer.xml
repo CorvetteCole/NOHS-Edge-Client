@@ -7,6 +7,10 @@
             android:icon="@drawable/ic_home"
             android:title="Home"/>
         <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_account_circle"
+            android:title="Profile"/>
+        <item
             android:id="@+id/nav_notifications"
             android:icon="@drawable/ic_notifications"
             android:title="Notifications"/>
@@ -31,12 +35,9 @@
             android:id="@+id/nav_fancam"
             android:icon="@drawable/ic_photo"
             android:title="Fancam"/>
-        <item android:title="Preferences">
+
+        <item android:title="Options">
                     <menu>
-                        <item
-                            android:id="@+id/nav_profile"
-                            android:icon="@drawable/ic_account_circle"
-                            android:title="Edit Profile"/>
                         <item
                             android:id="@+id/nav_settings"
                             android:icon="@drawable/ic_menu_settings"

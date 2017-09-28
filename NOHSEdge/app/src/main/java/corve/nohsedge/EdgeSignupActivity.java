@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -133,6 +134,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
                     if (showPage) {
                         mEdgePage.setVisibility(View.VISIBLE);
                         mLoadingCircle.setVisibility(View.INVISIBLE);
+                        mLoadingText.setVisibility(View.INVISIBLE);
                     }
                     getEdgeClasses();
                 }
@@ -163,6 +165,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
                     if (showPage) {
                         mLoadingCircle.setVisibility(View.VISIBLE);
                         mEdgePage.setVisibility(View.INVISIBLE);
+                        mLoadingText.setVisibility(View.VISIBLE);
                     }
                 }
             }
@@ -213,12 +216,22 @@ public class EdgeSignupActivity extends AppCompatActivity {
             if (!consoleMessage.contains(EdgeDay5Ar[0]) && consoleMessage != null) {
                 EdgeDay5Ar[1] = consoleMessage;
             }
+            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) != Calendar.FRIDAY) {
+                if (!showPage) {
+                    savePreferences();
+                    super.onBackPressed();
+                }
+            }
             EdgeDay5Cur = EdgeDay5Ar[0];
             Log.d("!test!", EdgeDay5Cur);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
                 /*setEdgeMessage(consoleMessage);
                 setEdgeNotifications(parseEdgeTitle(EdgeDay5Cur), parseEdgeText(EdgeDay5Cur), parseEdgeSession(EdgeDay5Cur), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));*/
                 EdgeDay5CurValue = EdgeDay5Cur;
+                if (!showPage) {
+                    savePreferences();
+                    super.onBackPressed();
+                }
             }
         }
     }
@@ -231,14 +244,9 @@ public class EdgeSignupActivity extends AppCompatActivity {
                     "})()");
             ClassElement++;
         }
-        if (!showPage) {
-            savePreferences();
-            super.onBackPressed();
-        }
     }
     private void savePreferences() {
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
-                Context.MODE_APPEND);
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         SharedPreferences.Editor editor = settings.edit();
 
         // Edit and commit

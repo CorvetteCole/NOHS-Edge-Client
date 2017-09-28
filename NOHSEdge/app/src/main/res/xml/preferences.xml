@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="preferences">
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="AutoLogin"
+        android:title="Enable Automatic Login"
+        android:summary="Immediately login when app is opened"/>
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="Notify"
+        android:title="Enable Notifications"
+        android:summary="Send Edge signup reminders and Edge class notifications"/>
+    <corve.nohsedge.NumberPickerPreference
+        android:key="Notify_min"
+        android:title="Edge Notification Send Time"
+        android:summary="Notifications will be sent the selected number of minutes before an Edge class is scheduled"
+        android:dependency="Notify"
+        android:defaultValue="5" />
+</PreferenceScreen>
