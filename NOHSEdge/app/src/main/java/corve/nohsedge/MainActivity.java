@@ -660,7 +660,11 @@ public class MainActivity extends AppCompatActivity
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
                     REQUEST_CODE_WEEKLY, intent3, PendingIntent.FLAG_UPDATE_CURRENT);
             AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);
-            am.setExact(AlarmManager.RTC_WAKEUP, calendar3.getTimeInMillis(), pendingIntent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar3.getTimeInMillis(), pendingIntent);
+            } else {
+                am.set(AlarmManager.RTC_WAKEUP, calendar3.getTimeInMillis(), pendingIntent);
+            }
         /*ComponentName component = new ComponentName(this, WeeklyReceiver.class);
         JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE_WEEKLY, component)
                 .setMinimumLatency(calendar3.getTimeInMillis() - System.currentTimeMillis())
@@ -697,7 +701,11 @@ public class MainActivity extends AppCompatActivity
                 REQUEST_CODE, intent2, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);
         //am.setInexactRepeating(AlarmManager.RTC_WAKEUP, activateTime, AlarmManager.INTERVAL_DAY, pendingIntent);
-        am.setExact(AlarmManager.RTC_WAKEUP, activateTime, pendingIntent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar2.getTimeInMillis(), pendingIntent);
+        } else {
+            am.set(AlarmManager.RTC_WAKEUP, calendar2.getTimeInMillis(), pendingIntent);
+        }
         /*JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE, component)
                 .setPersisted(true)
                 .setMinimumLatency((calendar2.getTimeInMillis()) - System.currentTimeMillis())
@@ -744,7 +752,11 @@ public class MainActivity extends AppCompatActivity
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
                     REQUEST_CODE_EDGE, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
             AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);
-            am.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            } else {
+                am.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            }
 
        /* ComponentName component = new ComponentName(this, Receiver.class);
         JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE_EDGE, component)

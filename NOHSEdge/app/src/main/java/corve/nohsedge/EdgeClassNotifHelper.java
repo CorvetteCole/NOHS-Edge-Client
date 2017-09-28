@@ -11,6 +11,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -127,7 +128,11 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context1,
                     MainActivity.REQUEST_CODE_EDGE, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
             AlarmManager am = (AlarmManager) context1.getSystemService(ALARM_SERVICE);
-            am.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            } else {
+                am.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            }
 
        /* ComponentName component = new ComponentName(this, Receiver.class);
         JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE_EDGE, component)
