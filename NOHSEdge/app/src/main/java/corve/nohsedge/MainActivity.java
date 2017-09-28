@@ -11,6 +11,8 @@ import android.content.pm.ShortcutManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Icon;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -66,11 +68,13 @@ public class MainActivity extends AppCompatActivity
     public static final String PREF_EDGE5 = "Edge 5";
     public static final String PREF_MIN = "Notify_min";
     public static final String PREF_EDGE5Cur = "Current Friday Edge Class";
+    public static final String PREF_IMAGELOAD = "ImageLoad";
     private String WrongPassword = "pass did not match";
     private String webUrl;
     String newUrl = "";
     public static int currentSet = 0;
 
+    static boolean ImageLoadValue;
 
     private final String DefaultUnameValue = "";
     static String UnameValue;
@@ -356,6 +360,20 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         id = item.getItemId();
         boolean drawerClose = true;
+        ConnectivityManager cm =
+                (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
+
+        if (ImageLoadValue && isWiFi){
+            WebSettings webSettings = mLoginPage.getSettings();
+            webSettings.setLoadsImagesAutomatically(true);
+        } else if (!ImageLoadValue){
+            WebSettings webSettings = mLoginPage.getSettings();
+            webSettings.setLoadsImagesAutomatically(true);
+        }
 
         if (id == R.id.nav_schedule) {
             drawerClose = false;
@@ -383,34 +401,24 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);*/
             drawerClose = false;
         } else if (id == R.id.nav_homescreen){
-            WebSettings webSettings = mLoginPage.getSettings();
-            webSettings.setLoadsImagesAutomatically(false);
             mLoginPage.setVisibility(View.INVISIBLE);
             setWelcomeVisible(true);
         } else if (id == R.id.nav_notifications){
-            WebSettings webSettings = mLoginPage.getSettings();
-            webSettings.setLoadsImagesAutomatically(true);
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#notifications");
             edgePage = "notifications";
             mLoginPage.setVisibility(VISIBLE);
             setWelcomeVisible(false);
         } else if (id == R.id.nav_events){
-            WebSettings webSettings = mLoginPage.getSettings();
-            webSettings.setLoadsImagesAutomatically(true);
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#events");
             mLoginPage.setVisibility(VISIBLE);
             edgePage = "events";
             setWelcomeVisible(false);
         } else if (id == R.id.nav_leaderboard){
-            WebSettings webSettings = mLoginPage.getSettings();
-            webSettings.setLoadsImagesAutomatically(true);
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#leaderboard");
             mLoginPage.setVisibility(VISIBLE);
             edgePage = "leaderboard";
             setWelcomeVisible(false);
         } else if (id == R.id.nav_fancam){
-            WebSettings webSettings = mLoginPage.getSettings();
-            webSettings.setLoadsImagesAutomatically(true);
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#fancam");
             mLoginPage.setVisibility(VISIBLE);
             edgePage = "fancam";
@@ -649,8 +657,9 @@ public class MainActivity extends AppCompatActivity
         EdgeDay5Value = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
         EdgeDay5CurValue = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
         MinValue = settings.getInt(PREF_MIN, DefaultMinValue);
+        ImageLoadValue = settings.getBoolean(PREF_IMAGELOAD, false);
         Log.d("NotificationValue", NotificationValue + "");
-        if (NotificationValue == true) {
+        if (NotificationValue) {
             Log.d("Setting notification", " ");
             setWeeklyNotifications();
         }

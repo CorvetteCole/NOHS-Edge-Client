@@ -7,6 +7,11 @@
         android:title="Enable Automatic Login"
         android:summary="Immediately login when app is opened"/>
     <SwitchPreference
+        android:defaultValue="false"
+        android:key="ImageLoad"
+        android:title="Load images on WiFi only"
+        android:summary="Select if images can load using cellular data or not"/>
+    <SwitchPreference
         android:defaultValue="true"
         android:key="Notify"
         android:title="Enable Notifications"

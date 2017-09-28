@@ -16,14 +16,6 @@
             android:title="Notifications"/>
 
         <item
-            android:id="@+id/nav_schedule"
-            android:icon="@drawable/ic_schedule"
-            android:title="Edge Schedule"/>
-        <item
-            android:id="@+id/nav_signup"
-            android:icon="@drawable/ic_update"
-            android:title="Edge Signup"/>
-        <item
             android:id="@+id/nav_events"
             android:icon="@drawable/ic_event"
             android:title="Events"/>
@@ -35,7 +27,18 @@
             android:id="@+id/nav_fancam"
             android:icon="@drawable/ic_photo"
             android:title="Fancam"/>
-
+        <item android:title="Edge">
+            <menu>
+                <item
+                    android:id="@+id/nav_schedule"
+                    android:icon="@drawable/ic_schedule"
+                    android:title="Edge Schedule"/>
+                <item
+                    android:id="@+id/nav_signup"
+                    android:icon="@drawable/ic_update"
+                    android:title="Edge Signup"/>
+            </menu>
+        </item>
         <item android:title="Options">
                     <menu>
                         <item
