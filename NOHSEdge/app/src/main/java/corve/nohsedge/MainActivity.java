@@ -56,9 +56,9 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     public static final String PREFS_NAME = "preferences";
-    private static final String PREF_UNAME = "Username";
-    private static final String PREF_PASSWORD = "Password";
-    private static final String PREF_PREMEM = "RememPass";
+    static final String PREF_UNAME = "Username";
+    static final String PREF_PASSWORD = "Password";
+    static final String PREF_PREMEM = "RememPass";
     static final String PREF_NOTIFY = "Notify";
     static final String PREF_AUTOLOGIN = "AutoLogin";
     public static final String PREF_EDGE1 = "Edge 1";
@@ -68,7 +68,6 @@ public class MainActivity extends AppCompatActivity
     public static final String PREF_EDGE5 = "Edge 5";
     public static final String PREF_MIN = "Notify_min";
     public static final String PREF_EDGE5Cur = "Current Friday Edge Class";
-    public static final String PREF_IMAGELOAD = "ImageLoad";
     private String WrongPassword = "WrongPass";
     static final String PREF_FIRSTLOAD = "FirstLoad";
     private String webUrl;
@@ -111,27 +110,13 @@ public class MainActivity extends AppCompatActivity
     static String EdgeDay4Value;
     static String EdgeDay5Value;
     static String EdgeDay5CurValue;
-    private int getEdgeClassesRan = 0;
     static String EmailValue;
 
-    Button mLogin;
-    TextView mCredit;
     ProgressBar mLoadingCircle;
     private static final String TAG = "MainActivity";
     int x = 0;
     private WebView mLoginPage;
-    private TextView mUsername;
-    private TextView mPassword;
-    private CheckBox mRemember;
-    private String edgeUrl;
     private TextView mLoadingText;
-    private Button mRegister;
-    private TextView mEmail;
-    private TextView mActivateRegister;
-    private Switch mNotify;
-    private Switch mAutoLogin;
-    private Button mSettings;
-    int a = 0;
     static int REQUEST_CODE = 0;
     static int REQUEST_CODE_EDGE = 1;
     static int REQUEST_CODE_WEEKLY = 2;
@@ -145,8 +130,6 @@ public class MainActivity extends AppCompatActivity
     public int NotificationSet;
     static int notifyMinutes = 5;
     private boolean settingsOpen = false;
-    private NumberPicker mNumberPicker;
-    private TextView mNumberPickerTextView;
     static String[] EdgeDay5Ar = new String[2];
     public static int Login = 0;
     public static int Register = 0;
@@ -154,7 +137,6 @@ public class MainActivity extends AppCompatActivity
     private TextView mWelcome;
     private String edgePage;
     private int id;
-    private Context MainActivityContext = this;
     static String uuid;
     private TextView mEdgeTitle;
     private TextView mEdgeText;
@@ -368,7 +350,7 @@ public class MainActivity extends AppCompatActivity
                 (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        //boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
         boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
         Log.d("isWiFi?", isWiFi + "");
         if (!ImageLoadOnWiFiValue){
@@ -396,10 +378,6 @@ public class MainActivity extends AppCompatActivity
             uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
             Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
             startActivity(intent);
-            /*mLoginPage.loadUrl("https://api.superfanu.com/6.0.0/gen/link_track.php?platform=Web:%20chrome&uuid=" + getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID") + "&nid=305&lkey=nohsstampede-edgetime-module");
-            mLoginPage.setVisibility(View.VISIBLE);
-            mEdgeMessage.setVisibility(View.INVISIBLE);
-            mWelcome.setVisibility(View.INVISIBLE);*/
         } else if (id == R.id.nav_profile) {
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#profile-edit");
             edgePage = "profile-edit";
@@ -408,8 +386,6 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_settings) {
             Intent i = new Intent(this, PreferencesActivity.class);
             startActivity(i);
-            /*Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
-            startActivity(intent);*/
             drawerClose = false;
         } else if (id == R.id.nav_homescreen){
             mLoginPage.setVisibility(View.INVISIBLE);
@@ -472,7 +448,6 @@ public class MainActivity extends AppCompatActivity
         //mLoginPage.setVisibility(VISIBLE);
         mLoadingCircle.setVisibility(VISIBLE);
         mLoadingText.setText("Checking login details...");
-        //mLoadingText.setVisibility(View.VISIBLE);
         WebSettings webSettings = mLoginPage.getSettings();
         webSettings.setLoadsImagesAutomatically(false);
         webSettings.setDomStorageEnabled(true);
@@ -498,7 +473,6 @@ public class MainActivity extends AppCompatActivity
                 }
 
             }
-
             public boolean onConsoleMessage(ConsoleMessage cm) {
                 Log.d(TAG, cm.message() + " -- From line "
                         + cm.lineNumber() + " of "
@@ -523,18 +497,13 @@ public class MainActivity extends AppCompatActivity
                             Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
                             startActivity(intent);
                         }
-
-                        // /mLoginPage.setVisibility(View.VISIBLE);
-
-                        //THE KEY IS BELOW. THE KEY I TELL YOU!
-                        //mLoginPage.loadUrl("https://api.superfanu.com/6.0.0/gen/link_track.php?platform=Web:%20chrome&uuid=" + getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID") + "&nid=305&lkey=nohsstampede-edgetime-module");
                         x = 2;
                     }
                 }
                 if (cm.message().toLowerCase().contains("RetrievedEdgeClass".toLowerCase())) {
                     InterpretEdgeData(cm.message());
                 }
-                if (cm.message().toLowerCase().contains("post_queue")/* && (cm.lineNumber() == 419)*/) {
+                if (cm.message().toLowerCase().contains("post_queue")) {
                     mLoadingCircle.setVisibility(View.INVISIBLE);
                     mLoginPage.setVisibility(VISIBLE);
                     getEdgeClasses();
@@ -575,13 +544,11 @@ public class MainActivity extends AppCompatActivity
                 }
                 if ((mLoginPage.getUrl().contains("nohsstampede")) && (x == 2)) {
                     mLoadingCircle.setVisibility(View.INVISIBLE);
-                    //mLoginPage.setVisibility(View.VISIBLE);
                     newUrl = "";
                 }
                 if ((mLoginPage.getUrl().contains("edgetime")) && (x == 2)) {
                     mLoadingCircle.setVisibility(View.INVISIBLE);
                     mLoginPage.setVisibility(VISIBLE);
-                    //mLoadingText.setVisibility(View.INVISIBLE);
                 }
                 if (mLoginPage.getUrl().contains("homescreen") && id != R.id.nav_homescreen && edgePage != null){
                     mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + edgePage);
@@ -595,11 +562,8 @@ public class MainActivity extends AppCompatActivity
                 webUrl = mLoginPage.getUrl();
                 Log.d("!URL", webUrl);
                 if ((webUrl.toLowerCase().contains("edgetime".toLowerCase())) && (x == 2)) {
-                    edgeUrl = webUrl;
                     mLoadingCircle.setVisibility(VISIBLE);
-                    //mLoginPage.setVisibility(View.INVISIBLE);
                     mLoadingText.setText("Retrieving Edge Classes...");
-                    //mLoadingText.setVisibility(View.VISIBLE);
                 }
                 if ((!webUrl.toLowerCase().contains("edgetime".toLowerCase())) && (!webUrl.toLowerCase().contains("nohs".toLowerCase()))) {
                     //check to make sure web page hasn't been opened already (avoids opening 20+ chrome tabs upon one button click)
@@ -610,12 +574,6 @@ public class MainActivity extends AppCompatActivity
                         newUrl = webUrl;
                     }
                 }
-
-                //if (webUrl.toLowerCase().contains("#login".toLowerCase())){
-                //    mLoginPage.setVisibility(View.INVISIBLE);
-                //    mLoadingCircle.setVisibility(View.VISIBLE);
-                //}
-
             }
         });
     }
@@ -635,26 +593,18 @@ public class MainActivity extends AppCompatActivity
             editor.putString(PREF_UNAME, UnameValue);
             editor.putString(PREF_PASSWORD, PasswordValue);
         }
-        //editor.putBoolean(PREF_NOTIFY, NotificationValue);
         editor.putBoolean(PREF_PREMEM, PRememValue);
-        //editor.putBoolean(PREF_AUTOLOGIN, AutologinValue);
         editor.putString(PREF_EDGE1, EdgeDay1Value);
         editor.putString(PREF_EDGE2, EdgeDay2Value);
         editor.putString(PREF_EDGE3, EdgeDay3Value);
         editor.putString(PREF_EDGE4, EdgeDay4Value);
         editor.putString(PREF_EDGE5, EdgeDay5Value);
         editor.putString(PREF_EDGE5Cur, EdgeDay5CurValue);
-        //editor.putInt(PREF_MIN, MinValue);
         editor.apply();
     }
 
     public void loadPreferences() {
-
-        /*SharedPreferences settings = getSharedPreferences(PREFS_NAME,
-                Context.MODE_PRIVATE);*/
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-
-        // Get value
         if (!calledForeign) {
             UnameValue = settings.getString(PREF_UNAME, DefaultUnameValue);
             PasswordValue = settings.getString(PREF_PASSWORD, DefaultPasswordValue);
@@ -668,7 +618,7 @@ public class MainActivity extends AppCompatActivity
         EdgeDay4Value = settings.getString(PREF_EDGE4, DefaultEdgeDay4Value);
         EdgeDay5Value = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
         EdgeDay5CurValue = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
-        //FirstLoadValue = settings.getBoolean(PREF_FIRSTLOAD, DefaultFirstLoadVaue);
+        FirstLoadValue = settings.getBoolean(PREF_FIRSTLOAD, DefaultFirstLoadVaue);
         MinValue = settings.getInt(PREF_MIN, DefaultMinValue);
         ImageLoadOnWiFiValue = settings.getBoolean("ImageLoad", false);
         Log.d("LoadImagesOnWiFi", ImageLoadOnWiFiValue + "");
@@ -691,7 +641,7 @@ public class MainActivity extends AppCompatActivity
             InterpretEdgeData(EdgeDay4);
             InterpretEdgeData(EdgeDay5);
         }
-        /*if (FirstLoadValue){
+        if (FirstLoadValue && UnameValue == null){
             SharedPreferences oldSettings = getSharedPreferences("preferences",
                     Context.MODE_PRIVATE);
             UnameValue = oldSettings.getString(PREF_UNAME, DefaultUnameValue);
@@ -712,7 +662,7 @@ public class MainActivity extends AppCompatActivity
             editor.putBoolean(PREF_FIRSTLOAD, FirstLoadValue);
             editor.putInt(PREF_MIN, MinValue);
             editor.apply();
-        }*/
+        }
         currentSet = 0;
     }
 
@@ -734,15 +684,6 @@ public class MainActivity extends AppCompatActivity
             } else {
                 am.set(AlarmManager.RTC_WAKEUP, calendar3.getTimeInMillis(), pendingIntent);
             }
-        /*ComponentName component = new ComponentName(this, WeeklyReceiver.class);
-        JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE_WEEKLY, component)
-                .setMinimumLatency(calendar3.getTimeInMillis() - System.currentTimeMillis())
-                .setPersisted(true)
-                .setOverrideDeadline((calendar3.getTimeInMillis() - System.currentTimeMillis()) + 1800000);
-        JobScheduler jobScheduler = (JobScheduler) this.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        if (calendar3.getTimeInMillis() - System.currentTimeMillis() > 0){
-            jobScheduler.schedule(builder.build());
-            */
         }
     }
 
@@ -755,7 +696,6 @@ public class MainActivity extends AppCompatActivity
         calendar2.set(Calendar.SECOND, 0);
         calendar2.set(Calendar.AM_PM, Calendar.AM);
         long activateTime;
-        //ComponentName component = new ComponentName(this, EdgeClassNotifHelper.class);
         Log.d("!edgehelp c2", calendar2.getTimeInMillis() + "");
         Log.d("!edgehelp s", System.currentTimeMillis() + "");
         if (calendar2.getTimeInMillis() < System.currentTimeMillis()) {
@@ -769,19 +709,11 @@ public class MainActivity extends AppCompatActivity
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
                 REQUEST_CODE, intent2, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);
-        //am.setInexactRepeating(AlarmManager.RTC_WAKEUP, activateTime, AlarmManager.INTERVAL_DAY, pendingIntent);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar2.getTimeInMillis(), pendingIntent);
         } else {
             am.set(AlarmManager.RTC_WAKEUP, calendar2.getTimeInMillis(), pendingIntent);
         }
-        /*JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE, component)
-                .setPersisted(true)
-                .setMinimumLatency((calendar2.getTimeInMillis()) - System.currentTimeMillis())
-                .setOverrideDeadline(ONE_MIN * 180);
-
-        JobScheduler jobScheduler = (JobScheduler) this.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        jobScheduler.schedule(builder.build());*/
     }
 
     private void setEdgeNotifications(String EdgeTitle, String EdgeText, int EdgeSession, int DayofWeek) {
@@ -826,18 +758,6 @@ public class MainActivity extends AppCompatActivity
             } else {
                 am.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
             }
-
-       /* ComponentName component = new ComponentName(this, Receiver.class);
-        JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE_EDGE, component)
-                .setMinimumLatency(calendar.getTimeInMillis() - System.currentTimeMillis())
-                .setPersisted(true)
-                .setOverrideDeadline((calendar.getTimeInMillis() - System.currentTimeMillis()) + 60000);
-            JobScheduler jobScheduler = (JobScheduler) this.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-            if (calendar.getTimeInMillis() - System.currentTimeMillis() > 0){
-                jobScheduler.schedule(builder.build());
-            }
-            */
-
         }
     }
 
@@ -955,7 +875,6 @@ public class MainActivity extends AppCompatActivity
                 setEdgeMessage(consoleMessage);
                 setEdgeNotifications(parseEdgeTitle(EdgeDay5Cur), parseEdgeText(EdgeDay5Cur), parseEdgeSession(EdgeDay5Cur), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
                 EdgeDay5CurValue = EdgeDay5Cur;
-                //savePreferences();
             }
         }
     }
