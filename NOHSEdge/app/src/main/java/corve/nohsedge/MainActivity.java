@@ -337,6 +337,10 @@ public class MainActivity extends AppCompatActivity
             uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
             Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
             startActivity(intent);
+        } else if (id == R.id.nav_gear){
+            drawerClose = false;
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://sideline.bsnsports.com/schools/kentucky/goshen/north-oldham-high-school"));
+            startActivity(browserIntent);
         } else if (id == R.id.nav_profile) {
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#profile-edit");
             edgePage = "profile-edit";
