@@ -69,12 +69,16 @@ public class MainActivity extends AppCompatActivity
     public static final String PREF_MIN = "Notify_min";
     public static final String PREF_EDGE5Cur = "Current Friday Edge Class";
     public static final String PREF_IMAGELOAD = "ImageLoad";
-    private String WrongPassword = "pass did not match";
+    private String WrongPassword = "WrongPass";
+    static final String PREF_FIRSTLOAD = "FirstLoad";
     private String webUrl;
     String newUrl = "";
     public static int currentSet = 0;
 
     static boolean ImageLoadOnWiFiValue;
+
+    private final Boolean DefaultFirstLoadVaue = true;
+    private Boolean FirstLoadValue = true;
 
     private final String DefaultUnameValue = "";
     static String UnameValue;
@@ -663,6 +667,7 @@ public class MainActivity extends AppCompatActivity
         EdgeDay4Value = settings.getString(PREF_EDGE4, DefaultEdgeDay4Value);
         EdgeDay5Value = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
         EdgeDay5CurValue = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
+        FirstLoadValue = settings.getBoolean(PREF_FIRSTLOAD, DefaultFirstLoadVaue);
         MinValue = settings.getInt(PREF_MIN, DefaultMinValue);
         ImageLoadOnWiFiValue = settings.getBoolean("ImageLoad", false);
         Log.d("LoadImagesOnWiFi", ImageLoadOnWiFiValue + "");
@@ -684,6 +689,28 @@ public class MainActivity extends AppCompatActivity
             InterpretEdgeData(EdgeDay3);
             InterpretEdgeData(EdgeDay4);
             InterpretEdgeData(EdgeDay5);
+        }
+        if (FirstLoadValue){
+            SharedPreferences oldSettings = getSharedPreferences("preferences",
+                    Context.MODE_PRIVATE);
+            UnameValue = oldSettings.getString(PREF_UNAME, DefaultUnameValue);
+            PasswordValue = oldSettings.getString(PREF_PASSWORD, DefaultPasswordValue);
+            PRememValue = oldSettings.getBoolean(PREF_PREMEM, DefaultPRememValue);
+            NotificationValue = oldSettings.getBoolean(PREF_NOTIFY, DefaultNotificationValue);
+            AutologinValue = oldSettings.getBoolean(PREF_AUTOLOGIN, DefaultAutologinValue);
+            MinValue = oldSettings.getInt(PREF_MIN, DefaultMinValue);
+            FirstLoadValue = false;
+            SharedPreferences.Editor editor = settings.edit();
+            if (PRememValue) {
+                editor.putString(PREF_UNAME, UnameValue);
+                editor.putString(PREF_PASSWORD, PasswordValue);
+            }
+            editor.putBoolean(PREF_NOTIFY, NotificationValue);
+            editor.putBoolean(PREF_PREMEM, PRememValue);
+            editor.putBoolean(PREF_AUTOLOGIN, AutologinValue);
+            editor.putBoolean(PREF_FIRSTLOAD, FirstLoadValue);
+            editor.putInt(PREF_MIN, MinValue);
+            editor.apply();
         }
         currentSet = 0;
     }
