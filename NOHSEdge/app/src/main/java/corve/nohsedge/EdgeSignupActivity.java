@@ -54,7 +54,10 @@ public class EdgeSignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         if (showPage){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    }
+        } else if (!showPage){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            getSupportActionBar().hide();
+        }
         setContentView(R.layout.activity_edge_signup);
         mEdgePage = (WebView) findViewById(R.id.edgePage);
         mLoadingText = (TextView) findViewById(R.id.LoadingTextEdge);
