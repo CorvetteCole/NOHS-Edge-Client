@@ -2,7 +2,6 @@ package corve.nohsedge;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,7 +51,7 @@ public class EdgeBaseAdapter extends BaseAdapter {
         LayoutInflater inflater = (LayoutInflater)
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View row = inflater.inflate(R.layout.list_item,parent, false);
+        View row = inflater.inflate(R.layout.edge_list_item,parent, false);
 
         TextView mText = row.findViewById(R.id.edgesubtitle);
         TextView mTitle = row.findViewById(R.id.edgetitle);
