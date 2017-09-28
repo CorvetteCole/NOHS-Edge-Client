@@ -383,24 +383,34 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);*/
             drawerClose = false;
         } else if (id == R.id.nav_homescreen){
+            WebSettings webSettings = mLoginPage.getSettings();
+            webSettings.setLoadsImagesAutomatically(false);
             mLoginPage.setVisibility(View.INVISIBLE);
             setWelcomeVisible(true);
         } else if (id == R.id.nav_notifications){
+            WebSettings webSettings = mLoginPage.getSettings();
+            webSettings.setLoadsImagesAutomatically(true);
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#notifications");
             edgePage = "notifications";
             mLoginPage.setVisibility(VISIBLE);
             setWelcomeVisible(false);
         } else if (id == R.id.nav_events){
+            WebSettings webSettings = mLoginPage.getSettings();
+            webSettings.setLoadsImagesAutomatically(true);
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#events");
             mLoginPage.setVisibility(VISIBLE);
             edgePage = "events";
             setWelcomeVisible(false);
         } else if (id == R.id.nav_leaderboard){
+            WebSettings webSettings = mLoginPage.getSettings();
+            webSettings.setLoadsImagesAutomatically(true);
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#leaderboard");
             mLoginPage.setVisibility(VISIBLE);
             edgePage = "leaderboard";
             setWelcomeVisible(false);
         } else if (id == R.id.nav_fancam){
+            WebSettings webSettings = mLoginPage.getSettings();
+            webSettings.setLoadsImagesAutomatically(true);
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#fancam");
             mLoginPage.setVisibility(VISIBLE);
             edgePage = "fancam";
@@ -444,6 +454,7 @@ public class MainActivity extends AppCompatActivity
         mLoadingText.setText("Checking login details...");
         //mLoadingText.setVisibility(View.VISIBLE);
         WebSettings webSettings = mLoginPage.getSettings();
+        webSettings.setLoadsImagesAutomatically(false);
         webSettings.setDomStorageEnabled(true);
         webSettings.setJavaScriptEnabled(true);
         webSettings.setGeolocationEnabled(true);
@@ -453,7 +464,7 @@ public class MainActivity extends AppCompatActivity
         webSettings.setAllowFileAccessFromFileURLs(true);
         webSettings.setAppCacheEnabled(true);
         webSettings.setDatabaseEnabled(true);
-        //webSettings.setLoadsImagesAutomatically(false);
+
         mLoginPage.clearHistory();
         clearCookies(this);
         mLoginPage.setWebChromeClient(new WebChromeClient() {
