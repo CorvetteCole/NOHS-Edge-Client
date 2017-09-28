@@ -37,11 +37,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.NumberPicker;
 import android.widget.ProgressBar;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,7 +56,8 @@ public class MainActivity extends AppCompatActivity
     static final String PREF_UNAME = "Username";
     static final String PREF_PASSWORD = "Password";
     static final String PREF_PREMEM = "RememPass";
-    static final String PREF_NOTIFY = "Notify";
+    static final String PREF_NOTIFYEDGE = "NotifyEdge";
+    static final String PREF_NOTIFYWEEKLY = "NotifyWeekly";
     static final String PREF_AUTOLOGIN = "AutoLogin";
     public static final String PREF_EDGE1 = "Edge 1";
     public static final String PREF_EDGE2 = "Edge 2";
@@ -88,8 +86,11 @@ public class MainActivity extends AppCompatActivity
     private final boolean DefaultPRememValue = false;
     static boolean PRememValue;
 
-    private final boolean DefaultNotificationValue = true;
-    static boolean NotificationValue;
+    private final boolean DefaultEdgeNotificationValue = true;
+    static boolean EdgeNotificationValue;
+
+    private final boolean DefaultWeeklyNotificationValue = true;
+    static boolean WeeklyNotificationValue;
 
     private final boolean DefaultAutologinValue = false;
     static boolean AutologinValue;
@@ -567,8 +568,9 @@ public class MainActivity extends AppCompatActivity
             PasswordValue = settings.getString(PREF_PASSWORD, DefaultPasswordValue);
             PRememValue = settings.getBoolean(PREF_PREMEM, DefaultPRememValue);
         }
-        NotificationValue = settings.getBoolean(PREF_NOTIFY, DefaultNotificationValue);
+        EdgeNotificationValue = settings.getBoolean(PREF_NOTIFYEDGE, DefaultEdgeNotificationValue);
         AutologinValue = settings.getBoolean(PREF_AUTOLOGIN, DefaultAutologinValue);
+        WeeklyNotificationValue = settings.getBoolean(PREF_NOTIFYWEEKLY, DefaultWeeklyNotificationValue);
         EdgeDay1Value = settings.getString(PREF_EDGE1, DefaultEdgeDay1Value);
         EdgeDay2Value = settings.getString(PREF_EDGE2, DefaultEdgeDay2Value);
         EdgeDay3Value = settings.getString(PREF_EDGE3, DefaultEdgeDay3Value);
@@ -579,9 +581,9 @@ public class MainActivity extends AppCompatActivity
         MinValue = settings.getInt(PREF_MIN, DefaultMinValue);
         ImageLoadOnWiFiValue = settings.getBoolean("ImageLoad", false);
         Log.d("LoadImagesOnWiFi", ImageLoadOnWiFiValue + "");
-        Log.d("NotificationValue", NotificationValue + "");
-        if (NotificationValue) {
-            Log.d("Setting notification", " ");
+        Log.d("EdgeNotificationValue", EdgeNotificationValue + "");
+        if (WeeklyNotificationValue) {
+            Log.d("SettingWeeklyNotif", "SettingWeeklyNotif");
             setWeeklyNotifications();
         }
         EdgeDay1 = EdgeDay1Value;
@@ -604,7 +606,7 @@ public class MainActivity extends AppCompatActivity
             UnameValue = oldSettings.getString(PREF_UNAME, DefaultUnameValue);
             PasswordValue = oldSettings.getString(PREF_PASSWORD, DefaultPasswordValue);
             PRememValue = oldSettings.getBoolean(PREF_PREMEM, DefaultPRememValue);
-            NotificationValue = oldSettings.getBoolean(PREF_NOTIFY, DefaultNotificationValue);
+            EdgeNotificationValue = oldSettings.getBoolean(PREF_NOTIFYEDGE, DefaultEdgeNotificationValue);
             AutologinValue = oldSettings.getBoolean(PREF_AUTOLOGIN, DefaultAutologinValue);
             MinValue = oldSettings.getInt(PREF_MIN, DefaultMinValue);
             FirstLoadValue = false;
@@ -613,7 +615,7 @@ public class MainActivity extends AppCompatActivity
                 editor.putString(PREF_UNAME, UnameValue);
                 editor.putString(PREF_PASSWORD, PasswordValue);
             }
-            editor.putBoolean(PREF_NOTIFY, NotificationValue);
+            editor.putBoolean(PREF_NOTIFYEDGE, EdgeNotificationValue);
             editor.putBoolean(PREF_PREMEM, PRememValue);
             editor.putBoolean(PREF_AUTOLOGIN, AutologinValue);
             editor.putBoolean(PREF_FIRSTLOAD, FirstLoadValue);
@@ -631,7 +633,7 @@ public class MainActivity extends AppCompatActivity
         calendar3.set(Calendar.MINUTE, 0);
         calendar3.set(Calendar.SECOND, 0);
         calendar3.set(Calendar.AM_PM, Calendar.PM);
-        if ((calendar3.getTimeInMillis() - System.currentTimeMillis()) > 0) {
+        if ((calendar3.getTimeInMillis() - System.currentTimeMillis()) > 0 && WeeklyNotificationValue) {
             Intent intent3 = new Intent(this, WeeklyReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
                     REQUEST_CODE_WEEKLY, intent3, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -662,14 +664,16 @@ public class MainActivity extends AppCompatActivity
         }
 
         Log.d("edgehelptime", (activateTime - System.currentTimeMillis()) + "");
-        Intent intent2 = new Intent(this, EdgeClassNotifHelper.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
-                REQUEST_CODE, intent2, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar2.getTimeInMillis(), pendingIntent);
-        } else {
-            am.set(AlarmManager.RTC_WAKEUP, calendar2.getTimeInMillis(), pendingIntent);
+        if (EdgeNotificationValue) {
+            Intent intent2 = new Intent(this, EdgeClassNotifHelper.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
+                    REQUEST_CODE, intent2, PendingIntent.FLAG_UPDATE_CURRENT);
+            AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar2.getTimeInMillis(), pendingIntent);
+            } else {
+                am.set(AlarmManager.RTC_WAKEUP, calendar2.getTimeInMillis(), pendingIntent);
+            }
         }
     }
 
@@ -703,9 +707,9 @@ public class MainActivity extends AppCompatActivity
         editor.putString("TITLE", EdgeTitle);
         editor.putString("TEXT", EdgeText);
         editor.commit();
-        Log.d("Notification set", EdgeTitle);
         Log.d("edgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
-        if ((calendar.getTimeInMillis() - System.currentTimeMillis()) > 0 && NotificationValue) {
+        if ((calendar.getTimeInMillis() - System.currentTimeMillis()) > 0 && EdgeNotificationValue) {
+            Log.d("NotificationSet", EdgeTitle);
             Intent intent1 = new Intent(this, Receiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
                     REQUEST_CODE_EDGE, intent1, PendingIntent.FLAG_UPDATE_CURRENT);

@@ -1,12 +1,7 @@
 package corve.nohsedge;
 
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.preference.PreferenceManager;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,9 +15,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 import java.util.Calendar;
 
@@ -39,18 +31,14 @@ import static corve.nohsedge.MainActivity.EdgeDay5Ar;
 import static corve.nohsedge.MainActivity.EdgeDay5Cur;
 import static corve.nohsedge.MainActivity.EdgeDay5CurValue;
 import static corve.nohsedge.MainActivity.EdgeDay5Value;
-import static corve.nohsedge.MainActivity.NotificationValue;
-import static corve.nohsedge.MainActivity.PREFS_NAME;
+import static corve.nohsedge.MainActivity.EdgeNotificationValue;
 import static corve.nohsedge.MainActivity.PREF_EDGE1;
 import static corve.nohsedge.MainActivity.PREF_EDGE2;
 import static corve.nohsedge.MainActivity.PREF_EDGE3;
 import static corve.nohsedge.MainActivity.PREF_EDGE4;
 import static corve.nohsedge.MainActivity.PREF_EDGE5;
 import static corve.nohsedge.MainActivity.PREF_EDGE5Cur;
-import static corve.nohsedge.MainActivity.PRememValue;
-import static corve.nohsedge.MainActivity.UnameValue;
 import static corve.nohsedge.MainActivity.currentSet;
-import static corve.nohsedge.MainActivity.notifyMinutes;
 import static corve.nohsedge.MainActivity.uuid;
 
 public class EdgeSignupActivity extends AppCompatActivity {
@@ -127,7 +115,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
                 Log.d(TAG, cm.message() + " -- From line "
                         + cm.lineNumber() + " of "
                         + cm.sourceId());
-                if (cm.message().toLowerCase().contains("RetrievedEdgeClass".toLowerCase()) && NotificationValue) {
+                if (cm.message().toLowerCase().contains("RetrievedEdgeClass".toLowerCase())) {
                     InterpretEdgeData(cm.message());
                 }
                 if (cm.message().toLowerCase().contains("post_queue")/* && (cm.lineNumber() == 419)*/) {
