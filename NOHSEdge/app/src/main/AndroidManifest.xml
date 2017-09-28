@@ -51,10 +51,6 @@
             android:parentActivityName=".MainActivity"></activity>
         <activity android:name=".LoginActivity" />
         <activity
-            android:name=".SettingsActivity"
-            android:launchMode="singleTop"
-            android:parentActivityName=".MainActivity"></activity>
-        <activity
             android:name=".EdgeSignupActivity"
             android:parentActivityName=".MainActivity"
             android:launchMode="singleTop"></activity>
