@@ -380,7 +380,7 @@ public class MainActivity extends AppCompatActivity
             WebSettings webSettings = mLoginPage.getSettings();
             webSettings.setLoadsImagesAutomatically(true);
             Log.d("ImgLoadStatus", "WiFi");
-        } else {
+        } if (ImageLoadOnWiFiValue && !isWiFi) {
             WebSettings webSettings = mLoginPage.getSettings();
             webSettings.setLoadsImagesAutomatically(false);
             Log.d("ImgLoadStatus", "Disabled");
