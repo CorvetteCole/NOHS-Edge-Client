@@ -148,6 +148,7 @@ public class MainActivity extends AppCompatActivity
     private TextView mEdgeTextConst;
     private TextView mEdgeTimeConst;
     private ConnectivityManager cm;
+    private String fullName = "";
 
 
     @Override
@@ -571,6 +572,7 @@ public class MainActivity extends AppCompatActivity
         editor.putString(PREF_EDGE4, EdgeDay4Value);
         editor.putString(PREF_EDGE5, EdgeDay5Value);
         editor.putString(PREF_EDGE5Cur, EdgeDay5CurValue);
+        editor.putString("fullName", fullName);
         editor.apply();
     }
 
@@ -592,6 +594,7 @@ public class MainActivity extends AppCompatActivity
         EdgeDay5CurValue = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
         FirstLoadValue = settings.getBoolean(PREF_FIRSTLOAD, DefaultFirstLoadVaue);
         MinValue = settings.getInt(PREF_MIN, DefaultMinValue);
+        fullName = settings.getString("fullName", " ");
         ImageLoadOnWiFiValue = settings.getBoolean("ImageLoad", false);
         Log.d("LoadImagesOnWiFi", ImageLoadOnWiFiValue + "");
         Log.d("EdgeNotificationValue", EdgeNotificationValue + "");
@@ -784,7 +787,8 @@ public class MainActivity extends AppCompatActivity
         name = name.substring(0, name.indexOf("\","));
         Log.d("name", name);
         nav_user.setText(name);
-        mWelcome.setText("Hello, " + name);
+        fullName = name;
+        mWelcome.setText("Hello, " + fullName);
         username = message.substring(message.indexOf("\"username\":\"") + 12);
         username = username.substring(0, username.indexOf("\","));
         Log.d("username", username);
@@ -888,6 +892,7 @@ public class MainActivity extends AppCompatActivity
         mEdgeTitle.setText(parseEdgeTitle(consoleMessage));
         mEdgeText.setText(parseEdgeText(consoleMessage));
         mEdgeTime.setText(parseEdgeTime(consoleMessage));
+        mWelcome.setText("Hello, " + fullName);
     }
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
