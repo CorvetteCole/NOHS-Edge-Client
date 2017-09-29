@@ -837,10 +837,9 @@ public class MainActivity extends AppCompatActivity
                 currentSet = 1;
             }
             else {
-                Log.d("TRIGGERRRREEEDDD", "");
                 EdgeDay5Ar[1] = EdgeDay5;
             }
-            if (!consoleMessage.contains(EdgeDay5Ar[0]) && consoleMessage != null) {
+            if (!consoleMessage.contains(EdgeDay5Ar[0])) {
                 EdgeDay5Ar[1] = consoleMessage;
             }
             EdgeDay5Cur = EdgeDay5Ar[0];

@@ -79,6 +79,7 @@ public class LoginActivity extends AppCompatActivity {
                 UnameValue = mUsername.getText().toString();
                 PasswordValue = mPassword.getText().toString();
                 MainActivity.PRememValue = mRemember.isChecked();
+                //finish();
                 startActivity(intent);
             }
 
@@ -132,9 +133,9 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                                 editor.putBoolean(PREF_PREMEM, mRemember.isChecked());
                                 editor.apply();
-
                                 MainActivity.PRememValue = mRemember.isChecked();
                                 Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                                //finish();
                                 startActivity(intent);
                             }
                         }
@@ -166,6 +167,7 @@ public class LoginActivity extends AppCompatActivity {
                             editor.apply();
 
                             Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                            //finish();
                             startActivity(intent);
                         }
                     }

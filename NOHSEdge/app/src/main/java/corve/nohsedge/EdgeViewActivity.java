@@ -18,6 +18,7 @@ import static corve.nohsedge.MainActivity.DefaultEdgeDay3Value;
 import static corve.nohsedge.MainActivity.DefaultEdgeDay4Value;
 import static corve.nohsedge.MainActivity.DefaultEdgeDay5CurValue;
 import static corve.nohsedge.MainActivity.DefaultEdgeDay5Value;
+import static corve.nohsedge.MainActivity.EdgeDay5;
 import static corve.nohsedge.MainActivity.PREF_EDGE1;
 import static corve.nohsedge.MainActivity.PREF_EDGE2;
 import static corve.nohsedge.MainActivity.PREF_EDGE3;
@@ -112,13 +113,15 @@ public class EdgeViewActivity extends AppCompatActivity {
             Log.d("Thursday Edge Class", EdgeDay[3]);
         }
         if (consoleMessage.toLowerCase().contains("Fri".toLowerCase())) {
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) != Calendar.FRIDAY) {
+            if ((Calendar.getInstance().get(Calendar.DAY_OF_WEEK) != Calendar.FRIDAY)) {
                 EdgeDay[4] = consoleMessage;
             }
             //Log.d("Friday Edge Class", EdgeDay5);
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY){
+            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY && !isAfterEdgeClass(parseEdgeTime(consoleMessage))){
                 //Log.d("!test1!", EdgeDay5Cur);
                 EdgeDay[4] = EdgeDay5Cur;
+            } else if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY && isAfterEdgeClass(parseEdgeTime(consoleMessage))){
+                EdgeDay[4] = consoleMessage;
             }
         }
         int i = 0;
@@ -137,6 +140,29 @@ public class EdgeViewActivity extends AppCompatActivity {
             i++;
         }
         setList();
+    }
+
+    private boolean isAfterEdgeClass(String EdgeSession){
+        boolean after = false;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        if (EdgeSession.equals("12:43")) {
+            calendar.set(Calendar.HOUR, 0);
+            calendar.set(Calendar.MINUTE, 43);
+        }
+        if (EdgeSession.equals("1:09")) {
+            calendar.set(Calendar.HOUR, 1);
+            calendar.set(Calendar.MINUTE, 9);
+        }
+        calendar.set(Calendar.SECOND, 1);
+        calendar.set(Calendar.AM_PM, Calendar.PM);
+        Log.d("edgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
+        if (calendar.getTimeInMillis() - System.currentTimeMillis() > 0){
+            after = false;
+        } else if (calendar.getTimeInMillis() - System.currentTimeMillis() < 0){
+            after = true;
+        }
+        return after;
     }
 
     public String parseEdgeDate (int i){
