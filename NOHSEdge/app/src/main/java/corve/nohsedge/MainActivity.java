@@ -374,7 +374,6 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_leaderboard){
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#leaderboard");
             mLoginPage.setVisibility(VISIBLE);
-            deleteBanner();
             edgePage = "leaderboard";
             setWelcomeVisible(false);
         } else if (id == R.id.nav_fancam){
@@ -491,7 +490,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                if (mLoginPage.getUrl().contains("login")) {
+                if (mLoginPage.getUrl().toLowerCase().contains("login")) {
                     mLoginPage.loadUrl("javascript:(function(){" +
                             "document.getElementById('login-username').value = '" + UnameValue + "';" +
                             "document.getElementById('login-password').value = '" + PasswordValue + "';" +
@@ -502,7 +501,7 @@ public class MainActivity extends AppCompatActivity
                             "})()");
                     x = 1;
                 }
-                if (mLoginPage.getUrl().contains("register")) {
+                if (mLoginPage.getUrl().toLowerCase().contains("register")) {
                     mLoginPage.loadUrl("javascript:(function(){" +
                             "document.getElementById('register-username').value = '" + UnameValue + "';" +
                             "document.getElementById('register-password').value = '" + PasswordValue + "';" +
@@ -514,17 +513,18 @@ public class MainActivity extends AppCompatActivity
                             "})()");
                     x = 1;
                 }
-                if ((mLoginPage.getUrl().contains("nohsstampede")) && (x == 2)) {
+                if ((mLoginPage.getUrl().toLowerCase().contains("nohsstampede")) && (x == 2)) {
                     mLoadingCircle.setVisibility(View.INVISIBLE);
                     newUrl = "";
                 }
-                if ((mLoginPage.getUrl().contains("edgetime")) && (x == 2)) {
+                if ((mLoginPage.getUrl().toLowerCase().contains("edgetime")) && (x == 2)) {
                     mLoadingCircle.setVisibility(View.INVISIBLE);
                     mLoginPage.setVisibility(VISIBLE);
                 }
-                if (mLoginPage.getUrl().contains("homescreen") && id != R.id.nav_homescreen && edgePage != null){
+                if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && edgePage != null){
                     mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + edgePage);
                 }
+
 
             }
 
@@ -747,16 +747,6 @@ public class MainActivity extends AppCompatActivity
             ClassElement++;
         }
     }
-
-    private void deleteBanner() {
-        /*mLoginPage.loadUrl(
-                "javascript:(function() { " +
-                        "var element = document.getElementById('tab-form');"
-                        + "element.parentNode.removeChild(element);" +
-                        "})()");*/
-    }
-
-
 
     public static String parseEdgeTitle(String EdgeString) {
         EdgeString = EdgeString.substring(EdgeString.indexOf(">") + 1);
