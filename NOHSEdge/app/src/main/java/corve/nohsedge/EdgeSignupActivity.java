@@ -124,7 +124,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
                     InterpretEdgeData(cm.message());
                     getEdgeClasses();
                 }
-                if (cm.message().toLowerCase().contains("EdgeUndefined".toLowerCase())){
+                if (cm.message().toLowerCase().contains("EdgeUndefined".toLowerCase()) && ClassElement > 1){
                     defined = false;
                     Log.d("isDefined", false + "");
                     if (!showPage) {

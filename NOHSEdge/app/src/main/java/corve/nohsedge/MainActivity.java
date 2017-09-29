@@ -607,6 +607,7 @@ public class MainActivity extends AppCompatActivity
         EdgeDay5Cur = EdgeDay5CurValue;
         notifyMinutes = MinValue;
         if (calledForeign) {
+            Log.d("loadPrefs", "interpreting edge data...");
             InterpretEdgeData(EdgeDay1);
             InterpretEdgeData(EdgeDay2);
             InterpretEdgeData(EdgeDay3);
