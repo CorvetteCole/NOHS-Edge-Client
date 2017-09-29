@@ -169,7 +169,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (!calledForeign) {
-            setContentView(R.layout.activity_login);
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
@@ -402,7 +401,6 @@ public class MainActivity extends AppCompatActivity
             editor.putString(PREF_EDGE5Cur, "");
             editor.putInt(PREF_MIN, 5);
             editor.commit();
-            setContentView(R.layout.activity_login);
             Intent intent = new Intent(getBaseContext(), LoginActivity.class);
             startActivity(intent);
             drawerClose = false;
@@ -448,13 +446,14 @@ public class MainActivity extends AppCompatActivity
                 Log.d(TAG, cm.message() + " -- From line "
                         + cm.lineNumber() + " of "
                         + cm.sourceId());
-                if (cm.message().toLowerCase().contains(WrongPassword.toLowerCase())) {
+                if (cm.message().toLowerCase().contains("pass did not match".toLowerCase())) {
                     AutologinValue = false;
                     PRememValue = false;
                     UnameValue = "";
                     PasswordValue = "";
                     LoginActivity.invalid = true;
                     Intent intent = new Intent(getBaseContext(), LoginActivity.class);
+                    finish();
                     startActivity(intent);
                 }
                 if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(UnameValue.toLowerCase())&& x == 1)) {
