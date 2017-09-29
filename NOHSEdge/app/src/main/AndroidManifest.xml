@@ -58,9 +58,11 @@
         <activity
             android:name=".EdgeSignupActivity"
             android:parentActivityName=".MainActivity"
-            android:launchMode="singleTop"/>
+            android:launchMode="singleTop"
+            android:label="Edge Sign up"/>
         <activity android:name=".PreferencesActivity"
-                  android:theme="@style/AppTheme"
+            android:label="Settings"
+            android:theme="@style/AppTheme"
             android:parentActivityName=".MainActivity"/>
     </application>
 

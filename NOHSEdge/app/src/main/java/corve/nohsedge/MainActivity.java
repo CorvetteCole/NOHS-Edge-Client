@@ -174,7 +174,8 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
         }
         if (calledForeign) {
-            setupDrawer();
+            //setupDrawer();
+            setContentView(R.layout.activity_main);
             mLoginPage = (WebView) findViewById(R.id.loginWebview);
             mLoadingCircle = (ProgressBar) findViewById(R.id.progressBar);
             mLoadingText = (TextView) findViewById(R.id.LoadingText);
@@ -215,7 +216,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
     private void setupDrawer(){
-        setContentView(R.layout.activity_main);
+        //setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -226,6 +227,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        getSupportActionBar().setTitle("Home");
     }
 
 
@@ -350,6 +352,7 @@ public class MainActivity extends AppCompatActivity
                     .build();
             startActivity(emailIntent);
         } else if (id == R.id.nav_profile) {
+            getSupportActionBar().setTitle("Profile");
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#profile-edit");
             edgePage = "profile-edit";
             mLoginPage.setVisibility(VISIBLE);
@@ -359,24 +362,29 @@ public class MainActivity extends AppCompatActivity
             startActivity(i);
             drawerClose = false;
         } else if (id == R.id.nav_homescreen){
+            getSupportActionBar().setTitle("Home");
             mLoginPage.setVisibility(View.INVISIBLE);
             setWelcomeVisible(true);
         } else if (id == R.id.nav_notifications){
+            getSupportActionBar().setTitle("Notifications");
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#notifications");
             edgePage = "notifications";
             mLoginPage.setVisibility(VISIBLE);
             setWelcomeVisible(false);
         } else if (id == R.id.nav_events){
+            getSupportActionBar().setTitle("Events");
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#events");
             mLoginPage.setVisibility(VISIBLE);
             edgePage = "events";
             setWelcomeVisible(false);
         } else if (id == R.id.nav_leaderboard){
+            getSupportActionBar().setTitle("Leaderboard");
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#leaderboard");
             mLoginPage.setVisibility(VISIBLE);
             edgePage = "leaderboard";
             setWelcomeVisible(false);
         } else if (id == R.id.nav_fancam){
+            getSupportActionBar().setTitle("Fancam");
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#fancam");
             mLoginPage.setVisibility(VISIBLE);
             edgePage = "fancam";
@@ -459,6 +467,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(UnameValue.toLowerCase())&& x == 1)) {
                     if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
+                        setupDrawer();
                         mLoadingCircle.setVisibility(View.INVISIBLE);
                         setHeaderDetails(cm.message());
                         setWelcomeVisible(true);

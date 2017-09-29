@@ -48,8 +48,6 @@ public class EdgeSignupActivity extends AppCompatActivity {
     private TextView mLoadingText;
     private ProgressBar mLoadingCircle;
     static boolean showPage = false;
-    private boolean defined = true;
-    private int ClassElement = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,16 +120,6 @@ public class EdgeSignupActivity extends AppCompatActivity {
                         + cm.sourceId());
                 if (cm.message().toLowerCase().contains("RetrievedEdgeClass".toLowerCase())) {
                     InterpretEdgeData(cm.message());
-                    getEdgeClasses();
-                }
-                if (cm.message().toLowerCase().contains("EdgeUndefined".toLowerCase()) && ClassElement > 1){
-                    defined = false;
-                    Log.d("isDefined", false + "");
-                    if (!showPage) {
-                        savePreferences();
-                        finish();
-                    }
-
                 }
                 if (cm.message().toLowerCase().contains("post_queue")/* && (cm.lineNumber() == 419)*/) {
                     if (showPage) {
@@ -228,22 +216,26 @@ public class EdgeSignupActivity extends AppCompatActivity {
             EdgeDay5Cur = EdgeDay5Ar[0];
             Log.d("!test!", EdgeDay5Cur);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
+                /*setEdgeMessage(consoleMessage);
+                setEdgeNotifications(parseEdgeTitle(EdgeDay5Cur), parseEdgeText(EdgeDay5Cur), parseEdgeSession(EdgeDay5Cur), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));*/
                 EdgeDay5CurValue = EdgeDay5Cur;
+                if (!showPage) {
+                    savePreferences();
+                    super.onBackPressed();
+                }
             }
         }
     }
     private void getEdgeClasses() {
+        int ClassElement = 0;
+        while (ClassElement != 5) {
             mEdgePage.loadUrl("javascript:(function(){" +
                     "if (document.getElementsByClassName('class user-in-class')['" + ClassElement + "'] != undefined){" +
                     "console.log('RetrievedEdgeClass' + document.getElementsByClassName('class user-in-class')['" + ClassElement + "'].innerHTML);}" +
                     "})()");
-            mEdgePage.loadUrl("javascript:(function(){" +
-                    "if (document.getElementsByClassName('class user-in-class')['" + ClassElement + "'] == undefined){" +
-                    "console.log('EdgeUndefined' + 'not defined fam');}" +
-                    "})()");
             ClassElement++;
-            Log.d("whileGetEdge", "ITRAN");
         }
+    }
     private void savePreferences() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         SharedPreferences.Editor editor = settings.edit();

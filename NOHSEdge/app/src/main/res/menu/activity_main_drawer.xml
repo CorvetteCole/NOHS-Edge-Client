@@ -40,7 +40,7 @@
                 <item
                     android:id="@+id/nav_signup"
                     android:icon="@drawable/ic_update"
-                    android:title="Edge Signup"/>
+                    android:title="Edge Sign up"/>
             </menu>
         </item>
         <item android:title="Options">
