@@ -837,12 +837,12 @@ public class MainActivity extends AppCompatActivity
         if (consoleMessage.toLowerCase().contains("Mon".toLowerCase())) {
             EdgeDay1 = consoleMessage;
             Log.d("Monday Edge Class", EdgeDay1);
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY) {
+            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY && !consoleMessage.toLowerCase().contains("undefined")) {
                 setEdgeMessage(consoleMessage);
                 setEdgeNotifications(parseEdgeTitle(EdgeDay1), parseEdgeText(EdgeDay1), parseEdgeSession(EdgeDay1), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             }
         }
-        if (consoleMessage.toLowerCase().contains("Tue".toLowerCase())) {
+        if (consoleMessage.toLowerCase().contains("Tue".toLowerCase()) && !consoleMessage.toLowerCase().contains("undefined")) {
             EdgeDay2 = consoleMessage;
             Log.d("Tuesday Edge Class", EdgeDay2);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY) {
@@ -850,7 +850,7 @@ public class MainActivity extends AppCompatActivity
                 setEdgeNotifications(parseEdgeTitle(EdgeDay2), parseEdgeText(EdgeDay2), parseEdgeSession(EdgeDay2), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             }
         }
-        if (consoleMessage.toLowerCase().contains("Wed".toLowerCase())) {
+        if (consoleMessage.toLowerCase().contains("Wed".toLowerCase()) && !consoleMessage.toLowerCase().contains("undefined")) {
             EdgeDay3 = consoleMessage;
             Log.d("Wednesday Edge Class", EdgeDay3);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY) {
@@ -858,7 +858,7 @@ public class MainActivity extends AppCompatActivity
                 setEdgeNotifications(parseEdgeTitle(EdgeDay3), parseEdgeText(EdgeDay3), parseEdgeSession(EdgeDay3), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             }
         }
-        if (consoleMessage.toLowerCase().contains("Thu".toLowerCase())) {
+        if (consoleMessage.toLowerCase().contains("Thu".toLowerCase()) && !consoleMessage.toLowerCase().contains("undefined")) {
             EdgeDay4 = consoleMessage;   //Thursday
             Log.d("Thursday Edge Class", EdgeDay4);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY) {
@@ -866,7 +866,7 @@ public class MainActivity extends AppCompatActivity
                 setEdgeNotifications(parseEdgeTitle(EdgeDay4), parseEdgeText(EdgeDay4), parseEdgeSession(EdgeDay4), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             }
         }
-        if (consoleMessage.toLowerCase().contains("Fri".toLowerCase())) {
+        if (consoleMessage.toLowerCase().contains("Fri".toLowerCase()) && !consoleMessage.toLowerCase().contains("undefined")) {
             EdgeDay5 = consoleMessage;
             if (currentSet == 0) {
                 EdgeDay5Ar[0] = consoleMessage;
