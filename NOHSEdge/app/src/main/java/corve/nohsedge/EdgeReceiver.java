@@ -19,13 +19,14 @@ import android.util.Log;
 
 import static android.R.attr.colorAccent;
 import static android.R.attr.id;
+import static android.R.attr.targetActivity;
 import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by Cole on 9/11/2017.
  */
 
-public class Receiver extends BroadcastReceiver {
+public class EdgeReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         showNotification(context);
@@ -49,8 +50,10 @@ public class Receiver extends BroadcastReceiver {
         String Title=(mSharedPreference.getString("TITLE", "Title"));
         String Text=(mSharedPreference.getString("TEXT", "Text"));
         int reqCode = 0;
-        Intent intent = new Intent(context, MainActivity.class);
+        Intent intent = new Intent(context, EdgeViewActivity.class);
         PendingIntent pi = PendingIntent.getActivity(context, reqCode, intent, 0);
+
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager notificationManager =
@@ -82,10 +85,10 @@ public class Receiver extends BroadcastReceiver {
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                     .setSmallIcon(R.drawable.icon)
                     .setContentTitle(Title)
-                    .setContentText(Text);
-            mBuilder.setContentIntent(pi);
-            mBuilder.setDefaults(Notification.DEFAULT_SOUND);
-            mBuilder.setAutoCancel(true);
+                    .setContentText(Text)
+                    .setContentIntent(pi)
+                    .setDefaults(Notification.DEFAULT_SOUND)
+                    .setAutoCancel(true);
             NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotificationManager.notify(reqCode, mBuilder.build());
         }

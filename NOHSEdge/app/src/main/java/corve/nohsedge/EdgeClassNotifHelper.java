@@ -2,12 +2,7 @@ package corve.nohsedge;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.app.job.JobInfo;
-import android.app.job.JobParameters;
-import android.app.job.JobScheduler;
-import android.app.job.JobService;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -109,12 +104,12 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("TITLE", EdgeTitle);
         editor.putString("TEXT", EdgeText);
-        editor.commit();
+        editor.apply();
         Log.d("Notification set", EdgeTitle);
         Log.d("!helper!", "notification set");
         Log.d("edgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
         if ((calendar.getTimeInMillis() - System.currentTimeMillis()) > 0 && NotificationEnabled) {
-            Intent intent1 = new Intent(context1, Receiver.class);
+            Intent intent1 = new Intent(context1, EdgeReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context1,
                     MainActivity.REQUEST_CODE_EDGE, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
             AlarmManager am = (AlarmManager) context1.getSystemService(ALARM_SERVICE);
@@ -124,7 +119,7 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
                 am.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
             }
 
-       /* ComponentName component = new ComponentName(this, Receiver.class);
+       /* ComponentName component = new ComponentName(this, EdgeReceiver.class);
         JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE_EDGE, component)
                 .setMinimumLatency(calendar.getTimeInMillis() - System.currentTimeMillis())
                 .setPersisted(true)

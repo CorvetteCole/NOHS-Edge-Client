@@ -35,7 +35,7 @@
         </activity>
 
         <receiver
-            android:name=".Receiver"
+            android:name=".EdgeReceiver"
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <receiver
             android:name=".WeeklyReceiver"

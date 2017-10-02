@@ -409,7 +409,12 @@ public class MainActivity extends AppCompatActivity
             editor.putString(PREF_EDGE5, "");
             editor.putString(PREF_EDGE5Cur, "");
             editor.putInt(PREF_MIN, 5);
-            editor.commit();
+            editor.apply();
+            mLoginPage.clearHistory();
+            mLoginPage.clearCache(true);
+            clearCookies(this);
+            WebView obj = mLoginPage;
+            obj.clearCache(true);
             Intent intent = new Intent(getBaseContext(), LoginActivity.class);
             startActivity(intent);
             drawerClose = false;
@@ -462,7 +467,6 @@ public class MainActivity extends AppCompatActivity
                     PasswordValue = "";
                     LoginActivity.invalid = true;
                     Intent intent = new Intent(getBaseContext(), LoginActivity.class);
-                    finish();
                     startActivity(intent);
                 }
                 if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(UnameValue.toLowerCase())&& x == 1)) {
@@ -732,11 +736,11 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("TITLE", EdgeTitle);
         editor.putString("TEXT", EdgeText);
-        editor.commit();
+        editor.apply();
         Log.d("edgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
         if ((calendar.getTimeInMillis() - System.currentTimeMillis()) > 0 && EdgeNotificationValue) {
             Log.d("NotificationSet", EdgeTitle);
-            Intent intent1 = new Intent(this, Receiver.class);
+            Intent intent1 = new Intent(this, EdgeReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
                     REQUEST_CODE_EDGE, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
             AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);

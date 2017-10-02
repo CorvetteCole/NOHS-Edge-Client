@@ -253,6 +253,6 @@ public class EdgeSignupActivity extends AppCompatActivity {
         editor.putString(PREF_EDGE4, EdgeDay4Value);
         editor.putString(PREF_EDGE5, EdgeDay5Value);
         editor.putString(PREF_EDGE5Cur, EdgeDay5CurValue);
-        editor.commit();
+        editor.apply();
     }
 }
