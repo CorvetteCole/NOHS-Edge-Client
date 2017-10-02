@@ -484,6 +484,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(UnameValue.toLowerCase())&& x == 1)) {
                     if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
+                        //mLoginPage.stopLoading();
                         setupDrawer();
                         mLoadingCircle.setVisibility(View.INVISIBLE);
                         setHeaderDetails(cm.message());
@@ -569,6 +570,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 if ((!webUrl.toLowerCase().contains("edgetime".toLowerCase())) && (!webUrl.toLowerCase().contains("nohs".toLowerCase()))) {
                     //check to make sure web page hasn't been opened already (avoids opening 20+ chrome tabs upon one button click)
+                    mLoginPage.stopLoading();
                     mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + edgePage);
                     if (!webUrl.equals(newUrl)) {
                         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webUrl));
