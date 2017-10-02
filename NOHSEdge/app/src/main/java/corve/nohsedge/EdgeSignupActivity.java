@@ -119,7 +119,19 @@ public class EdgeSignupActivity extends AppCompatActivity {
                         + cm.lineNumber() + " of "
                         + cm.sourceId());
                 if (cm.message().toLowerCase().contains("RetrievedEdgeClass".toLowerCase())) {
-                    InterpretEdgeData(cm.message());
+                    String consoleMessage = cm.message();
+                    if (!EdgeDay1.toLowerCase().contains("mon")){
+                        consoleMessage = "MonUndefined";
+                    } else if (!EdgeDay2.toLowerCase().contains("tue")){
+                        consoleMessage = "TueUndefined";
+                    } else if (!EdgeDay3.toLowerCase().contains("wed")){
+                        consoleMessage = "WedUndefined";
+                    } else if (!EdgeDay4.toLowerCase().contains("thu")){
+                        consoleMessage = "ThurUndefined";
+                    } else if (!EdgeDay5.toLowerCase().contains("fri")){
+                        consoleMessage = "FriUndefined";
+                    }
+                    InterpretEdgeData(consoleMessage);
                 }
                 if (cm.message().toLowerCase().contains("post_queue")/* && (cm.lineNumber() == 419)*/) {
                     if (showPage) {
@@ -232,6 +244,10 @@ public class EdgeSignupActivity extends AppCompatActivity {
             mEdgePage.loadUrl("javascript:(function(){" +
                     "if (document.getElementsByClassName('class user-in-class')['" + ClassElement + "'] != undefined){" +
                     "console.log('RetrievedEdgeClass' + document.getElementsByClassName('class user-in-class')['" + ClassElement + "'].innerHTML);}" +
+                    "})()");
+            mEdgePage.loadUrl("javascript:(function(){" +
+                    "if (document.getElementsByClassName('class user-in-class')['" + ClassElement + "'] == undefined){" +
+                    "console.log('RetrievedEdgeClass' + 'Undefined');}" +
                     "})()");
             ClassElement++;
         }
