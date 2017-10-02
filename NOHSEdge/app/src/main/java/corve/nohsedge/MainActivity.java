@@ -150,6 +150,8 @@ public class MainActivity extends AppCompatActivity
     private ConnectivityManager cm;
     private String fullName = "";
     private Boolean invalidPassword;
+    private WebView mEdgeLink;
+    static String EdgeLink;
 
 
     @Override
@@ -187,6 +189,7 @@ public class MainActivity extends AppCompatActivity
             mEdgeTitleConst = (TextView) findViewById(R.id.edgeTitleTextView);
             mEdgeTextConst = (TextView) findViewById(R.id.edgeTextTextView);
             mEdgeTimeConst = (TextView) findViewById(R.id.edgeTimeTextView);
+            mEdgeLink = (WebView) findViewById(R.id.edgeLinkWebView);
             NotificationSet = 0;
             if (Login == 1) {
                 mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
@@ -339,7 +342,6 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_signup) {
             EdgeSignupActivity.showPage = true;
             drawerClose = false;
-            uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
             Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_gear){
@@ -484,7 +486,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(UnameValue.toLowerCase())&& x == 1)) {
                     if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
-                        //mLoginPage.stopLoading();
+                        refreshEdgeLink();
                         setupDrawer();
                         mLoadingCircle.setVisibility(View.INVISIBLE);
                         setHeaderDetails(cm.message());
@@ -502,14 +504,6 @@ public class MainActivity extends AppCompatActivity
                         x = 2;
                     }
                 }
-                if (cm.message().toLowerCase().contains("RetrievedEdgeClass".toLowerCase())) {
-                    InterpretEdgeData(cm.message());
-                }
-                if (cm.message().toLowerCase().contains("post_queue")) {
-                    mLoadingCircle.setVisibility(View.INVISIBLE);
-                    mLoginPage.setVisibility(VISIBLE);
-                    getEdgeClasses();
-                }
                 return true;
             }
 
@@ -517,10 +511,20 @@ public class MainActivity extends AppCompatActivity
                 callback.invoke(origin, true, false);
             }
         });
+        mEdgeLink.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url){
+                Log.d("EdgeLink", url);
+                mEdgeLink.stopLoading();
+                EdgeLink = url;
+                return true;
+            }
+                                   });
         mLoginPage.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+                refreshEdgeLink();
                 if (mLoginPage.getUrl().toLowerCase().contains("login")) {
                     mLoginPage.loadUrl("javascript:(function(){" +
                             "document.getElementById('login-username').value = '" + UnameValue + "';" +
@@ -548,10 +552,6 @@ public class MainActivity extends AppCompatActivity
                     mLoadingCircle.setVisibility(View.INVISIBLE);
                     newUrl = "";
                 }
-                if ((mLoginPage.getUrl().toLowerCase().contains("edgetime")) && (x == 2)) {
-                    mLoadingCircle.setVisibility(View.INVISIBLE);
-                    mLoginPage.setVisibility(VISIBLE);
-                }
                 if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && edgePage != null){
                     mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + edgePage);
                 }
@@ -564,10 +564,6 @@ public class MainActivity extends AppCompatActivity
                 super.onLoadResource(view, url);
                 webUrl = mLoginPage.getUrl();
                 Log.d("!URL", webUrl);
-                if ((webUrl.toLowerCase().contains("edgetime".toLowerCase())) && (x == 2)) {
-                    mLoadingCircle.setVisibility(VISIBLE);
-                    mLoadingText.setText("Retrieving Edge Classes...");
-                }
                 if ((!webUrl.toLowerCase().contains("edgetime".toLowerCase())) && (!webUrl.toLowerCase().contains("nohs".toLowerCase()))) {
                     //check to make sure web page hasn't been opened already (avoids opening 20+ chrome tabs upon one button click)
                     mLoginPage.stopLoading();
@@ -580,6 +576,11 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    private void refreshEdgeLink() {
+        uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
+        mEdgeLink.loadUrl("https://api.superfanu.com/6.0.0/gen/link_track.php?platform=Web:%20chrome&uuid=" + uuid + "&nid=305&lkey=nohsstampede-edgetime-module");
     }
 
     private void savePreferences() {
@@ -769,18 +770,6 @@ public class MainActivity extends AppCompatActivity
             } else {
                 am.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
             }
-        }
-    }
-
-
-    public void getEdgeClasses() {
-        int ClassElement = 0;
-        while (ClassElement != 5) {
-            mLoginPage.loadUrl("javascript:(function(){" +
-                    "if (document.getElementsByClassName('class user-in-class')['" + ClassElement + "'] != undefined){" +
-                    "console.log('RetrievedEdgeClass' + document.getElementsByClassName('class user-in-class')['" + ClassElement + "'].innerHTML);}" +
-                    "})()");
-            ClassElement++;
         }
     }
 

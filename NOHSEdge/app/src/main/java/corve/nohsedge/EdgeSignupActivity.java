@@ -31,6 +31,7 @@ import static corve.nohsedge.MainActivity.EdgeDay5Ar;
 import static corve.nohsedge.MainActivity.EdgeDay5Cur;
 import static corve.nohsedge.MainActivity.EdgeDay5CurValue;
 import static corve.nohsedge.MainActivity.EdgeDay5Value;
+import static corve.nohsedge.MainActivity.EdgeLink;
 import static corve.nohsedge.MainActivity.EdgeNotificationValue;
 import static corve.nohsedge.MainActivity.PREF_EDGE1;
 import static corve.nohsedge.MainActivity.PREF_EDGE2;
@@ -88,7 +89,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
         if(showPage) {
             mEdgePage.setVisibility(View.VISIBLE);
         }
-        mEdgePage.loadUrl("https://api.superfanu.com/6.0.0/gen/link_track.php?platform=Web:%20chrome&uuid=" + uuid + "&nid=305&lkey=nohsstampede-edgetime-module");
+        mEdgePage.loadUrl(EdgeLink);
         WebSettings webSettings = mEdgePage.getSettings();
         webSettings.setDomStorageEnabled(true);
         webSettings.setJavaScriptEnabled(true);
