@@ -149,6 +149,7 @@ public class MainActivity extends AppCompatActivity
     private TextView mEdgeTimeConst;
     private ConnectivityManager cm;
     private String fullName = "";
+    private Boolean invalidPassword;
 
 
     @Override
@@ -465,13 +466,21 @@ public class MainActivity extends AppCompatActivity
                     PRememValue = false;
                     UnameValue = "";
                     PasswordValue = "";
-                    LoginActivity.invalid = true;
+                    invalidPassword = true;
+                    SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putBoolean("invalid", true);
+                    editor.putString(PREF_UNAME, UnameValue);
+                    editor.putString(PREF_PASSWORD, PasswordValue);
+                    editor.putBoolean(PREF_PREMEM, PRememValue);
+                    editor.putBoolean(PREF_AUTOLOGIN, false);
+                    editor.commit();
                     Intent mStartActivity = new Intent(getBaseContext(), MainActivity.class);
                     int mPendingIntentId = 123456;
-                    PendingIntent mPendingIntent = PendingIntent.getActivity(getBaseContext(), mPendingIntentId,    mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
+                    PendingIntent mPendingIntent = PendingIntent.getActivity(getBaseContext(), mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
                     AlarmManager mgr = (AlarmManager)getBaseContext().getSystemService(Context.ALARM_SERVICE);
                     mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
-                    System.exit(0);
+                    android.os.Process.killProcess(android.os.Process.myPid());
                 }
                 if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(UnameValue.toLowerCase())&& x == 1)) {
                     if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
@@ -485,6 +494,10 @@ public class MainActivity extends AppCompatActivity
                             Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
                             startActivity(intent);
                         }
+                        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.putBoolean("invalid", false);
+                        editor.apply();
                         x = 2;
                     }
                 }
@@ -611,6 +624,7 @@ public class MainActivity extends AppCompatActivity
         EdgeDay5CurValue = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
         FirstLoadValue = settings.getBoolean(PREF_FIRSTLOAD, DefaultFirstLoadVaue);
         MinValue = settings.getInt(PREF_MIN, DefaultMinValue);
+        LoginActivity.invalid = settings.getBoolean("invalid", false);
         fullName = settings.getString("fullName", " ");
         ImageLoadOnWiFiValue = settings.getBoolean("ImageLoad", false);
         Log.d("LoadImagesOnWiFi", ImageLoadOnWiFiValue + "");
