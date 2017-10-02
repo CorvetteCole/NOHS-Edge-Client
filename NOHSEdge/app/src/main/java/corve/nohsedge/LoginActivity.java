@@ -40,6 +40,12 @@ public class LoginActivity extends AppCompatActivity {
     static boolean invalid;
 
     @Override
+    protected void onPause(){
+        super.onPause();
+        finish();
+    }
+
+    @Override
     public void onBackPressed() {
         super.onBackPressed();
     }

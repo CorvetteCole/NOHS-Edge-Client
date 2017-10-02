@@ -222,7 +222,8 @@ public class EdgeSignupActivity extends AppCompatActivity {
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) != Calendar.FRIDAY) {
                 if (!showPage) {
                     savePreferences();
-                    super.onBackPressed();
+                    //super.onBackPressed();
+                    finish();
                 }
             }
             EdgeDay5Cur = EdgeDay5Ar[0];
