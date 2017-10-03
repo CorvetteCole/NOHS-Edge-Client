@@ -4,21 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.NumberPicker;
-import android.widget.ProgressBar;
-import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import static corve.nohsedge.MainActivity.PREF_PASSWORD;
 import static corve.nohsedge.MainActivity.PREF_PREMEM;
@@ -38,6 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView mCredit;
     private int a = 0;
     static boolean invalid;
+    private Intent loginIntent;
 
     @Override
     protected void onPause(){
@@ -66,6 +60,7 @@ public class LoginActivity extends AppCompatActivity {
         mEmail = (TextView) findViewById(R.id.emailField);
         mActivateRegister = (TextView) findViewById(R.id.ActivateRegister);
         mRemember.setChecked(PRememValue);
+        loginIntent = new Intent(getBaseContext(), MainActivity.class);
         if (PRememValue) {
             mUsername.setText(UnameValue);
             mPassword.setText(PasswordValue);
@@ -82,13 +77,12 @@ public class LoginActivity extends AppCompatActivity {
                         InputMethodManager.HIDE_NOT_ALWAYS);
             }
                 MainActivity.currentSet = 0;
-                Intent intent = new Intent(getBaseContext(), MainActivity.class);
                 MainActivity.Login = 1;
                 MainActivity.calledForeign = true;
                 UnameValue = mUsername.getText().toString();
                 PasswordValue = mPassword.getText().toString();
                 MainActivity.PRememValue = mRemember.isChecked();
-                startActivity(intent);
+                startActivity(loginIntent);
             }
 
             mActivateRegister.setOnClickListener(
@@ -122,6 +116,7 @@ public class LoginActivity extends AppCompatActivity {
             mLogin.setOnClickListener(
                     new View.OnClickListener() {
                         public void onClick(View view) {
+                            Log.d("ITS BEEN CLICKED", " (the login button I mean)");
                             InputMethodManager inputManager = (InputMethodManager)
                                     getSystemService(Context.INPUT_METHOD_SERVICE);
                             if (getCurrentFocus() != null) {
@@ -142,8 +137,9 @@ public class LoginActivity extends AppCompatActivity {
                                 editor.putBoolean(PREF_PREMEM, mRemember.isChecked());
                                 editor.apply();
                                 MainActivity.PRememValue = mRemember.isChecked();
-                                Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                                startActivity(intent);
+                                setContentView(R.layout.activity_main);
+                                startActivity(loginIntent);
+
                             }
                         }
                     }
@@ -172,9 +168,7 @@ public class LoginActivity extends AppCompatActivity {
                             }
                             editor.putBoolean(PREF_PREMEM, mRemember.isChecked());
                             editor.apply();
-
-                            Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                            startActivity(intent);
+                            startActivity(loginIntent);
                         }
                     }
             );

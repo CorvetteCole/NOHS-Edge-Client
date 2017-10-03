@@ -157,9 +157,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onResume() {
         super.onResume();
-        //if (!calledForeign){
+            Log.d("I sense a resuming", "setting contentview...." );
+            //setContentView(R.layout.activity_main);
             loadPreferences();
-        //}
+
     }
 
     @Override
@@ -171,6 +172,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
         cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (!calledForeign) {
             Intent intent = new Intent(this, LoginActivity.class);
@@ -178,7 +180,7 @@ public class MainActivity extends AppCompatActivity
         }
         if (calledForeign) {
             //setupDrawer();
-            setContentView(R.layout.activity_main);
+            //setContentView(R.layout.activity_main);
             mLoginPage = (WebView) findViewById(R.id.loginWebview);
             mLoadingCircle = (ProgressBar) findViewById(R.id.progressBar);
             mLoadingText = (TextView) findViewById(R.id.LoadingText);
@@ -610,6 +612,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void loadPreferences() {
+        Log.d("LOADDDDDD", " Load my pretties");
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         if (!calledForeign) {
             UnameValue = settings.getString(PREF_UNAME, DefaultUnameValue);
