@@ -717,12 +717,12 @@ public class MainActivity extends AppCompatActivity
         int edgeMin1 = 43 - notifyMinutes;
         int edgeMin2;
         int edgeHour2;
-        if (notifyMinutes > 4) {
-            int x = notifyMinutes - 4;
+        if (notifyMinutes > 9) {
+            int x = notifyMinutes - 9;
             edgeMin2 = 60 - x;
             edgeHour2 = 0;
         } else {
-            edgeMin2 = 4 - notifyMinutes;
+            edgeMin2 = 9 - notifyMinutes;
             edgeHour2 = 1;
         }
         if (EdgeSession == 1) {
