@@ -150,17 +150,14 @@ public class MainActivity extends AppCompatActivity
     private ConnectivityManager cm;
     private String fullName = "";
     private Boolean invalidPassword;
-    private WebView mEdgeLink;
-    static String EdgeLink;
 
 
     @Override
     public void onResume() {
         super.onResume();
-            Log.d("I sense a resuming", "setting contentview...." );
-            //setContentView(R.layout.activity_main);
+        //if (!calledForeign){
             loadPreferences();
-
+        //}
     }
 
     @Override
@@ -180,7 +177,6 @@ public class MainActivity extends AppCompatActivity
         }
         if (calledForeign) {
             //setupDrawer();
-            //setContentView(R.layout.activity_main);
             mLoginPage = (WebView) findViewById(R.id.loginWebview);
             mLoadingCircle = (ProgressBar) findViewById(R.id.progressBar);
             mLoadingText = (TextView) findViewById(R.id.LoadingText);
@@ -191,7 +187,6 @@ public class MainActivity extends AppCompatActivity
             mEdgeTitleConst = (TextView) findViewById(R.id.edgeTitleTextView);
             mEdgeTextConst = (TextView) findViewById(R.id.edgeTextTextView);
             mEdgeTimeConst = (TextView) findViewById(R.id.edgeTimeTextView);
-            mEdgeLink = (WebView) findViewById(R.id.edgeLinkWebView);
             NotificationSet = 0;
             if (Login == 1) {
                 mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
@@ -344,6 +339,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_signup) {
             EdgeSignupActivity.showPage = true;
             drawerClose = false;
+            uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
             Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_gear){
@@ -488,7 +484,6 @@ public class MainActivity extends AppCompatActivity
                 }
                 if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(UnameValue.toLowerCase())&& x == 1)) {
                     if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
-                        refreshEdgeLink();
                         setupDrawer();
                         mLoadingCircle.setVisibility(View.INVISIBLE);
                         setHeaderDetails(cm.message());
@@ -513,20 +508,11 @@ public class MainActivity extends AppCompatActivity
                 callback.invoke(origin, true, false);
             }
         });
-        mEdgeLink.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url){
-                Log.d("EdgeLink", url);
-                mEdgeLink.stopLoading();
-                EdgeLink = url;
-                return true;
-            }
-                                   });
         mLoginPage.setWebViewClient(new WebViewClient() {
+
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                refreshEdgeLink();
                 if (mLoginPage.getUrl().toLowerCase().contains("login")) {
                     mLoginPage.loadUrl("javascript:(function(){" +
                             "document.getElementById('login-username').value = '" + UnameValue + "';" +
@@ -580,11 +566,6 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void refreshEdgeLink() {
-        uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
-        mEdgeLink.loadUrl("https://api.superfanu.com/6.0.0/gen/link_track.php?platform=Web:%20chrome&uuid=" + uuid + "&nid=305&lkey=nohsstampede-edgetime-module");
-    }
-
     private void savePreferences() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         SharedPreferences.Editor editor = settings.edit();
@@ -612,7 +593,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void loadPreferences() {
-        Log.d("LOADDDDDD", " Load my pretties");
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         if (!calledForeign) {
             UnameValue = settings.getString(PREF_UNAME, DefaultUnameValue);

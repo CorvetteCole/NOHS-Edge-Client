@@ -31,7 +31,6 @@ import static corve.nohsedge.MainActivity.EdgeDay5Ar;
 import static corve.nohsedge.MainActivity.EdgeDay5Cur;
 import static corve.nohsedge.MainActivity.EdgeDay5CurValue;
 import static corve.nohsedge.MainActivity.EdgeDay5Value;
-import static corve.nohsedge.MainActivity.EdgeLink;
 import static corve.nohsedge.MainActivity.EdgeNotificationValue;
 import static corve.nohsedge.MainActivity.PREF_EDGE1;
 import static corve.nohsedge.MainActivity.PREF_EDGE2;
@@ -89,7 +88,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
         if(showPage) {
             mEdgePage.setVisibility(View.VISIBLE);
         }
-        mEdgePage.loadUrl(EdgeLink);
+        mEdgePage.loadUrl("https://api.superfanu.com/6.0.0/gen/link_track.php?platform=Web:%20chrome&uuid=" + uuid + "&nid=305&lkey=nohsstampede-edgetime-module");
         WebSettings webSettings = mEdgePage.getSettings();
         webSettings.setDomStorageEnabled(true);
         webSettings.setJavaScriptEnabled(true);
@@ -150,16 +149,6 @@ public class EdgeSignupActivity extends AppCompatActivity {
             }
         });
         mEdgePage.setWebViewClient(new WebViewClient() {
-            /*@Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                if (mLoginPage.getUrl().contains("edgetime")) {
-                    mLoadingCircle.setVisibility(View.INVISIBLE);
-                    mLoginPage.setVisibility(View.VISIBLE);
-                }
-
-            }*/
-
             @Override
             public void onLoadResource(WebView view, String url) {
                 super.onLoadResource(view, url);
