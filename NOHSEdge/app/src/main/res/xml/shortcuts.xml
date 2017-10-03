@@ -8,10 +8,6 @@
         android:shortcutLongLabel="@string/edge_shortcut_long"
         android:shortcutShortLabel="@string/edge_shortcut_short">
         <intent
-            android:action="android.intent.action.MAIN"
-            android:targetClass="corve.nohsedge.MainActivity"
-            android:targetPackage="corve.nohsedge" />
-        <intent
             android:action="android.intent.action.VIEW"
             android:targetClass="corve.nohsedge.EdgeViewActivity"
             android:targetPackage="corve.nohsedge" />

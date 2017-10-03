@@ -41,7 +41,7 @@ public class WeeklyReceiver extends BroadcastReceiver {
     }
     */
         private void showNotification(Context context){
-        String Title="Schedule your NOHS classes today!";
+        String Title="Schedule your Edge classes today!";
         String Text="Get ahead of the crowd!";
         int reqCode = 0;
         Intent intent = new Intent(context, MainActivity.class);
@@ -57,7 +57,6 @@ public class WeeklyReceiver extends BroadcastReceiver {
             notificationChannel.enableLights(true);
             notificationChannel.setLightColor(colorAccent);
             notificationChannel.enableVibration(true);
-            notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
             notificationManager.createNotificationChannel(notificationChannel);
             Notification notification = new Notification.Builder(context)
                     .setContentTitle(Title)

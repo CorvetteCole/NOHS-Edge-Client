@@ -8,18 +8,26 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
-import android.graphics.Color;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Icon;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
-import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
@@ -29,59 +37,68 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.NumberPicker;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Calendar;
 
+import de.cketti.mailto.EmailIntentBuilder;
 
-public class MainActivity extends AppCompatActivity {
+import static android.view.View.VISIBLE;
+
+
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     public static final String PREFS_NAME = "preferences";
-    private static final String PREF_UNAME = "Username";
-    private static final String PREF_PASSWORD = "Password";
-    private static final String PREF_PREMEM = "RememPass";
-    private static final String PREF_NOTIFY = "NOTIFICATIONS";
-    private static final String PREF_AUTOLOGIN = "Autologin";
+    static final String PREF_UNAME = "Username";
+    static final String PREF_PASSWORD = "Password";
+    static final String PREF_PREMEM = "RememPass";
+    static final String PREF_NOTIFYEDGE = "NotifyEdge";
+    static final String PREF_NOTIFYWEEKLY = "NotifyWeekly";
+    static final String PREF_AUTOLOGIN = "AutoLogin";
     public static final String PREF_EDGE1 = "Edge 1";
     public static final String PREF_EDGE2 = "Edge 2";
     public static final String PREF_EDGE3 = "Edge 3";
     public static final String PREF_EDGE4 = "Edge 4";
     public static final String PREF_EDGE5 = "Edge 5";
-    public static final String PREF_CALLEDFOREIGN = "from mainactivity?";
-    public static final String PREF_MIN = "Notify min";
+    public static final String PREF_MIN = "Notify_min";
     public static final String PREF_EDGE5Cur = "Current Friday Edge Class";
-    private String WrongPassword = "pass did not match";
+    private String WrongPassword = "WrongPass";
+    static final String PREF_FIRSTLOAD = "FirstLoad";
     private String webUrl;
     String newUrl = "";
-    private int currentSet = 0;
+    public static int currentSet = 0;
 
+    static boolean ImageLoadOnWiFiValue;
+
+    private final Boolean DefaultFirstLoadVaue = true;
+    private Boolean FirstLoadValue = true;
 
     private final String DefaultUnameValue = "";
-    private String UnameValue;
+    static String UnameValue;
 
     private final String DefaultPasswordValue = "";
-    private String PasswordValue;
+    static String PasswordValue;
 
     private final boolean DefaultPRememValue = false;
-    private boolean PRememValue;
+    static boolean PRememValue;
 
-    private final boolean DefaultNotificationValue = true;
-    private boolean NotificationValue;
+    private final boolean DefaultEdgeNotificationValue = true;
+    static boolean EdgeNotificationValue;
+
+    private final boolean DefaultWeeklyNotificationValue = true;
+    static boolean WeeklyNotificationValue;
 
     private final boolean DefaultAutologinValue = false;
-    private boolean AutologinValue;
-
-    private final boolean DefaultCalledForeign = false;
-    private boolean calledForeign;
+    static boolean AutologinValue;
 
     public static final int DefaultMinValue = 5;
-    private int MinValue;
+    static int MinValue;
 
 
     public final static String DefaultEdgeDay1Value = "";
@@ -90,54 +107,60 @@ public class MainActivity extends AppCompatActivity {
     public final static String DefaultEdgeDay4Value = "";
     public final static String DefaultEdgeDay5Value = "";
     public final static String DefaultEdgeDay5CurValue = "";
-    private String EdgeDay1Value;
-    private String EdgeDay2Value;
-    private String EdgeDay3Value;
-    private String EdgeDay4Value;
-    private String EdgeDay5Value;
-    private String EdgeDay5CurValue;
-    private int getEdgeClassesRan = 0;
+    static String EdgeDay1Value;
+    static String EdgeDay2Value;
+    static String EdgeDay3Value;
+    static String EdgeDay4Value;
+    static String EdgeDay5Value;
+    static String EdgeDay5CurValue;
+    static String EmailValue;
 
-    Button mLogin;
-    TextView mCredit;
     ProgressBar mLoadingCircle;
     private static final String TAG = "MainActivity";
     int x = 0;
     private WebView mLoginPage;
-    private TextView mUsername;
-    private TextView mPassword;
-    private CheckBox mRemember;
-    private String edgeUrl;
     private TextView mLoadingText;
-    private Button mRegister;
-    private TextView mEmail;
-    private TextView mActivateRegister;
-    private Switch mNotify;
-    private Switch mAutoLogin;
-    private Button mSettings;
-    int a = 0;
     static int REQUEST_CODE = 0;
     static int REQUEST_CODE_EDGE = 1;
     static int REQUEST_CODE_WEEKLY = 2;
     private Button mLogout;
-    private String EdgeDay1;
-    private String EdgeDay2;
-    private String EdgeDay3;
-    private String EdgeDay4;
-    private String EdgeDay5;
-    private String EdgeDay5Cur;
+    static String EdgeDay1;
+    static String EdgeDay2;
+    static String EdgeDay3;
+    static String EdgeDay4;
+    static String EdgeDay5;
+    static String EdgeDay5Cur;
     public int NotificationSet;
-    public int notifyMinutes = 5;
+    static int notifyMinutes = 5;
     private boolean settingsOpen = false;
-    private NumberPicker mNumberPicker;
-    private TextView mNumberPickerTextView;
-    private String[] EdgeDay5Ar = new String[2];
+    static String[] EdgeDay5Ar = new String[2];
+    public static int Login = 0;
+    public static int Register = 0;
+    public static boolean calledForeign;
+    private TextView mWelcome;
+    private String edgePage;
+    private int id;
+    static String uuid;
+    private TextView mEdgeTitle;
+    private TextView mEdgeText;
+    private TextView mEdgeTime;
+    private TextView mEdgeTitleConst;
+    private TextView mEdgeTextConst;
+    private TextView mEdgeTimeConst;
+    private ConnectivityManager cm;
+    private String fullName = "";
+    private Boolean invalidPassword;
+    private WebView mEdgeLink;
+    static String EdgeLink;
 
 
     @Override
     public void onResume() {
         super.onResume();
-        loadPreferences();
+            Log.d("I sense a resuming", "setting contentview...." );
+            //setContentView(R.layout.activity_main);
+            loadPreferences();
+
     }
 
     @Override
@@ -150,180 +173,67 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mLogin = (Button) findViewById(R.id.loginButton);
-        mLoginPage = (WebView) findViewById(R.id.loginWebview);
-        mCredit = (TextView) findViewById(R.id.creditText);
-        mLoadingCircle = (ProgressBar) findViewById(R.id.progressBar);
-        mUsername = (TextView) findViewById(R.id.usernameField);
-        mPassword = (TextView) findViewById(R.id.passwordField);
-        mRemember = (CheckBox) findViewById(R.id.rememberPassword);
-        mLoadingText = (TextView) findViewById(R.id.LoadingText);
-        mRegister = (Button) findViewById(R.id.RegisterButton);
-        mEmail = (TextView) findViewById(R.id.emailField);
-        mActivateRegister = (TextView) findViewById(R.id.ActivateRegister);
-        mNotify = (Switch) findViewById(R.id.NotificationCheckbox);
-        mLogout = (Button) findViewById(R.id.logoutButton);
-        mAutoLogin = (Switch) findViewById(R.id.AutoLoginSwitch);
-        mSettings = (Button) findViewById(R.id.settingsButton);
-        mNumberPicker = (NumberPicker) findViewById(R.id.numberPicker);
-        mNumberPickerTextView = (TextView) findViewById(R.id.numberPickerTextView);
-        NotificationSet = 0;
-        String[] nums = new String[40];
-        for (int i = 0; i < nums.length; i++)
-            nums[i] = Integer.toString(i);
-
-        mNumberPicker.setMinValue(1);
-        mNumberPicker.setMaxValue(40);
-        mNumberPicker.setWrapSelectorWheel(true);
-        mNumberPicker.setDisplayedValues(nums);
-
-        activateEdgeHelper();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(Color.BLACK);
+        cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (!calledForeign) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
-            ShortcutInfo wNOHSShortcut = new ShortcutInfo.Builder(this, "shortcut_web")
-                    .setShortLabel("NOHS Website")
-                    .setLongLabel("Open NOHS Website")
-                    .setIcon(Icon.createWithResource(this, R.drawable.nohs))
-                    .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.oldham.kyschools.us/nohs/")))
-                    .build();
-            ShortcutInfo wCampusShortcut = new ShortcutInfo.Builder(this, "shortcut_dynamic")
-                    .setShortLabel("Campus Portal")
-                    .setLongLabel("Open Campus Portal")
-                    .setIcon(Icon.createWithResource(this, R.drawable.infinitecampus))
-                    .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://kyede10.infinitecampus.org/campus/portal/oldham.jsp")))
-                    .build();
-            shortcutManager.setDynamicShortcuts(Arrays.asList(wNOHSShortcut, wCampusShortcut));
+        if (calledForeign) {
+            //setupDrawer();
+            //setContentView(R.layout.activity_main);
+            mLoginPage = (WebView) findViewById(R.id.loginWebview);
+            mLoadingCircle = (ProgressBar) findViewById(R.id.progressBar);
+            mLoadingText = (TextView) findViewById(R.id.LoadingText);
+            mWelcome = (TextView) findViewById(R.id.helloTextView);
+            mEdgeTitle = (TextView) findViewById(R.id.edgeClassTitle);
+            mEdgeText = (TextView) findViewById(R.id.edgeClassText);
+            mEdgeTime = (TextView) findViewById(R.id.edgeClassTime);
+            mEdgeTitleConst = (TextView) findViewById(R.id.edgeTitleTextView);
+            mEdgeTextConst = (TextView) findViewById(R.id.edgeTextTextView);
+            mEdgeTimeConst = (TextView) findViewById(R.id.edgeTimeTextView);
+            mEdgeLink = (WebView) findViewById(R.id.edgeLinkWebView);
+            NotificationSet = 0;
+            if (Login == 1) {
+                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
+                openLoginpage();
+            }
+            if (Register == 1) {
+                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#register");
+                openLoginpage();
+            }
+
+            activateEdgeHelper();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+                ShortcutInfo wNOHSShortcut = new ShortcutInfo.Builder(this, "shortcut_nohs")
+                        .setShortLabel("NOHS Website")
+                        .setLongLabel("Open NOHS Website")
+                        .setIcon(Icon.createWithResource(this, R.drawable.nohs))
+                        .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.oldham.kyschools.us/nohs/")))
+                        .build();
+                ShortcutInfo wCampusShortcut = new ShortcutInfo.Builder(this, "shortcut_campus")
+                        .setShortLabel("Campus Portal")
+                        .setLongLabel("Open Campus Portal")
+                        .setIcon(Icon.createWithResource(this, R.drawable.infinitecampus))
+                        .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://kyede10.infinitecampus.org/campus/portal/oldham.jsp")))
+                        .build();
+                shortcutManager.setDynamicShortcuts(Arrays.asList(wNOHSShortcut, wCampusShortcut));
+            }
         }
-        mActivateRegister.setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(View view) {
-                        if (mActivateRegister.getText().equals("Back to login")) {
-                            a = 1;
-                        }
-                        if (mActivateRegister.getText().equals("Need to register?")) {
-                            a = 0;
-                        }
+    }
+    private void setupDrawer(){
+        //setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
 
-                        if (a == 0) {
-                            mRegister.setVisibility(View.VISIBLE);
-                            mEmail.setVisibility(View.VISIBLE);
-                            mActivateRegister.setText("Back to login");
-                            mLogin.setVisibility(View.INVISIBLE);
-
-                        }
-                        if (a == 1) {
-                            mRegister.setVisibility(View.INVISIBLE);
-                            mEmail.setVisibility(View.INVISIBLE);
-                            mActivateRegister.setText("Need to register?");
-                            mLogin.setVisibility(View.VISIBLE);
-
-                        }
-                    }
-                }
-        );
-
-        mLogin.setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(View view) {
-                        InputMethodManager inputManager = (InputMethodManager)
-                                getSystemService(Context.INPUT_METHOD_SERVICE);
-                        if (getCurrentFocus() != null) {
-                            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                                    InputMethodManager.HIDE_NOT_ALWAYS);
-                            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
-                            openLoginpage();
-                            getSupportActionBar().hide();
-                            currentSet = 0;
-                            savePreferences();
-                        }
-                    }
-                }
-        );
-        mRegister.setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(View view) {
-                        InputMethodManager inputManager = (InputMethodManager)
-                                getSystemService(Context.INPUT_METHOD_SERVICE);
-                        if (getCurrentFocus() != null) {
-                            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                                    InputMethodManager.HIDE_NOT_ALWAYS);
-                        }
-                        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#register");
-                        openLoginpage();
-                    }
-                }
-        );
-        mLogout.setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(View view) {
-                        getSupportActionBar().show();
-                        mLoginPage.setVisibility(View.INVISIBLE);
-                        mSettings.setVisibility(View.INVISIBLE);
-                        clearCookies(getBaseContext());
-                        mLogin.setVisibility(View.VISIBLE);
-                        mUsername.setText("");
-                        mPassword.setText("");
-                        mRemember.setChecked(false);
-                        mUsername.setVisibility(View.VISIBLE);
-                        mPassword.setVisibility(View.VISIBLE);
-                        mRemember.setVisibility(View.VISIBLE);
-                        mLogout.setVisibility(View.INVISIBLE);
-                    }
-                });
-        mSettings.setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(View view) {
-                        if (settingsOpen) {
-                            a = 1;
-                        }
-                        if (!settingsOpen) {
-                            a = 0;
-                        }
-
-                        if (a == 0) {
-                            mLoginPage.setVisibility(View.INVISIBLE);
-                            mNotify.setVisibility(View.VISIBLE);
-                            mAutoLogin.setVisibility(View.VISIBLE);
-                            mSettings.setText("Back");
-                            settingsOpen = true;
-                            mLoadingCircle.setVisibility(View.INVISIBLE);
-                            mNumberPicker.setVisibility(View.VISIBLE);
-                            mNumberPickerTextView.setVisibility(View.VISIBLE);
-                            mNumberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-                                @Override
-                                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-
-
-                                    mNumberPickerTextView.setText("Send notification " + (newVal - 1) + " minutes before class");
-                                    notifyMinutes = newVal - 1;
-                                }
-                            });
-
-
-                        }
-                        if (a == 1) {
-                            mLoginPage.setVisibility(View.VISIBLE);
-                            mNotify.setVisibility(View.INVISIBLE);
-                            mAutoLogin.setVisibility(View.INVISIBLE);
-                            mSettings.setText("Settings");
-                            settingsOpen = false;
-                            mLoadingCircle.setVisibility(View.INVISIBLE);
-                            mNumberPicker.setVisibility(View.INVISIBLE);
-                            mNumberPickerTextView.setVisibility(View.INVISIBLE);
-                            savePreferences();
-
-                        }
-                    }
-                }
-        );
-
-
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        getSupportActionBar().setTitle("Home");
     }
 
 
@@ -364,51 +274,170 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        /*if (mLoginPage.getUrl().toLowerCase().contains("edgetime".toLowerCase()) && mLoginPage.canGoBack()){
-            mLoginPage.goBack();
-            mLoadingText.setVisibility(View.VISIBLE);
-            mLoadingText.setText("Loading homescreen...");
-            int t = 0;
-            while (t < 1000){
-                t++;
-            }
-            mLoginPage.goBack();
-            //mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen");
-        }*/
-
-
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        }
         if (mLoginPage.canGoBack() && !settingsOpen) {
             mLoginPage.goBack();
             if (mLoginPage.getUrl().toLowerCase().contains("edgetime".toLowerCase())) {
                 Toast.makeText(this, "Click again to exit Edge", Toast.LENGTH_SHORT).show();
             }
-        } else if (settingsOpen) {
-            mNotify.setVisibility(View.INVISIBLE);
-            mAutoLogin.setVisibility(View.INVISIBLE);
-            mLoginPage.setVisibility(View.VISIBLE);
-            mSettings.setText("Settings");
-            mLoadingCircle.setVisibility(View.INVISIBLE);
-            settingsOpen = false;
-            mNumberPicker.setVisibility(View.INVISIBLE);
-            mNumberPickerTextView.setVisibility(View.INVISIBLE);
-        } else {
+        }  else {
             Log.d("not good", "kill me");
             super.onBackPressed();
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        //getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
 
-    public void openLoginpage() {
-        mActivateRegister.setVisibility(View.GONE);
-        mEmail.setVisibility(View.INVISIBLE);
-        mRegister.setVisibility(View.GONE);
-        mLogin.setVisibility(View.INVISIBLE);
-        mCredit.setVisibility(View.INVISIBLE);
-        mRemember.setVisibility(View.INVISIBLE);
-        mLoadingCircle.setVisibility(View.VISIBLE);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        //if (id == R.id.action_settings) {
+        //    return true;
+        //}
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        id = item.getItemId();
+        boolean drawerClose = true;
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        //boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
+        Log.d("isWiFi?", isWiFi + "");
+        if (!ImageLoadOnWiFiValue){
+            WebSettings webSettings = mLoginPage.getSettings();
+            webSettings.setLoadsImagesAutomatically(true);
+            Log.d("ImgLoadStatus", "Cell&WiFi");
+        }
+        if (ImageLoadOnWiFiValue && isWiFi){
+            WebSettings webSettings = mLoginPage.getSettings();
+            webSettings.setLoadsImagesAutomatically(true);
+            Log.d("ImgLoadStatus", "WiFi");
+        } if (ImageLoadOnWiFiValue && !isWiFi) {
+            WebSettings webSettings = mLoginPage.getSettings();
+            webSettings.setLoadsImagesAutomatically(false);
+            Log.d("ImgLoadStatus", "Disabled");
+        }
+
+        if (id == R.id.nav_schedule) {
+            drawerClose = false;
+            uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
+            Intent intent = new Intent(getBaseContext(), EdgeViewActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_signup) {
+            EdgeSignupActivity.showPage = true;
+            drawerClose = false;
+            Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_gear){
+            drawerClose = false;
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://sideline.bsnsports.com/schools/kentucky/goshen/north-oldham-high-school"));
+            startActivity(browserIntent);
+        } else if (id == R.id.nav_feedback){
+            Intent emailIntent = EmailIntentBuilder.from(this)
+                    .to("corvettecole@gmail.com")
+                    .subject("NOHS Stampede App")
+                    .build();
+            startActivity(emailIntent);
+        } else if (id == R.id.nav_profile) {
+            getSupportActionBar().setTitle("Profile");
+            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#profile-edit");
+            edgePage = "profile-edit";
+            mLoginPage.setVisibility(VISIBLE);
+            setWelcomeVisible(false);
+        } else if (id == R.id.nav_settings) {
+            Intent i = new Intent(this, PreferencesActivity.class);
+            startActivity(i);
+            drawerClose = false;
+        } else if (id == R.id.nav_homescreen){
+            getSupportActionBar().setTitle("Home");
+            mLoginPage.setVisibility(View.INVISIBLE);
+            setWelcomeVisible(true);
+        } else if (id == R.id.nav_notifications){
+            getSupportActionBar().setTitle("Notifications");
+            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#notifications");
+            edgePage = "notifications";
+            mLoginPage.setVisibility(VISIBLE);
+            setWelcomeVisible(false);
+        } else if (id == R.id.nav_events){
+            getSupportActionBar().setTitle("Events");
+            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#events");
+            mLoginPage.setVisibility(VISIBLE);
+            edgePage = "events";
+            setWelcomeVisible(false);
+        } else if (id == R.id.nav_leaderboard){
+            getSupportActionBar().setTitle("Leaderboard");
+            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#leaderboard");
+            mLoginPage.setVisibility(VISIBLE);
+            edgePage = "leaderboard";
+            setWelcomeVisible(false);
+        } else if (id == R.id.nav_fancam){
+            getSupportActionBar().setTitle("Fancam");
+            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#fancam");
+            mLoginPage.setVisibility(VISIBLE);
+            edgePage = "fancam";
+            setWelcomeVisible(false);
+        } else if (id == R.id.nav_logout){
+            AutologinValue = false;
+            PRememValue = false;
+            UnameValue = "";
+            PasswordValue = "";
+            EdgeDay1 = "";
+            EdgeDay2 = "";
+            EdgeDay3 = "";
+            EdgeDay4 = "";
+            EdgeDay5 = "";
+            EdgeDay5Cur = "";
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putString(PREF_EDGE1, "");
+            editor.putString(PREF_EDGE2, "");
+            editor.putString(PREF_EDGE3, "");
+            editor.putString(PREF_EDGE4, "");
+            editor.putString(PREF_EDGE5, "");
+            editor.putString(PREF_EDGE5Cur, "");
+            editor.putInt(PREF_MIN, 5);
+            editor.apply();
+            mLoginPage.clearHistory();
+            mLoginPage.clearCache(true);
+            clearCookies(this);
+            WebView obj = mLoginPage;
+            obj.clearCache(true);
+            Intent intent = new Intent(getBaseContext(), LoginActivity.class);
+            startActivity(intent);
+            drawerClose = false;
+        }
+        if (drawerClose) {
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+        }
+        return true;
+    }
+
+
+    private void openLoginpage() {
+        //mLoginPage.setVisibility(VISIBLE);
+        mLoadingCircle.setVisibility(VISIBLE);
         mLoadingText.setText("Checking login details...");
-        //mLoadingText.setVisibility(View.VISIBLE);
         WebSettings webSettings = mLoginPage.getSettings();
+        webSettings.setLoadsImagesAutomatically(false);
         webSettings.setDomStorageEnabled(true);
         webSettings.setJavaScriptEnabled(true);
         webSettings.setGeolocationEnabled(true);
@@ -418,6 +447,7 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setAllowFileAccessFromFileURLs(true);
         webSettings.setAppCacheEnabled(true);
         webSettings.setDatabaseEnabled(true);
+
         mLoginPage.clearHistory();
         clearCookies(this);
         mLoginPage.setWebChromeClient(new WebChromeClient() {
@@ -426,46 +456,55 @@ public class MainActivity extends AppCompatActivity {
                 if (progress == 100) {
                     mLoadingText.setVisibility(View.INVISIBLE);
                 } else {
-                    mLoadingText.setVisibility(View.VISIBLE);
-                    mLoadingCircle.setVisibility(View.VISIBLE);
+                    mLoadingText.setVisibility(VISIBLE);
+                    mLoadingCircle.setVisibility(VISIBLE);
                 }
 
             }
-
             public boolean onConsoleMessage(ConsoleMessage cm) {
                 Log.d(TAG, cm.message() + " -- From line "
                         + cm.lineNumber() + " of "
                         + cm.sourceId());
-                if (cm.message().toLowerCase().contains(WrongPassword.toLowerCase())) {
-                    mLoadingCircle.setVisibility(View.INVISIBLE);
-                    mLogin.setVisibility(View.VISIBLE);
-                    mRemember.setVisibility(View.VISIBLE);
-                    mUsername.setVisibility(View.VISIBLE);
-                    mPassword.setVisibility(View.VISIBLE);
-                    getSupportActionBar().show();
-                    //mLoadingText.setVisibility(View.INVISIBLE);
-                    x = 0;
+                if (cm.message().toLowerCase().contains("pass did not match".toLowerCase())) {
+                    AutologinValue = false;
+                    PRememValue = false;
+                    UnameValue = "";
+                    PasswordValue = "";
+                    invalidPassword = true;
+                    SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putBoolean("invalid", true);
+                    editor.putString(PREF_UNAME, UnameValue);
+                    editor.putString(PREF_PASSWORD, PasswordValue);
+                    editor.putBoolean(PREF_PREMEM, PRememValue);
+                    editor.putBoolean(PREF_AUTOLOGIN, false);
+                    editor.commit();
+                    Intent mStartActivity = new Intent(getBaseContext(), MainActivity.class);
+                    int mPendingIntentId = 123456;
+                    PendingIntent mPendingIntent = PendingIntent.getActivity(getBaseContext(), mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
+                    AlarmManager mgr = (AlarmManager)getBaseContext().getSystemService(Context.ALARM_SERVICE);
+                    mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+                    android.os.Process.killProcess(android.os.Process.myPid());
                 }
-                if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(mUsername.getText().toString())&& x == 1)) {
+                if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(UnameValue.toLowerCase())&& x == 1)) {
                     if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
+                        refreshEdgeLink();
+                        setupDrawer();
                         mLoadingCircle.setVisibility(View.INVISIBLE);
-                        mLoginPage.setVisibility(View.VISIBLE);
-                        mUsername.setVisibility(View.GONE);
-                        mPassword.setVisibility(View.GONE);
-                        mRemember.setVisibility(View.GONE);
-                        mEmail.setVisibility(View.GONE);
-                        //mLoadingText.setVisibility(View.INVISIBLE);
+                        setHeaderDetails(cm.message());
+                        setWelcomeVisible(true);
+                        if (!EdgeDay5Value.toLowerCase().contains("Fri".toLowerCase())){
+                            EdgeSignupActivity.showPage = false;
+                            uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
+                            Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
+                            startActivity(intent);
+                        }
+                        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.putBoolean("invalid", false);
+                        editor.apply();
                         x = 2;
-                        //confirmLogin();
                     }
-                }
-                if (cm.message().toLowerCase().contains("RetrievedEdgeClass".toLowerCase()) && mNotify.isChecked()) {
-                    InterpretEdgeData(cm.message());
-                }
-                if (cm.message().toLowerCase().contains("post_queue")/* && (cm.lineNumber() == 419)*/) {
-                    mLoadingCircle.setVisibility(View.INVISIBLE);
-                    mLoginPage.setVisibility(View.VISIBLE);
-                    getEdgeClasses();
                 }
                 return true;
             }
@@ -474,14 +513,24 @@ public class MainActivity extends AppCompatActivity {
                 callback.invoke(origin, true, false);
             }
         });
+        mEdgeLink.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url){
+                Log.d("EdgeLink", url);
+                mEdgeLink.stopLoading();
+                EdgeLink = url;
+                return true;
+            }
+                                   });
         mLoginPage.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                if (mLoginPage.getUrl().contains("login")) {
+                refreshEdgeLink();
+                if (mLoginPage.getUrl().toLowerCase().contains("login")) {
                     mLoginPage.loadUrl("javascript:(function(){" +
-                            "document.getElementById('login-username').value = '" + mUsername.getText().toString() + "';" +
-                            "document.getElementById('login-password').value = '" + mPassword.getText().toString() + "';" +
+                            "document.getElementById('login-username').value = '" + UnameValue + "';" +
+                            "document.getElementById('login-password').value = '" + PasswordValue + "';" +
                             "l=document.getElementById('login-btn');" +
                             "e=document.createEvent('HTMLEvents');" +
                             "e.initEvent('click',true,true);" +
@@ -489,11 +538,11 @@ public class MainActivity extends AppCompatActivity {
                             "})()");
                     x = 1;
                 }
-                if (mLoginPage.getUrl().contains("register")) {
+                if (mLoginPage.getUrl().toLowerCase().contains("register")) {
                     mLoginPage.loadUrl("javascript:(function(){" +
-                            "document.getElementById('register-username').value = '" + mUsername.getText().toString() + "';" +
-                            "document.getElementById('register-password').value = '" + mPassword.getText().toString() + "';" +
-                            "document.getElementById('register-email').value = '" + mEmail.getText().toString() + "';" +
+                            "document.getElementById('register-username').value = '" + UnameValue + "';" +
+                            "document.getElementById('register-password').value = '" + PasswordValue + "';" +
+                            "document.getElementById('register-email').value = '" + EmailValue + "';" +
                             "l=document.getElementById('register-btn');" +
                             "e=document.createEvent('HTMLEvents');" +
                             "e.initEvent('click',true,true);" +
@@ -501,27 +550,15 @@ public class MainActivity extends AppCompatActivity {
                             "})()");
                     x = 1;
                 }
-                if ((mLoginPage.getUrl().contains("nohsstampede")) && (x == 2)) {
+                if ((mLoginPage.getUrl().toLowerCase().contains("nohsstampede")) && (x == 2)) {
                     mLoadingCircle.setVisibility(View.INVISIBLE);
-                    mLoginPage.setVisibility(View.VISIBLE);
                     newUrl = "";
                 }
-                if ((mLoginPage.getUrl().contains("edgetime")) && (x == 2)) {
-                    mLoadingCircle.setVisibility(View.INVISIBLE);
-                    mLoginPage.setVisibility(View.VISIBLE);
-                    //mLoadingText.setVisibility(View.INVISIBLE);
+                if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && edgePage != null){
+                    mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + edgePage);
                 }
-                if (mLoginPage.getUrl().toLowerCase().contains("#homescreen".toLowerCase()) && mLoginPage.getVisibility() == View.VISIBLE) {
-                    mSettings.setVisibility(View.VISIBLE);
-                    mLogout.setVisibility(View.VISIBLE);
-                    if (getSupportActionBar() != null) {
-                        getSupportActionBar().hide();
-                    }
-                }
-                if (!mLoginPage.getUrl().toLowerCase().contains("#homescreen".toLowerCase())) {
-                    mSettings.setVisibility(View.INVISIBLE);
-                    mLogout.setVisibility(View.INVISIBLE);
-                }
+
+
             }
 
             @Override
@@ -529,101 +566,79 @@ public class MainActivity extends AppCompatActivity {
                 super.onLoadResource(view, url);
                 webUrl = mLoginPage.getUrl();
                 Log.d("!URL", webUrl);
-                if ((webUrl.toLowerCase().contains("edgetime".toLowerCase())) && (x == 2)) {
-                    edgeUrl = webUrl;
-                    mLoadingCircle.setVisibility(View.VISIBLE);
-                    mLoginPage.setVisibility(View.INVISIBLE);
-                    mLoadingText.setText("Retrieving Edge Classes...");
-                    //mLoadingText.setVisibility(View.VISIBLE);
-                }
                 if ((!webUrl.toLowerCase().contains("edgetime".toLowerCase())) && (!webUrl.toLowerCase().contains("nohs".toLowerCase()))) {
                     //check to make sure web page hasn't been opened already (avoids opening 20+ chrome tabs upon one button click)
-                    mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen");
+                    mLoginPage.stopLoading();
+                    mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + edgePage);
                     if (!webUrl.equals(newUrl)) {
                         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webUrl));
                         startActivity(browserIntent);
                         newUrl = webUrl;
                     }
                 }
-                if (webUrl.toLowerCase().contains("#homescreen".toLowerCase()) && mLoadingCircle.getVisibility() == View.INVISIBLE) {
-                    if (mLoginPage.getVisibility() == View.VISIBLE) {
-                        mSettings.setVisibility(View.VISIBLE);
-                        mLogout.setVisibility(View.VISIBLE);
-                    }
-                }
-                if (!webUrl.toLowerCase().contains("#homescreen".toLowerCase())) {
-                    mSettings.setVisibility(View.INVISIBLE);
-                    mLogout.setVisibility(View.INVISIBLE);
-                }
-                //if (webUrl.toLowerCase().contains("#login".toLowerCase())){
-                //    mLoginPage.setVisibility(View.INVISIBLE);
-                //    mLoadingCircle.setVisibility(View.VISIBLE);
-                //}
-
             }
         });
     }
 
-    public void savePreferences() {
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
-                Context.MODE_APPEND);
+    private void refreshEdgeLink() {
+        uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
+        mEdgeLink.loadUrl("https://api.superfanu.com/6.0.0/gen/link_track.php?platform=Web:%20chrome&uuid=" + uuid + "&nid=305&lkey=nohsstampede-edgetime-module");
+    }
+
+    private void savePreferences() {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         SharedPreferences.Editor editor = settings.edit();
 
         // Edit and commit
-        UnameValue = mUsername.getText().toString();
-        PasswordValue = mPassword.getText().toString();
-        PRememValue = mRemember.isChecked();
-        NotificationValue = mNotify.isChecked();
-        AutologinValue = mAutoLogin.isChecked();
         EdgeDay1Value = EdgeDay1;
         EdgeDay2Value = EdgeDay2;
         EdgeDay3Value = EdgeDay3;
         EdgeDay4Value = EdgeDay4;
         EdgeDay5Value = EdgeDay5;
         EdgeDay5CurValue = EdgeDay5Cur;
-        MinValue = notifyMinutes;
-        if (mRemember.isChecked()) {
+        if (PRememValue) {
             editor.putString(PREF_UNAME, UnameValue);
             editor.putString(PREF_PASSWORD, PasswordValue);
         }
-        editor.putBoolean(PREF_NOTIFY, NotificationValue);
         editor.putBoolean(PREF_PREMEM, PRememValue);
-        editor.putBoolean(PREF_AUTOLOGIN, AutologinValue);
         editor.putString(PREF_EDGE1, EdgeDay1Value);
         editor.putString(PREF_EDGE2, EdgeDay2Value);
         editor.putString(PREF_EDGE3, EdgeDay3Value);
         editor.putString(PREF_EDGE4, EdgeDay4Value);
         editor.putString(PREF_EDGE5, EdgeDay5Value);
         editor.putString(PREF_EDGE5Cur, EdgeDay5CurValue);
-        editor.putInt(PREF_MIN, MinValue);
+        editor.putString("fullName", fullName);
         editor.apply();
     }
 
     public void loadPreferences() {
-
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
-                Context.MODE_PRIVATE);
-
-        // Get value
-        UnameValue = settings.getString(PREF_UNAME, DefaultUnameValue);
-        PasswordValue = settings.getString(PREF_PASSWORD, DefaultPasswordValue);
-        PRememValue = settings.getBoolean(PREF_PREMEM, DefaultPRememValue);
-        NotificationValue = settings.getBoolean(PREF_NOTIFY, DefaultNotificationValue);
+        Log.d("LOADDDDDD", " Load my pretties");
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        if (!calledForeign) {
+            UnameValue = settings.getString(PREF_UNAME, DefaultUnameValue);
+            PasswordValue = settings.getString(PREF_PASSWORD, DefaultPasswordValue);
+            PRememValue = settings.getBoolean(PREF_PREMEM, DefaultPRememValue);
+        }
+        EdgeNotificationValue = settings.getBoolean(PREF_NOTIFYEDGE, DefaultEdgeNotificationValue);
         AutologinValue = settings.getBoolean(PREF_AUTOLOGIN, DefaultAutologinValue);
+        WeeklyNotificationValue = settings.getBoolean(PREF_NOTIFYWEEKLY, DefaultWeeklyNotificationValue);
         EdgeDay1Value = settings.getString(PREF_EDGE1, DefaultEdgeDay1Value);
         EdgeDay2Value = settings.getString(PREF_EDGE2, DefaultEdgeDay2Value);
         EdgeDay3Value = settings.getString(PREF_EDGE3, DefaultEdgeDay3Value);
         EdgeDay4Value = settings.getString(PREF_EDGE4, DefaultEdgeDay4Value);
         EdgeDay5Value = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
         EdgeDay5CurValue = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
+        FirstLoadValue = settings.getBoolean(PREF_FIRSTLOAD, DefaultFirstLoadVaue);
         MinValue = settings.getInt(PREF_MIN, DefaultMinValue);
-        if (NotificationValue) {
-            Log.d("Setting notification", " ");
+        LoginActivity.invalid = settings.getBoolean("invalid", false);
+        fullName = settings.getString("fullName", " ");
+        ImageLoadOnWiFiValue = settings.getBoolean("ImageLoad", false);
+        Log.d("LoadImagesOnWiFi", ImageLoadOnWiFiValue + "");
+        Log.d("EdgeNotificationValue", EdgeNotificationValue + "");
+        if (WeeklyNotificationValue) {
+            Log.d("SettingWeeklyNotif", "SettingWeeklyNotif");
             setWeeklyNotifications();
         }
-        mAutoLogin.setChecked(AutologinValue);
-        mRemember.setChecked(PRememValue);
-        mNotify.setChecked(NotificationValue);
         EdgeDay1 = EdgeDay1Value;
         EdgeDay2 = EdgeDay2Value;
         EdgeDay3 = EdgeDay3Value;
@@ -631,27 +646,39 @@ public class MainActivity extends AppCompatActivity {
         EdgeDay5 = EdgeDay5Value;
         EdgeDay5Cur = EdgeDay5CurValue;
         notifyMinutes = MinValue;
-        mNumberPicker.setValue((notifyMinutes + 1));
-        mNumberPickerTextView.setText("Send notification " + (notifyMinutes) + " minutes before class");
-
-        InterpretEdgeData(EdgeDay1);
-        InterpretEdgeData(EdgeDay2);
-        InterpretEdgeData(EdgeDay3);
-        InterpretEdgeData(EdgeDay4);
-        InterpretEdgeData(EdgeDay5);
+        if (calledForeign) {
+            Log.d("loadPrefs", "interpreting edge data...");
+            InterpretEdgeData(EdgeDay1);
+            InterpretEdgeData(EdgeDay2);
+            InterpretEdgeData(EdgeDay3);
+            InterpretEdgeData(EdgeDay4);
+            InterpretEdgeData(EdgeDay5);
+        }
+        if (FirstLoadValue && UnameValue == null){
+            SharedPreferences oldSettings = getSharedPreferences("preferences",
+                    Context.MODE_PRIVATE);
+            UnameValue = oldSettings.getString(PREF_UNAME, DefaultUnameValue);
+            PasswordValue = oldSettings.getString(PREF_PASSWORD, DefaultPasswordValue);
+            PRememValue = oldSettings.getBoolean(PREF_PREMEM, DefaultPRememValue);
+            EdgeNotificationValue = oldSettings.getBoolean(PREF_NOTIFYEDGE, DefaultEdgeNotificationValue);
+            AutologinValue = oldSettings.getBoolean(PREF_AUTOLOGIN, DefaultAutologinValue);
+            MinValue = oldSettings.getInt(PREF_MIN, DefaultMinValue);
+            FirstLoadValue = false;
+            SharedPreferences.Editor editor = settings.edit();
+            if (PRememValue) {
+                editor.putString(PREF_UNAME, UnameValue);
+                editor.putString(PREF_PASSWORD, PasswordValue);
+            }
+            editor.putBoolean(PREF_NOTIFYEDGE, EdgeNotificationValue);
+            editor.putBoolean(PREF_PREMEM, PRememValue);
+            editor.putBoolean(PREF_AUTOLOGIN, AutologinValue);
+            editor.putBoolean(PREF_FIRSTLOAD, FirstLoadValue);
+            editor.putInt(PREF_MIN, MinValue);
+            editor.apply();
+        }
         currentSet = 0;
-
-        if (mRemember.isChecked()) {
-            mUsername.setText(UnameValue);
-            mPassword.setText(PasswordValue);
-        }
-        if (mAutoLogin.isChecked() && !mUsername.getText().toString().equals("") && !mPassword.getText().toString().equals("") && !calledForeign) {
-            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
-            openLoginpage();
-            getSupportActionBar().hide();
-        }
-
     }
+
 
     private void setWeeklyNotifications() {
         Calendar calendar3 = Calendar.getInstance();
@@ -660,21 +687,16 @@ public class MainActivity extends AppCompatActivity {
         calendar3.set(Calendar.MINUTE, 0);
         calendar3.set(Calendar.SECOND, 0);
         calendar3.set(Calendar.AM_PM, Calendar.PM);
-        if ((calendar3.getTimeInMillis() - System.currentTimeMillis()) > 0) {
+        if ((calendar3.getTimeInMillis() - System.currentTimeMillis()) > 0 && WeeklyNotificationValue) {
             Intent intent3 = new Intent(this, WeeklyReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
                     REQUEST_CODE_WEEKLY, intent3, PendingIntent.FLAG_UPDATE_CURRENT);
             AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);
-            am.setExact(AlarmManager.RTC_WAKEUP, calendar3.getTimeInMillis(), pendingIntent);
-        /*ComponentName component = new ComponentName(this, WeeklyReceiver.class);
-        JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE_WEEKLY, component)
-                .setMinimumLatency(calendar3.getTimeInMillis() - System.currentTimeMillis())
-                .setPersisted(true)
-                .setOverrideDeadline((calendar3.getTimeInMillis() - System.currentTimeMillis()) + 1800000);
-        JobScheduler jobScheduler = (JobScheduler) this.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        if (calendar3.getTimeInMillis() - System.currentTimeMillis() > 0){
-            jobScheduler.schedule(builder.build());
-            */
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar3.getTimeInMillis(), pendingIntent);
+            } else {
+                am.set(AlarmManager.RTC_WAKEUP, calendar3.getTimeInMillis(), pendingIntent);
+            }
         }
     }
 
@@ -687,7 +709,6 @@ public class MainActivity extends AppCompatActivity {
         calendar2.set(Calendar.SECOND, 0);
         calendar2.set(Calendar.AM_PM, Calendar.AM);
         long activateTime;
-        //ComponentName component = new ComponentName(this, EdgeClassNotifHelper.class);
         Log.d("!edgehelp c2", calendar2.getTimeInMillis() + "");
         Log.d("!edgehelp s", System.currentTimeMillis() + "");
         if (calendar2.getTimeInMillis() < System.currentTimeMillis()) {
@@ -697,22 +718,20 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Log.d("edgehelptime", (activateTime - System.currentTimeMillis()) + "");
-        Intent intent2 = new Intent(this, EdgeClassNotifHelper.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
-                REQUEST_CODE, intent2, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);
-        //am.setInexactRepeating(AlarmManager.RTC_WAKEUP, activateTime, AlarmManager.INTERVAL_DAY, pendingIntent);
-        am.setExact(AlarmManager.RTC_WAKEUP, activateTime, pendingIntent);
-        /*JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE, component)
-                .setPersisted(true)
-                .setMinimumLatency((calendar2.getTimeInMillis()) - System.currentTimeMillis())
-                .setOverrideDeadline(ONE_MIN * 180);
-
-        JobScheduler jobScheduler = (JobScheduler) this.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        jobScheduler.schedule(builder.build());*/
+        if (EdgeNotificationValue) {
+            Intent intent2 = new Intent(this, EdgeClassNotifHelper.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
+                    REQUEST_CODE, intent2, PendingIntent.FLAG_UPDATE_CURRENT);
+            AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar2.getTimeInMillis(), pendingIntent);
+            } else {
+                am.set(AlarmManager.RTC_WAKEUP, calendar2.getTimeInMillis(), pendingIntent);
+            }
+        }
     }
 
-    public void setEdgeNotifications(String EdgeTitle, String EdgeText, int EdgeSession, int DayofWeek) {
+    private void setEdgeNotifications(String EdgeTitle, String EdgeText, int EdgeSession, int DayofWeek) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         int edgeMin1 = 43 - notifyMinutes;
@@ -741,49 +760,29 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("TITLE", EdgeTitle);
         editor.putString("TEXT", EdgeText);
-        editor.commit();
-        Log.d("Notification set", EdgeTitle);
+        editor.apply();
         Log.d("edgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
-        if ((calendar.getTimeInMillis() - System.currentTimeMillis()) > 0) {
-            Intent intent1 = new Intent(this, Receiver.class);
+        if ((calendar.getTimeInMillis() - System.currentTimeMillis()) > 0 && EdgeNotificationValue) {
+            Log.d("NotificationSet", EdgeTitle);
+            Intent intent1 = new Intent(this, EdgeReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
                     REQUEST_CODE_EDGE, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
             AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);
-            am.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-
-       /* ComponentName component = new ComponentName(this, Receiver.class);
-        JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE_EDGE, component)
-                .setMinimumLatency(calendar.getTimeInMillis() - System.currentTimeMillis())
-                .setPersisted(true)
-                .setOverrideDeadline((calendar.getTimeInMillis() - System.currentTimeMillis()) + 60000);
-            JobScheduler jobScheduler = (JobScheduler) this.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-            if (calendar.getTimeInMillis() - System.currentTimeMillis() > 0){
-                jobScheduler.schedule(builder.build());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            } else {
+                am.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
             }
-            */
-
         }
     }
 
-
-    public void getEdgeClasses() {
-        int ClassElement = 0;
-        while (ClassElement != 5) {
-            mLoginPage.loadUrl("javascript:(function(){" +
-                    "if (document.getElementsByClassName('class user-in-class')['" + ClassElement + "'] != undefined){" +
-                    "console.log('RetrievedEdgeClass' + document.getElementsByClassName('class user-in-class')['" + ClassElement + "'].innerHTML);}" +
-                    "})()");
-            ClassElement++;
-        }
-    }
-
-    public String parseEdgeTitle(String EdgeString) {
+    public static String parseEdgeTitle(String EdgeString) {
         EdgeString = EdgeString.substring(EdgeString.indexOf(">") + 1);
         EdgeString = EdgeString.substring(0, EdgeString.indexOf("</h3>"));
         return EdgeString;
     }
 
-    public int parseEdgeSession(String EdgeString) {
+    public static int parseEdgeSession(String EdgeString) {
         int session = 0;
         if (EdgeString.toLowerCase().contains("12:43")) {
             session = 1;
@@ -794,64 +793,154 @@ public class MainActivity extends AppCompatActivity {
         return session;
     }
 
-    public String parseEdgeText(String EdgeString) {
+    public static String parseEdgeText(String EdgeString) {
         EdgeString = EdgeString.substring(EdgeString.indexOf("g>") + 2);
         EdgeString = EdgeString.substring(0, EdgeString.indexOf("</"));
         return EdgeString;
     }
 
-    public void InterpretEdgeData(String consoleMessage) {
+    private void setHeaderDetails(String message){
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View hView =  navigationView.getHeaderView(0);
+        TextView nav_user = hView.findViewById(R.id.HeaderName);
+        TextView nav_username = hView.findViewById(R.id.HeaderUsername);
+        //ImageView nav_image = hView.findViewById(R.id.HeaderImage);
+        String name;
+        String username;
+        String imageurl;
+        name = message.substring(message.indexOf("\"name\":\"") + 8);
+        name = name.substring(0, name.indexOf("\","));
+        Log.d("name", name);
+        nav_user.setText(name);
+        fullName = name;
+        mWelcome.setText("Hello, " + fullName);
+        username = message.substring(message.indexOf("\"username\":\"") + 12);
+        username = username.substring(0, username.indexOf("\","));
+        Log.d("username", username);
+        nav_username.setText(username);
+        imageurl = message.substring(message.indexOf("\"profile_pic\":\"") + 15);
+        imageurl = imageurl.substring(0, imageurl.indexOf("\","));
+        imageurl = imageurl.replace("/","");
+        Log.d("imageurl", imageurl);
+        imageurl = "http://objects-us-west-1.dream.io/sfu-profiles/default.jpg";
+        /*new DownloadImageTask(nav_image)
+                .execute(imageurl);*/
+    }
+
+     private void InterpretEdgeData(String consoleMessage) {
         if (consoleMessage.toLowerCase().contains("Mon".toLowerCase())) {
             EdgeDay1 = consoleMessage;
             Log.d("Monday Edge Class", EdgeDay1);
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY) {
+            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY && !consoleMessage.toLowerCase().contains("undefined")) {
+                setEdgeMessage(consoleMessage);
                 setEdgeNotifications(parseEdgeTitle(EdgeDay1), parseEdgeText(EdgeDay1), parseEdgeSession(EdgeDay1), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             }
         }
-        if (consoleMessage.toLowerCase().contains("Tue".toLowerCase())) {
+        if (consoleMessage.toLowerCase().contains("Tue".toLowerCase()) && !consoleMessage.toLowerCase().contains("undefined")) {
             EdgeDay2 = consoleMessage;
             Log.d("Tuesday Edge Class", EdgeDay2);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY) {
+                setEdgeMessage(consoleMessage);
                 setEdgeNotifications(parseEdgeTitle(EdgeDay2), parseEdgeText(EdgeDay2), parseEdgeSession(EdgeDay2), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             }
         }
-        if (consoleMessage.toLowerCase().contains("Wed".toLowerCase())) {
+        if (consoleMessage.toLowerCase().contains("Wed".toLowerCase()) && !consoleMessage.toLowerCase().contains("undefined")) {
             EdgeDay3 = consoleMessage;
             Log.d("Wednesday Edge Class", EdgeDay3);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY) {
+                setEdgeMessage(consoleMessage);
                 setEdgeNotifications(parseEdgeTitle(EdgeDay3), parseEdgeText(EdgeDay3), parseEdgeSession(EdgeDay3), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             }
         }
-        if (consoleMessage.toLowerCase().contains("Thu".toLowerCase())) {
+        if (consoleMessage.toLowerCase().contains("Thu".toLowerCase()) && !consoleMessage.toLowerCase().contains("undefined")) {
             EdgeDay4 = consoleMessage;   //Thursday
             Log.d("Thursday Edge Class", EdgeDay4);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY) {
+                setEdgeMessage(consoleMessage);
                 setEdgeNotifications(parseEdgeTitle(EdgeDay4), parseEdgeText(EdgeDay4), parseEdgeSession(EdgeDay4), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             }
         }
-        if (consoleMessage.toLowerCase().contains("Fri".toLowerCase())) {
+        if (consoleMessage.toLowerCase().contains("Fri".toLowerCase()) && !consoleMessage.toLowerCase().contains("undefined")) {
             EdgeDay5 = consoleMessage;
             if (currentSet == 0) {
                 EdgeDay5Ar[0] = consoleMessage;
                 currentSet = 1;
             }
             else {
-                Log.d("TRIGGERRRREEEDDD", "");
                 EdgeDay5Ar[1] = EdgeDay5;
             }
             if (!consoleMessage.contains(EdgeDay5Ar[0])) {
                 EdgeDay5Ar[1] = consoleMessage;
             }
             EdgeDay5Cur = EdgeDay5Ar[0];
-            Log.d("!test!", EdgeDay5Cur);
+            Log.d("Cur Friday Edge Class", EdgeDay5Cur);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
+                setEdgeMessage(consoleMessage);
                 setEdgeNotifications(parseEdgeTitle(EdgeDay5Cur), parseEdgeText(EdgeDay5Cur), parseEdgeSession(EdgeDay5Cur), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
-                SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_APPEND);
-                SharedPreferences.Editor editor = settings.edit();
                 EdgeDay5CurValue = EdgeDay5Cur;
-                editor.putString(PREF_EDGE5Cur, EdgeDay5CurValue);
-                editor.apply();
             }
+        }
+    }
+    public String parseEdgeTime(String EdgeString) {
+        String time = "";
+        if (EdgeString.toLowerCase().contains("12:43")) {
+            time = "12:43";
+        }
+        if (EdgeString.toLowerCase().contains("1:09")) {
+            time = "1:09";
+        }
+        return time;
+    }
+
+    private void setWelcomeVisible(Boolean visible){
+        if (!visible) {
+            mEdgeTitleConst.setVisibility(View.INVISIBLE);
+            mEdgeTimeConst.setVisibility(View.INVISIBLE);
+            mEdgeTextConst.setVisibility(View.INVISIBLE);
+            mWelcome.setVisibility(View.INVISIBLE);
+            mEdgeTitle.setVisibility(View.INVISIBLE);
+            mEdgeText.setVisibility(View.INVISIBLE);
+            mEdgeTime.setVisibility(View.INVISIBLE);
+        }
+        if (visible) {
+            mEdgeTitleConst.setVisibility(View.VISIBLE);
+            mEdgeTimeConst.setVisibility(View.VISIBLE);
+            mEdgeTextConst.setVisibility(View.VISIBLE);
+            mWelcome.setVisibility(View.VISIBLE);
+            mEdgeTitle.setVisibility(View.VISIBLE);
+            mEdgeText.setVisibility(View.VISIBLE);
+            mEdgeTime.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void setEdgeMessage(String consoleMessage){
+        mEdgeTitle.setText(parseEdgeTitle(consoleMessage));
+        mEdgeText.setText(parseEdgeText(consoleMessage));
+        mEdgeTime.setText(parseEdgeTime(consoleMessage));
+        mWelcome.setText("Hello, " + fullName);
+    }
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
         }
     }
 }

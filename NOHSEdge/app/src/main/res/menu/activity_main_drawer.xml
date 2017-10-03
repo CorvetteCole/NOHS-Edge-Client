@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_homescreen"
+            android:icon="@drawable/ic_home"
+            android:title="Home"/>
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_account_circle"
+            android:title="Profile"/>
+        <item
+            android:id="@+id/nav_notifications"
+            android:icon="@drawable/ic_notifications"
+            android:title="Notifications"/>
+
+        <item
+            android:id="@+id/nav_events"
+            android:icon="@drawable/ic_event"
+            android:title="Events"/>
+        <item
+            android:id="@+id/nav_leaderboard"
+            android:icon="@drawable/ic_leaderboard"
+            android:title="Leaderboard"/>
+        <item
+            android:id="@+id/nav_fancam"
+            android:icon="@drawable/ic_photo"
+            android:title="Fancam"/>
+        <item
+            android:id="@+id/nav_gear"
+            android:icon="@drawable/ic_open_in_browser"
+            android:title="Gear"/>
+        <item android:title="Edge">
+            <menu>
+                <item
+                    android:id="@+id/nav_schedule"
+                    android:icon="@drawable/ic_schedule"
+                    android:title="Edge Schedule"/>
+                <item
+                    android:id="@+id/nav_signup"
+                    android:icon="@drawable/ic_update"
+                    android:title="Edge Sign up"/>
+            </menu>
+        </item>
+        <item android:title="Options">
+                    <menu>
+                        <item
+                            android:id="@+id/nav_logout"
+                            android:icon="@drawable/ic_logout"
+                            android:title="Logout"/>
+                        <item
+                            android:id="@+id/nav_settings"
+                            android:icon="@drawable/ic_menu_settings"
+                            android:title="Settings"/>
+                        <item
+                            android:id="@+id/nav_feedback"
+                            android:icon="@drawable/ic_feedback"
+                            android:title="Send Feedback"/>
+                    </menu>
+                </item>
+    </group>
+
+</menu>

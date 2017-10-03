@@ -2,15 +2,11 @@ package corve.nohsedge;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.app.job.JobInfo;
-import android.app.job.JobParameters;
-import android.app.job.JobScheduler;
-import android.app.job.JobService;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -31,6 +27,7 @@ import static corve.nohsedge.MainActivity.PREF_EDGE4;
 import static corve.nohsedge.MainActivity.PREF_EDGE5;
 import static corve.nohsedge.MainActivity.PREF_EDGE5Cur;
 import static corve.nohsedge.MainActivity.PREF_MIN;
+import static corve.nohsedge.MainActivity.PREF_NOTIFYEDGE;
 
 /**
  * Created by Cole on 9/18/2017.
@@ -41,6 +38,7 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
     private int notifyMinutes;
     private Context context1;
     private String EdgeDay5Cur;
+    private Boolean NotificationEnabled;
     @Override
     public void onReceive(Context context, Intent intent) {
         context1 = context;
@@ -48,19 +46,6 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
 
 
     }
-    /*@Override
-    public boolean onStartJob(JobParameters params) {
-        Log.d("maybe it'll", "work");
-        //setNewEdgeNotif();
-        return true;
-    }
-    @Override
-    public boolean onStopJob(JobParameters params) {
-        Log.d("please kill me", "death");
-        // whether or not you would like JobScheduler to automatically retry your failed job.
-        return true;
-    }
-    */
     public void setNewEdgeNotif(){
         Log.d("!edgehelper worked", "im ok with life");
         loadPreferences();
@@ -78,6 +63,7 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
         String EdgeDay5Value = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
         EdgeDay5Cur = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
         notifyMinutes = settings.getInt(PREF_MIN, DefaultMinValue);
+        NotificationEnabled = settings.getBoolean(PREF_NOTIFYEDGE, true);
 
         InterpretEdgeData(EdgeDay1Value);
         InterpretEdgeData(EdgeDay2Value);
@@ -118,18 +104,22 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("TITLE", EdgeTitle);
         editor.putString("TEXT", EdgeText);
-        editor.commit();
+        editor.apply();
         Log.d("Notification set", EdgeTitle);
         Log.d("!helper!", "notification set");
         Log.d("edgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
-        if ((calendar.getTimeInMillis() - System.currentTimeMillis()) > 0) {
-            Intent intent1 = new Intent(context1, Receiver.class);
+        if ((calendar.getTimeInMillis() - System.currentTimeMillis()) > 0 && NotificationEnabled) {
+            Intent intent1 = new Intent(context1, EdgeReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context1,
                     MainActivity.REQUEST_CODE_EDGE, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
             AlarmManager am = (AlarmManager) context1.getSystemService(ALARM_SERVICE);
-            am.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            } else {
+                am.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            }
 
-       /* ComponentName component = new ComponentName(this, Receiver.class);
+       /* ComponentName component = new ComponentName(this, EdgeReceiver.class);
         JobInfo.Builder builder = new JobInfo.Builder(REQUEST_CODE_EDGE, component)
                 .setMinimumLatency(calendar.getTimeInMillis() - System.currentTimeMillis())
                 .setPersisted(true)
