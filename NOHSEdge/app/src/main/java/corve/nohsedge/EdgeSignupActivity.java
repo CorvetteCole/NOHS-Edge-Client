@@ -149,16 +149,6 @@ public class EdgeSignupActivity extends AppCompatActivity {
             }
         });
         mEdgePage.setWebViewClient(new WebViewClient() {
-            /*@Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                if (mLoginPage.getUrl().contains("edgetime")) {
-                    mLoadingCircle.setVisibility(View.INVISIBLE);
-                    mLoginPage.setVisibility(View.VISIBLE);
-                }
-
-            }*/
-
             @Override
             public void onLoadResource(WebView view, String url) {
                 super.onLoadResource(view, url);
