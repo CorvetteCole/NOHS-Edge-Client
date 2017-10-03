@@ -68,7 +68,6 @@ public class MainActivity extends AppCompatActivity
     public static final String PREF_EDGE5 = "Edge 5";
     public static final String PREF_MIN = "Notify_min";
     public static final String PREF_EDGE5Cur = "Current Friday Edge Class";
-    private String WrongPassword = "WrongPass";
     static final String PREF_FIRSTLOAD = "FirstLoad";
     private String webUrl;
     String newUrl = "";
@@ -123,7 +122,6 @@ public class MainActivity extends AppCompatActivity
     static int REQUEST_CODE = 0;
     static int REQUEST_CODE_EDGE = 1;
     static int REQUEST_CODE_WEEKLY = 2;
-    private Button mLogout;
     static String EdgeDay1;
     static String EdgeDay2;
     static String EdgeDay3;
@@ -149,7 +147,6 @@ public class MainActivity extends AppCompatActivity
     private TextView mEdgeTimeConst;
     private ConnectivityManager cm;
     private String fullName = "";
-    private Boolean invalidPassword;
 
 
     @Override
@@ -350,6 +347,7 @@ public class MainActivity extends AppCompatActivity
             Intent emailIntent = EmailIntentBuilder.from(this)
                     .to("corvettecole@gmail.com")
                     .subject("NOHS Stampede App")
+                    .body("[insert feature request or bug report here]")
                     .build();
             startActivity(emailIntent);
         } else if (id == R.id.nav_profile) {
@@ -466,7 +464,6 @@ public class MainActivity extends AppCompatActivity
                     PRememValue = false;
                     UnameValue = "";
                     PasswordValue = "";
-                    invalidPassword = true;
                     SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
                     SharedPreferences.Editor editor = settings.edit();
                     editor.putBoolean("invalid", true);
