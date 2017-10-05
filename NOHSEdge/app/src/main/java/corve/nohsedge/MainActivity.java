@@ -697,13 +697,13 @@ public class MainActivity extends AppCompatActivity
         Log.d("edgehelptime", (activateTime - System.currentTimeMillis()) + "");
         if (EdgeNotificationValue) {
             Intent intent2 = new Intent(this, EdgeClassNotifHelper.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
+            PendingIntent pendingIntent2 = PendingIntent.getBroadcast(this,
                     REQUEST_CODE, intent2, PendingIntent.FLAG_UPDATE_CURRENT);
             AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar2.getTimeInMillis(), pendingIntent);
+                am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, activateTime, pendingIntent2);
             } else {
-                am.set(AlarmManager.RTC_WAKEUP, calendar2.getTimeInMillis(), pendingIntent);
+                am.setExact(AlarmManager.RTC_WAKEUP, activateTime, pendingIntent2);
             }
         }
     }

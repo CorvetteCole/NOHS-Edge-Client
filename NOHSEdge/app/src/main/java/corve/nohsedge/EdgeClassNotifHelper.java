@@ -107,7 +107,7 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
         editor.apply();
         Log.d("Notification set", EdgeTitle);
         Log.d("!helper!", "notification set");
-        Log.d("edgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
+        Log.d("helperedgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
         if ((calendar.getTimeInMillis() - System.currentTimeMillis()) > 0 && NotificationEnabled) {
             Intent intent1 = new Intent(context1, EdgeReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context1,
