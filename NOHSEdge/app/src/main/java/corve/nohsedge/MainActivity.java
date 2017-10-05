@@ -701,9 +701,9 @@ public class MainActivity extends AppCompatActivity
                     REQUEST_CODE, intent2, PendingIntent.FLAG_UPDATE_CURRENT);
             AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, activateTime, pendingIntent2);
+                am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, activateTime, pendingIntent2);
             } else {
-                am.setExact(AlarmManager.RTC_WAKEUP, activateTime, pendingIntent2);
+                am.set(AlarmManager.RTC_WAKEUP, activateTime, pendingIntent2);
             }
         }
     }

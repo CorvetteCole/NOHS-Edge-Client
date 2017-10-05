@@ -52,8 +52,7 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
 
     }
     public void loadPreferences() {
-        SharedPreferences settings = context1.getSharedPreferences(MainActivity.PREFS_NAME,
-                MainActivity.MODE_PRIVATE);
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context1);
 
         // Get value
         String EdgeDay1Value = settings.getString(PREF_EDGE1, DefaultEdgeDay1Value);
