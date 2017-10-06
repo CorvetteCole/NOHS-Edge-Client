@@ -38,6 +38,7 @@ import static corve.nohsedge.MainActivity.PREF_EDGE3;
 import static corve.nohsedge.MainActivity.PREF_EDGE4;
 import static corve.nohsedge.MainActivity.PREF_EDGE5;
 import static corve.nohsedge.MainActivity.PREF_EDGE5Cur;
+import static corve.nohsedge.MainActivity.clearCookies;
 import static corve.nohsedge.MainActivity.currentSet;
 import static corve.nohsedge.MainActivity.uuid;
 
@@ -48,6 +49,12 @@ public class EdgeSignupActivity extends AppCompatActivity {
     private TextView mLoadingText;
     private ProgressBar mLoadingCircle;
     static boolean showPage = false;
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +90,11 @@ public class EdgeSignupActivity extends AppCompatActivity {
     }
 
     private void openEdgepage() {
+        mEdgePage.clearHistory();
+        mEdgePage.clearCache(true);
+        //clearCookies(this);
+        WebView obj = mEdgePage;
+        obj.clearCache(true);
         mLoadingText.setVisibility(View.VISIBLE);
         mLoadingCircle.setVisibility(View.VISIBLE);
         if(showPage) {
@@ -92,13 +104,13 @@ public class EdgeSignupActivity extends AppCompatActivity {
         WebSettings webSettings = mEdgePage.getSettings();
         webSettings.setDomStorageEnabled(true);
         webSettings.setJavaScriptEnabled(true);
-        webSettings.setGeolocationEnabled(true);
-        webSettings.setAllowContentAccess(true);
-        webSettings.setAllowFileAccess(true);
-        webSettings.setAllowUniversalAccessFromFileURLs(true);
-        webSettings.setAllowFileAccessFromFileURLs(true);
-        webSettings.setAppCacheEnabled(true);
-        webSettings.setDatabaseEnabled(true);
+        //webSettings.setGeolocationEnabled(true);
+        //webSettings.setAllowContentAccess(true);
+        //webSettings.setAllowFileAccess(true);
+        //webSettings.setAllowUniversalAccessFromFileURLs(true);
+        //webSettings.setAllowFileAccessFromFileURLs(true);
+        //webSettings.setAppCacheEnabled(true);
+       //webSettings.setDatabaseEnabled(true);
         webSettings.setLoadsImagesAutomatically(false);
         mEdgePage.clearHistory();
 
@@ -153,7 +165,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
             public void onLoadResource(WebView view, String url) {
                 super.onLoadResource(view, url);
                 String webUrl = mEdgePage.getUrl();
-                Log.d("!URL", webUrl);
+                Log.d("!EdgeURL", webUrl);
                 if (webUrl.toLowerCase().contains("edgetime".toLowerCase())) {
                     if (showPage) {
                         mLoadingCircle.setVisibility(View.VISIBLE);
@@ -218,13 +230,15 @@ public class EdgeSignupActivity extends AppCompatActivity {
             }
             EdgeDay5Cur = EdgeDay5Ar[0];
             Log.d("!test!", EdgeDay5Cur);
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
+            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY && EdgeDay5Ar[1] != null) {
                 /*setEdgeMessage(consoleMessage);
                 setEdgeNotifications(parseEdgeTitle(EdgeDay5Cur), parseEdgeText(EdgeDay5Cur), parseEdgeSession(EdgeDay5Cur), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));*/
                 EdgeDay5CurValue = EdgeDay5Cur;
                 if (!showPage) {
                     savePreferences();
-                    super.onBackPressed();
+                    //super.onBackPressed();
+                    MainActivity.currentSet = 0;
+                    finish();
                 }
             }
         }
