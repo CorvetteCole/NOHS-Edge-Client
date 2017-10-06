@@ -68,7 +68,6 @@ public class MainActivity extends AppCompatActivity
     public static final String PREF_EDGE5 = "Edge 5";
     public static final String PREF_MIN = "Notify_min";
     public static final String PREF_EDGE5Cur = "Current Friday Edge Class";
-    private String WrongPassword = "WrongPass";
     static final String PREF_FIRSTLOAD = "FirstLoad";
     private String webUrl;
     String newUrl = "";
@@ -123,7 +122,6 @@ public class MainActivity extends AppCompatActivity
     static int REQUEST_CODE = 0;
     static int REQUEST_CODE_EDGE = 1;
     static int REQUEST_CODE_WEEKLY = 2;
-    private Button mLogout;
     static String EdgeDay1;
     static String EdgeDay2;
     static String EdgeDay3;
@@ -149,7 +147,6 @@ public class MainActivity extends AppCompatActivity
     private TextView mEdgeTimeConst;
     private ConnectivityManager cm;
     private String fullName = "";
-    private Boolean invalidPassword;
 
 
     @Override
@@ -164,6 +161,7 @@ public class MainActivity extends AppCompatActivity
     public void onPause() {
         super.onPause();
         savePreferences();
+        //finish();
     }
 
     @Override
@@ -256,6 +254,7 @@ public class MainActivity extends AppCompatActivity
 
         CookieManager cookieManager = CookieManager.getInstance();
         String cookies = cookieManager.getCookie(siteName);
+        if (cookies != null){
         String[] temp = cookies.split(";");
         for (String ar1 : temp) {
             if (ar1.contains(CookieName)) {
@@ -263,6 +262,7 @@ public class MainActivity extends AppCompatActivity
                 CookieValue = temp1[1];
                 break;
             }
+          }
         }
         return CookieValue;
     }
@@ -337,6 +337,7 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(getBaseContext(), EdgeViewActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_signup) {
+            mLoginPage.stopLoading();
             EdgeSignupActivity.showPage = true;
             drawerClose = false;
             uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
@@ -350,6 +351,7 @@ public class MainActivity extends AppCompatActivity
             Intent emailIntent = EmailIntentBuilder.from(this)
                     .to("corvettecole@gmail.com")
                     .subject("NOHS Stampede App")
+                    .body("[insert feature request or bug report here]")
                     .build();
             startActivity(emailIntent);
         } else if (id == R.id.nav_profile) {
@@ -403,6 +405,10 @@ public class MainActivity extends AppCompatActivity
             EdgeDay5Cur = "";
             SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             SharedPreferences.Editor editor = settings.edit();
+            editor.putString(PREF_PASSWORD, "");
+            editor.putString(PREF_UNAME, "");
+            editor.putBoolean(PREF_AUTOLOGIN, false);
+            editor.putBoolean(PREF_PREMEM, false);
             editor.putString(PREF_EDGE1, "");
             editor.putString(PREF_EDGE2, "");
             editor.putString(PREF_EDGE3, "");
@@ -416,9 +422,16 @@ public class MainActivity extends AppCompatActivity
             clearCookies(this);
             WebView obj = mLoginPage;
             obj.clearCache(true);
-            Intent intent = new Intent(getBaseContext(), LoginActivity.class);
+            Intent mStartActivity = new Intent(getBaseContext(), MainActivity.class);
+            int mPendingIntentId = 123456;
+            PendingIntent mPendingIntent = PendingIntent.getActivity(getBaseContext(), mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
+            AlarmManager mgr = (AlarmManager)getBaseContext().getSystemService(Context.ALARM_SERVICE);
+            mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+            android.os.Process.killProcess(android.os.Process.myPid());
+            /*Intent intent = new Intent(getBaseContext(), LoginActivity.class);
             startActivity(intent);
             drawerClose = false;
+            finish();*/
         }
         if (drawerClose) {
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -437,10 +450,10 @@ public class MainActivity extends AppCompatActivity
         webSettings.setDomStorageEnabled(true);
         webSettings.setJavaScriptEnabled(true);
         webSettings.setGeolocationEnabled(true);
-        webSettings.setAllowContentAccess(true);
-        webSettings.setAllowFileAccess(true);
-        webSettings.setAllowUniversalAccessFromFileURLs(true);
-        webSettings.setAllowFileAccessFromFileURLs(true);
+        //webSettings.setAllowContentAccess(true);
+        //webSettings.setAllowFileAccess(true);
+        //webSettings.setAllowUniversalAccessFromFileURLs(true);
+        //webSettings.setAllowFileAccessFromFileURLs(true);
         webSettings.setAppCacheEnabled(true);
         webSettings.setDatabaseEnabled(true);
 
@@ -466,7 +479,6 @@ public class MainActivity extends AppCompatActivity
                     PRememValue = false;
                     UnameValue = "";
                     PasswordValue = "";
-                    invalidPassword = true;
                     SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
                     SharedPreferences.Editor editor = settings.edit();
                     editor.putBoolean("invalid", true);
@@ -700,13 +712,13 @@ public class MainActivity extends AppCompatActivity
         Log.d("edgehelptime", (activateTime - System.currentTimeMillis()) + "");
         if (EdgeNotificationValue) {
             Intent intent2 = new Intent(this, EdgeClassNotifHelper.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
+            PendingIntent pendingIntent2 = PendingIntent.getBroadcast(this,
                     REQUEST_CODE, intent2, PendingIntent.FLAG_UPDATE_CURRENT);
             AlarmManager am = (AlarmManager) this.getSystemService(ALARM_SERVICE);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar2.getTimeInMillis(), pendingIntent);
+                am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, activateTime, pendingIntent2);
             } else {
-                am.set(AlarmManager.RTC_WAKEUP, calendar2.getTimeInMillis(), pendingIntent);
+                am.set(AlarmManager.RTC_WAKEUP, activateTime, pendingIntent2);
             }
         }
     }
@@ -840,19 +852,24 @@ public class MainActivity extends AppCompatActivity
                 setEdgeNotifications(parseEdgeTitle(EdgeDay4), parseEdgeText(EdgeDay4), parseEdgeSession(EdgeDay4), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             }
         }
-        if (consoleMessage.toLowerCase().contains("Fri".toLowerCase()) && !consoleMessage.toLowerCase().contains("undefined")) {
-            EdgeDay5 = consoleMessage;
-            if (currentSet == 0) {
+        if (consoleMessage.toLowerCase().contains("Fri".toLowerCase())) {
+            Log.d(TAG, consoleMessage);
+            if (consoleMessage.toLowerCase().contains("undefined".toLowerCase())){
+                EdgeDay5Ar[1] = consoleMessage;
+            } else if (currentSet == 0) {
                 EdgeDay5Ar[0] = consoleMessage;
+                EdgeDay5 = consoleMessage;
                 currentSet = 1;
-            }
-            else {
-                EdgeDay5Ar[1] = EdgeDay5;
-            }
-            if (!consoleMessage.contains(EdgeDay5Ar[0])) {
+            } else {
                 EdgeDay5Ar[1] = consoleMessage;
             }
+
+            Log.d("Day5Ar0", EdgeDay5Ar[0]);
+            if ( EdgeDay5Ar[1] != null){
+                Log.d("Day5Ar1", EdgeDay5Ar[1]);
+            }
             EdgeDay5Cur = EdgeDay5Ar[0];
+            Log.d(TAG, EdgeDay5Cur);
             Log.d("Cur Friday Edge Class", EdgeDay5Cur);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
                 setEdgeMessage(consoleMessage);

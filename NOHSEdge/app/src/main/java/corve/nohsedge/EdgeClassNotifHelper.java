@@ -52,8 +52,7 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
 
     }
     public void loadPreferences() {
-        SharedPreferences settings = context1.getSharedPreferences(MainActivity.PREFS_NAME,
-                MainActivity.MODE_PRIVATE);
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context1);
 
         // Get value
         String EdgeDay1Value = settings.getString(PREF_EDGE1, DefaultEdgeDay1Value);
@@ -107,7 +106,7 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
         editor.apply();
         Log.d("Notification set", EdgeTitle);
         Log.d("!helper!", "notification set");
-        Log.d("edgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
+        Log.d("helperedgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
         if ((calendar.getTimeInMillis() - System.currentTimeMillis()) > 0 && NotificationEnabled) {
             Intent intent1 = new Intent(context1, EdgeReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context1,
