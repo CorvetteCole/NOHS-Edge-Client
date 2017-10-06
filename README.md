@@ -11,6 +11,6 @@ Compared to the official Stampede app, this app is:
 Play store link: https://play.google.com/store/apps/details?id=corve.nohsedge
 
 # Planned features
-- Native Edge class signup
+- Material design Edge sign up
 - Auto-renewal for Edge classes (given that the class is present every week, like study hall or something)
 - Pretty much anything you want, make requests to corvettecole@gmail.com with subject title "NOHS Edge Feature Request".
