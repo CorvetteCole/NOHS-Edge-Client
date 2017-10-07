@@ -864,8 +864,10 @@ public class MainActivity extends AppCompatActivity
                 EdgeDay5Ar[1] = consoleMessage;
             }
 
-            Log.d("Day5Ar0", EdgeDay5Ar[0]);
-            if ( EdgeDay5Ar[1] != null){
+            if (EdgeDay5Ar[0] != null){
+                Log.d("Day5Ar0", EdgeDay5Ar[0]);
+            }
+            if (EdgeDay5Ar[1] != null){
                 Log.d("Day5Ar1", EdgeDay5Ar[1]);
             }
             EdgeDay5Cur = EdgeDay5Ar[0];
