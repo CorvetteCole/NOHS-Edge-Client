@@ -58,8 +58,8 @@ public class EdgeReceiver extends BroadcastReceiver {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager notificationManager =
                     (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            String channelId = "some_channel_id";
-            CharSequence channelName = "Some Channel";
+            String channelId = "edge_class_id";
+            CharSequence channelName = "Edge Class Notification";
             int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel notificationChannel = new NotificationChannel(channelId, channelName, importance);
             notificationChannel.enableLights(true);
@@ -87,6 +87,7 @@ public class EdgeReceiver extends BroadcastReceiver {
                     .setContentTitle(Title)
                     .setContentText(Text)
                     .setContentIntent(pi)
+                    .setColor(ContextCompat.getColor(context, R.color.colorAccent))
                     .setDefaults(Notification.DEFAULT_SOUND)
                     .setAutoCancel(true);
             NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

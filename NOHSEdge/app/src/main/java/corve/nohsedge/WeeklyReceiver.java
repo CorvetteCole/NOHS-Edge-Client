@@ -15,6 +15,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import static corve.nohsedge.R.attr.colorAccent;
@@ -50,8 +51,8 @@ public class WeeklyReceiver extends BroadcastReceiver {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager notificationManager =
                     (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            String channelId = "some_channel_id";
-            CharSequence channelName = "Some Channel";
+            String channelId = "weekly_notif_id";
+            CharSequence channelName = "Sign up Reminder";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel notificationChannel = new NotificationChannel(channelId, channelName, importance);
             notificationChannel.enableLights(true);
@@ -61,6 +62,7 @@ public class WeeklyReceiver extends BroadcastReceiver {
             Notification notification = new Notification.Builder(context)
                     .setContentTitle(Title)
                     .setContentText(Text)
+                    .setColor(ContextCompat.getColor(context, R.color.colorAccent))
                     .setSmallIcon(R.drawable.nohsnotif)
                     .setChannelId(channelId)
                     .setContentIntent(pi)
@@ -75,6 +77,7 @@ public class WeeklyReceiver extends BroadcastReceiver {
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                     .setSmallIcon(R.drawable.icon)
                     .setContentTitle(Title)
+                    .setColor(ContextCompat.getColor(context, R.color.colorAccent))
                     .setContentText(Text);
             mBuilder.setContentIntent(pi);
             mBuilder.setDefaults(Notification.DEFAULT_SOUND);
