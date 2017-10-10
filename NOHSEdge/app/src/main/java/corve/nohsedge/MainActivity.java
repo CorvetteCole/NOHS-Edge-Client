@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity
                 ShortcutInfo wNOHSShortcut = new ShortcutInfo.Builder(this, "shortcut_nohs")
                         .setShortLabel("NOHS Website")
                         .setLongLabel("Open NOHS Website")
-                        .setIcon(Icon.createWithResource(this, R.mipmap.ic_nohs_shortcut))
+                        .setIcon(Icon.createWithResource(this, R.drawable.nohs))
                         .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.oldham.kyschools.us/nohs/")))
                         .build();
                 ShortcutInfo wCampusShortcut = new ShortcutInfo.Builder(this, "shortcut_campus")
