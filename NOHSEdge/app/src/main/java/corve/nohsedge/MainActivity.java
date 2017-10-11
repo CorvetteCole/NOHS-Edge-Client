@@ -201,13 +201,13 @@ public class MainActivity extends AppCompatActivity
                 ShortcutInfo wNOHSShortcut = new ShortcutInfo.Builder(this, "shortcut_nohs")
                         .setShortLabel("NOHS Website")
                         .setLongLabel("Open NOHS Website")
-                        .setIcon(Icon.createWithResource(this, R.drawable.nohs))
+                        .setIcon(Icon.createWithResource(this, R.mipmap.nohs))
                         .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.oldham.kyschools.us/nohs/")))
                         .build();
                 ShortcutInfo wCampusShortcut = new ShortcutInfo.Builder(this, "shortcut_campus")
                         .setShortLabel("Campus Portal")
                         .setLongLabel("Open Campus Portal")
-                        .setIcon(Icon.createWithResource(this, R.drawable.infinitecampus))
+                        .setIcon(Icon.createWithResource(this, R.mipmap.infinitecampus))
                         .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://kyede10.infinitecampus.org/campus/portal/oldham.jsp")))
                         .build();
                 shortcutManager.setDynamicShortcuts(Arrays.asList(wNOHSShortcut, wCampusShortcut));
