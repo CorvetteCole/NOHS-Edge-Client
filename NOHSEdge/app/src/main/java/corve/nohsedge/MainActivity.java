@@ -149,6 +149,7 @@ public class MainActivity extends AppCompatActivity
     private TextView mEdgeTimeConst;
     private ConnectivityManager cm;
     private String fullName = "";
+    private Context context = this;
 
 
     @Override
@@ -588,7 +589,7 @@ public class MainActivity extends AppCompatActivity
                         intentBuilder.setToolbarColor(ContextCompat.getColor(getBaseContext(), R.color.colorPrimary));
                         intentBuilder.setSecondaryToolbarColor(ContextCompat.getColor(getBaseContext(), R.color.colorPrimaryDark));
                         CustomTabsIntent customTabsIntent = intentBuilder.build();
-                        customTabsIntent.launchUrl(getBaseContext(), uri);
+                        customTabsIntent.launchUrl(context, uri);
                         newUrl = webUrl;
                     }
                 }
