@@ -348,13 +348,12 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
         } else if (id == R.id.nav_gear){
             drawerClose = false;
-
             Uri uri = Uri.parse("https://sideline.bsnsports.com/schools/kentucky/goshen/north-oldham-high-school");
             CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
+            intentBuilder.setStartAnimations(this, R.anim.slide_in_right, R.anim.slide_out_left);
+            intentBuilder.setExitAnimations(this, R.anim.slide_in_left, R.anim.slide_out_right);
             intentBuilder.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary));
             intentBuilder.setSecondaryToolbarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
-
-            //intentBuilder.setExitAnimations(this, android.R.anim.slide_in_left, android.R.anim.slide_out_right);
             CustomTabsIntent customTabsIntent = intentBuilder.build();
             customTabsIntent.launchUrl(this, uri);
 
@@ -582,8 +581,14 @@ public class MainActivity extends AppCompatActivity
                     mLoginPage.stopLoading();
                     mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + edgePage);
                     if (!webUrl.equals(newUrl)) {
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webUrl));
-                        startActivity(browserIntent);
+                        Uri uri = Uri.parse(webUrl);
+                        CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
+                        intentBuilder.setStartAnimations(getBaseContext(), R.anim.slide_in_right, R.anim.slide_out_left);
+                        intentBuilder.setExitAnimations(getBaseContext(), R.anim.slide_in_left, R.anim.slide_out_right);
+                        intentBuilder.setToolbarColor(ContextCompat.getColor(getBaseContext(), R.color.colorPrimary));
+                        intentBuilder.setSecondaryToolbarColor(ContextCompat.getColor(getBaseContext(), R.color.colorPrimaryDark));
+                        CustomTabsIntent customTabsIntent = intentBuilder.build();
+                        customTabsIntent.launchUrl(getBaseContext(), uri);
                         newUrl = webUrl;
                     }
                 }
