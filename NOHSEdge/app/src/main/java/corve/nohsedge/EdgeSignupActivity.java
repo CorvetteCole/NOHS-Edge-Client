@@ -49,6 +49,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
     private TextView mLoadingText;
     private ProgressBar mLoadingCircle;
     static boolean showPage = false;
+    private int undefinedFriday = 0;
 
     @Override
     protected void onPause(){
@@ -141,7 +142,10 @@ public class EdgeSignupActivity extends AppCompatActivity {
                     } else if (!EdgeDay4.toLowerCase().contains("thu")){
                         consoleMessage = "ThurUndefined";
                     } else if (!EdgeDay5.toLowerCase().contains("fri")){
-                        consoleMessage = "FriUndefined";
+                        undefinedFriday++;
+                        if (undefinedFriday > 2) {
+                            consoleMessage = "FriUndefined";
+                        }
                     }
                     InterpretEdgeData(consoleMessage);
                 }
