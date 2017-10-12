@@ -133,7 +133,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
                         + cm.sourceId());
                 if (cm.message().toLowerCase().contains("RetrievedEdgeClass".toLowerCase())) {
                     String consoleMessage = cm.message();
-                    if (!EdgeDay1.toLowerCase().contains("mon")){
+                    /*if (!EdgeDay1.toLowerCase().contains("mon")){
                         consoleMessage = "MonUndefined";
                     } else if (!EdgeDay2.toLowerCase().contains("tue")){
                         consoleMessage = "TueUndefined";
@@ -143,10 +143,10 @@ public class EdgeSignupActivity extends AppCompatActivity {
                         consoleMessage = "ThurUndefined";
                     } else if (!EdgeDay5.toLowerCase().contains("fri")){
                         undefinedFriday++;
-                        if (undefinedFriday > 2) {
+                        if (undefinedFriday > 1) {
                             consoleMessage = "FriUndefined";
                         }
-                    }
+                    }*/
                     InterpretEdgeData(consoleMessage);
                 }
                 if (cm.message().toLowerCase().contains("post_queue")/* && (cm.lineNumber() == 419)*/) {

@@ -18,7 +18,9 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -122,11 +124,11 @@ public class MainActivity extends AppCompatActivity
     static int REQUEST_CODE = 0;
     static int REQUEST_CODE_EDGE = 1;
     static int REQUEST_CODE_WEEKLY = 2;
-    static String EdgeDay1;
-    static String EdgeDay2;
-    static String EdgeDay3;
-    static String EdgeDay4;
-    static String EdgeDay5;
+    static String EdgeDay1 = "MonUndefined";
+    static String EdgeDay2 = "TueUndefined";
+    static String EdgeDay3 = "WedUndefined";
+    static String EdgeDay4 = "ThuUndefined";
+    static String EdgeDay5 = "FriUndefined";
     static String EdgeDay5Cur;
     public int NotificationSet;
     static int notifyMinutes = 5;
@@ -346,8 +348,18 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
         } else if (id == R.id.nav_gear){
             drawerClose = false;
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://sideline.bsnsports.com/schools/kentucky/goshen/north-oldham-high-school"));
-            startActivity(browserIntent);
+
+            Uri uri = Uri.parse("https://sideline.bsnsports.com/schools/kentucky/goshen/north-oldham-high-school");
+            CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
+            intentBuilder.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary));
+            intentBuilder.setSecondaryToolbarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+
+            //intentBuilder.setExitAnimations(this, android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+            CustomTabsIntent customTabsIntent = intentBuilder.build();
+            customTabsIntent.launchUrl(this, uri);
+
+            //Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://sideline.bsnsports.com/schools/kentucky/goshen/north-oldham-high-school"));
+            //startActivity(browserIntent);
         } else if (id == R.id.nav_feedback){
             Intent emailIntent = EmailIntentBuilder.from(this)
                     .to("corvettecole@gmail.com")
@@ -855,23 +867,7 @@ public class MainActivity extends AppCompatActivity
         }
         if (consoleMessage.toLowerCase().contains("Fri".toLowerCase())) {
             Log.d(TAG, consoleMessage);
-            if (consoleMessage.toLowerCase().contains("undefined".toLowerCase())){
-                EdgeDay5Ar[1] = consoleMessage;
-            } else if (currentSet == 0) {
-                EdgeDay5Ar[0] = consoleMessage;
-                EdgeDay5 = consoleMessage;
-                currentSet = 1;
-            } else {
-                EdgeDay5Ar[1] = consoleMessage;
-            }
-
-            if (EdgeDay5Ar[0] != null){
-                Log.d("Day5Ar0", EdgeDay5Ar[0]);
-            }
-            if (EdgeDay5Ar[1] != null){
-                Log.d("Day5Ar1", EdgeDay5Ar[1]);
-            }
-            EdgeDay5Cur = EdgeDay5Ar[0];
+            EdgeDay5Cur = consoleMessage;
             Log.d(TAG, EdgeDay5Cur);
             Log.d("Cur Friday Edge Class", EdgeDay5Cur);
             if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
