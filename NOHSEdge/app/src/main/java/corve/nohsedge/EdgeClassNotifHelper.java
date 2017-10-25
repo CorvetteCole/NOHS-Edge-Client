@@ -136,33 +136,33 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
         if (consoleMessage.toLowerCase().contains("Mon".toLowerCase())){
             String EdgeDay1 = consoleMessage;
             Log.d("Monday Edge Class", EdgeDay1);
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY){
+            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY && !consoleMessage.toLowerCase().contains("undefined")){
                 setEdgeNotifications(parseEdgeTitle(EdgeDay1), parseEdgeText(EdgeDay1), parseEdgeSession(EdgeDay1), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             }
         }
         if (consoleMessage.toLowerCase().contains("Tue".toLowerCase())){
             String EdgeDay2 = consoleMessage;
             Log.d("Tuesday Edge Class", EdgeDay2);
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY){
+            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY && !consoleMessage.toLowerCase().contains("undefined")){
                 setEdgeNotifications(parseEdgeTitle(EdgeDay2), parseEdgeText(EdgeDay2), parseEdgeSession(EdgeDay2), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             }
         }
         if (consoleMessage.toLowerCase().contains("Wed".toLowerCase())){
             String EdgeDay3 = consoleMessage;
             Log.d("Wednesday Edge Class", EdgeDay3);
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY){
+            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY && !consoleMessage.toLowerCase().contains("undefined")){
                 setEdgeNotifications(parseEdgeTitle(EdgeDay3), parseEdgeText(EdgeDay3), parseEdgeSession(EdgeDay3), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             }
         }
         if (consoleMessage.toLowerCase().contains("Thu".toLowerCase())){
             String EdgeDay4 = consoleMessage;   //Thursday
             Log.d("Thursday Edge Class", EdgeDay4);
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY){
+            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY && !consoleMessage.toLowerCase().contains("undefined")){
                 setEdgeNotifications(parseEdgeTitle(EdgeDay4), parseEdgeText(EdgeDay4), parseEdgeSession(EdgeDay4), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             }
         }
         if (consoleMessage.toLowerCase().contains("Fri".toLowerCase())){
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY){
+            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY && !consoleMessage.toLowerCase().contains("undefined")){
                 setEdgeNotifications(parseEdgeTitle(EdgeDay5Cur), parseEdgeText(EdgeDay5Cur), parseEdgeSession(EdgeDay5Cur), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
                 Log.d("Edge Notification set", EdgeDay5Cur);
             }
