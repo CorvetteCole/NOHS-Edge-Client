@@ -27,7 +27,6 @@ import static corve.nohsedge.MainActivity.EdgeDay3Value;
 import static corve.nohsedge.MainActivity.EdgeDay4;
 import static corve.nohsedge.MainActivity.EdgeDay4Value;
 import static corve.nohsedge.MainActivity.EdgeDay5;
-import static corve.nohsedge.MainActivity.EdgeDay5Ar;
 import static corve.nohsedge.MainActivity.EdgeDay5Cur;
 import static corve.nohsedge.MainActivity.EdgeDay5CurValue;
 import static corve.nohsedge.MainActivity.EdgeDay5Value;
@@ -49,7 +48,8 @@ public class EdgeSignupActivity extends AppCompatActivity {
     private TextView mLoadingText;
     private ProgressBar mLoadingCircle;
     static boolean showPage = false;
-    private int undefinedFriday = 0;
+    private String[] EdgeDay5Ar = new String[2];
+
 
     @Override
     protected void onPause(){
@@ -62,7 +62,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         if (showPage){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        } else if (!showPage){
+        } else {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             getSupportActionBar().hide();
         }
@@ -91,6 +91,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
     }
 
     private void openEdgepage() {
+        EdgeDay5Ar[0] = "notSet";
         mEdgePage.clearHistory();
         mEdgePage.clearCache(true);
         //clearCookies(this);
@@ -133,20 +134,6 @@ public class EdgeSignupActivity extends AppCompatActivity {
                         + cm.sourceId());
                 if (cm.message().toLowerCase().contains("RetrievedEdgeClass".toLowerCase())) {
                     String consoleMessage = cm.message();
-                    /*if (!EdgeDay1.toLowerCase().contains("mon")){
-                        consoleMessage = "MonUndefined";
-                    } else if (!EdgeDay2.toLowerCase().contains("tue")){
-                        consoleMessage = "TueUndefined";
-                    } else if (!EdgeDay3.toLowerCase().contains("wed")){
-                        consoleMessage = "WedUndefined";
-                    } else if (!EdgeDay4.toLowerCase().contains("thu")){
-                        consoleMessage = "ThurUndefined";
-                    } else if (!EdgeDay5.toLowerCase().contains("fri")){
-                        undefinedFriday++;
-                        if (undefinedFriday > 1) {
-                            consoleMessage = "FriUndefined";
-                        }
-                    }*/
                     InterpretEdgeData(consoleMessage);
                 }
                 if (cm.message().toLowerCase().contains("post_queue")/* && (cm.lineNumber() == 419)*/) {
@@ -199,57 +186,68 @@ public class EdgeSignupActivity extends AppCompatActivity {
         if (consoleMessage.toLowerCase().contains("Wed".toLowerCase())) {
             EdgeDay3 = consoleMessage;
             Log.d("Wednesday Edge Class", EdgeDay3);
-            /*if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY) {
-                setEdgeMessage(consoleMessage);
-                setEdgeNotifications(parseEdgeTitle(EdgeDay3), parseEdgeText(EdgeDay3), parseEdgeSession(EdgeDay3), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
-            }*/
+
         }
         if (consoleMessage.toLowerCase().contains("Thu".toLowerCase())) {
             EdgeDay4 = consoleMessage;   //Thursday
             Log.d("Thursday Edge Class", EdgeDay4);
-            /*if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY) {
-                setEdgeMessage(consoleMessage);
-                setEdgeNotifications(parseEdgeTitle(EdgeDay4), parseEdgeText(EdgeDay4), parseEdgeSession(EdgeDay4), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
-            }*/
         }
         if (consoleMessage.toLowerCase().contains("Fri".toLowerCase())) {
-            EdgeDay5 = consoleMessage;
-            if (currentSet == 0) {
+            Log.d(TAG, consoleMessage);
+            if (EdgeDay5Ar[0].equals("notSet")){
                 EdgeDay5Ar[0] = consoleMessage;
-                currentSet = 1;
-            }
-            else {
-                Log.d("TRIGGERRRREEEDDD", "");
-                EdgeDay5Ar[1] = EdgeDay5;
-            }
-            if (!consoleMessage.contains(EdgeDay5Ar[0]) && consoleMessage != null) {
+                Log.d(TAG, "Friday Array 0 set");
+            } else if (!EdgeDay5Ar[0].equals(consoleMessage) && !isSameWeek(EdgeDay5Ar[0], consoleMessage)){
+                Log.d(TAG, "Friday Array 1 set");
                 EdgeDay5Ar[1] = consoleMessage;
-            }
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) != Calendar.FRIDAY) {
                 if (!showPage) {
                     savePreferences();
-                    //super.onBackPressed();
+                    MainActivity.currentSet = 0;
+                    finish();
+                }
+                EdgeDay5 = EdgeDay5Ar[1];
+                EdgeDay5Cur = EdgeDay5Ar[0];
+                Log.d("Current Friday Edge", EdgeDay5Cur);
+                Log.d("Next Friday Edge", EdgeDay5);
+            } else if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) != Calendar.FRIDAY){
+                EdgeDay5Cur = EdgeDay5Ar[0];
+                if (!showPage) {
+                    savePreferences();
+                    MainActivity.currentSet = 0;
                     finish();
                 }
             }
-            EdgeDay5Cur = EdgeDay5Ar[0];
-            Log.d("!test!", EdgeDay5Cur);
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY && EdgeDay5Ar[1] != null) {
-                /*setEdgeMessage(consoleMessage);
-                setEdgeNotifications(parseEdgeTitle(EdgeDay5Cur), parseEdgeText(EdgeDay5Cur), parseEdgeSession(EdgeDay5Cur), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));*/
-                EdgeDay5CurValue = EdgeDay5Cur;
+            if (isAfterEdgeClasses() && Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY){
+                EdgeDay5 = EdgeDay5Ar[0];
+                Log.d(TAG, "is after edge classes, only next is set");
                 if (!showPage) {
                     savePreferences();
-                    //super.onBackPressed();
                     MainActivity.currentSet = 0;
                     finish();
                 }
             }
         }
     }
+    private boolean isAfterEdgeClasses(){
+        boolean after = false;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR, 1);
+        calendar.set(Calendar.MINUTE, 9);
+        calendar.set(Calendar.SECOND, 1);
+        calendar.set(Calendar.AM_PM, Calendar.PM);
+        Log.d("edgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
+        if (calendar.getTimeInMillis() - System.currentTimeMillis() > 0){
+            after = false;
+        } else if (calendar.getTimeInMillis() - System.currentTimeMillis() < 0){
+            after = true;
+        }
+        return after;
+    }
+
     private void getEdgeClasses() {
         int ClassElement = 0;
-        while (ClassElement != 5) {
+        while (ClassElement != 6) {
             mEdgePage.loadUrl("javascript:(function(){" +
                     "if (document.getElementsByClassName('class user-in-class')['" + ClassElement + "'] != undefined){" +
                     "console.log('RetrievedEdgeClass' + document.getElementsByClassName('class user-in-class')['" + ClassElement + "'].innerHTML);}" +
@@ -261,6 +259,30 @@ public class EdgeSignupActivity extends AppCompatActivity {
             ClassElement++;
         }
     }
+    private boolean isSameWeek (String edge1, String edge2){
+        String date1 = edge1.substring(edge1.indexOf("\"datetime\">") + 16);
+        date1 = date1.substring(date1.indexOf("/") + 1);
+        if (edge1.contains("12:")) {
+            date1 = date1.substring(0, (date1.indexOf("pm") - 6));
+        } else {
+            date1 = date1.substring(0, (date1.indexOf("pm") - 5));
+        }
+        Log.d("edge1 date", date1);
+        String date2 = edge2.substring(edge2.indexOf("\"datetime\">") + 16);
+        date2 = date2.substring(date2.indexOf("/") + 1);
+        if (edge2.contains("12:")) {
+            date2 = date2.substring(0, (date2.indexOf("pm") - 6));
+        } else {
+            date2 = date2.substring(0, (date2.indexOf("pm") - 5));
+        }
+        Log.d("edge2 date", date2);
+        if (Math.abs(Integer.parseInt(date1) - Integer.parseInt(date2)) >= 7){
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     private void savePreferences() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         SharedPreferences.Editor editor = settings.edit();
@@ -271,7 +293,9 @@ public class EdgeSignupActivity extends AppCompatActivity {
         EdgeDay3Value = EdgeDay3;
         EdgeDay4Value = EdgeDay4;
         EdgeDay5Value = EdgeDay5;
-        EdgeDay5CurValue = EdgeDay5Cur;
+        if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY && EdgeDay5Cur != null) {
+            EdgeDay5CurValue = EdgeDay5Cur;
+        }
         editor.putString(PREF_EDGE1, EdgeDay1Value);
         editor.putString(PREF_EDGE2, EdgeDay2Value);
         editor.putString(PREF_EDGE3, EdgeDay3Value);

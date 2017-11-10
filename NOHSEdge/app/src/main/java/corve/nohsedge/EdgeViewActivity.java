@@ -84,45 +84,8 @@ public class EdgeViewActivity extends AppCompatActivity {
         EdgeDay[3] = settings.getString(PREF_EDGE4, DefaultEdgeDay4Value);
         EdgeDay[4] = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
         EdgeDay5Cur = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
-        int i = 0;
-        while (i <= 4) {
-            InterpretEdgeData(EdgeDay[i]);
-            i++;
-        }
-    }
-
-
-    public void InterpretEdgeData(String consoleMessage) {
-        if (consoleMessage.toLowerCase().contains("Mon".toLowerCase())) {
-            EdgeDay[0] = consoleMessage;
-            Log.d("Monday Edge Class", EdgeDay[0]);
-        }
-        if (consoleMessage.toLowerCase().contains("Tue".toLowerCase())) {
-            EdgeDay[1] = consoleMessage;
-            EdgeDate[1] = "Tuesday";
-            Log.d("Tuesday Edge Class", EdgeDay[1]);
-        }
-        if (consoleMessage.toLowerCase().contains("Wed".toLowerCase())) {
-            EdgeDay[2] = consoleMessage;
-            EdgeDate[2] = "Wednesday";
-            Log.d("Wednesday Edge Class", EdgeDay[2]);
-        }
-        if (consoleMessage.toLowerCase().contains("Thu".toLowerCase())) {
-            EdgeDay[3] = consoleMessage;   //Thursday
-            EdgeDate[3] = "Thursday";
-            Log.d("Thursday Edge Class", EdgeDay[3]);
-        }
-        if (consoleMessage.toLowerCase().contains("Fri".toLowerCase())) {
-            if ((Calendar.getInstance().get(Calendar.DAY_OF_WEEK) != Calendar.FRIDAY)) {
-                EdgeDay[4] = consoleMessage;
-            }
-            //Log.d("Friday Edge Class", EdgeDay5);
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY && !isAfterEdgeClass(parseEdgeTime(consoleMessage))){
-                //Log.d("!test1!", EdgeDay5Cur);
-                EdgeDay[4] = EdgeDay5Cur;
-            } else if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY && isAfterEdgeClass(parseEdgeTime(consoleMessage))){
-                EdgeDay[4] = consoleMessage;
-            }
+        if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY && !isAfterEdgeClass(parseEdgeTime(EdgeDay5Cur))) {
+            EdgeDay[4] = EdgeDay5Cur;
         }
         int i = 0;
         while (i != 5) {
