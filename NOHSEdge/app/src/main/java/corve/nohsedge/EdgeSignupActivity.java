@@ -2,6 +2,7 @@ package corve.nohsedge;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -48,6 +50,8 @@ public class EdgeSignupActivity extends AppCompatActivity {
     private TextView mLoadingText;
     private ProgressBar mLoadingCircle;
     static boolean showPage = false;
+    private Button mSkipButton;
+    private ConstraintLayout mSkipLayout;
     private String[] EdgeDay5Ar = new String[2];
 
 
@@ -60,17 +64,33 @@ public class EdgeSignupActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_edge_signup);
+        mEdgePage = findViewById(R.id.edgePage);
+        mLoadingText = findViewById(R.id.LoadingTextEdge);
+        mLoadingCircle = findViewById(R.id.LoadingCircleEdge);
+        mSkipButton = findViewById(R.id.skipButton);
+        mSkipLayout = findViewById(R.id.skipLayout);
+
+        MainActivity.calledForeign = true;
         if (showPage){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            mSkipLayout.setVisibility(View.INVISIBLE);
         } else {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             getSupportActionBar().hide();
+            mSkipLayout.setVisibility(View.VISIBLE);
         }
-        setContentView(R.layout.activity_edge_signup);
-        mEdgePage = (WebView) findViewById(R.id.edgePage);
-        mLoadingText = (TextView) findViewById(R.id.LoadingTextEdge);
-        mLoadingCircle = (ProgressBar) findViewById(R.id.LoadingCircleEdge);
-        MainActivity.calledForeign = true;
+        mSkipButton.setOnClickListener(
+                new View.OnClickListener() {
+                    public void onClick(View view) {
+                        mEdgePage.stopLoading();
+                        mEdgePage.clearHistory();
+                        mEdgePage.clearCache(true);
+                        WebView obj = mEdgePage;
+                        obj.clearCache(true);
+                        finish();
+                    }
+                });
         openEdgepage();
     }
     @Override
@@ -106,13 +126,6 @@ public class EdgeSignupActivity extends AppCompatActivity {
         WebSettings webSettings = mEdgePage.getSettings();
         webSettings.setDomStorageEnabled(true);
         webSettings.setJavaScriptEnabled(true);
-        //webSettings.setGeolocationEnabled(true);
-        //webSettings.setAllowContentAccess(true);
-        //webSettings.setAllowFileAccess(true);
-        //webSettings.setAllowUniversalAccessFromFileURLs(true);
-        //webSettings.setAllowFileAccessFromFileURLs(true);
-        //webSettings.setAppCacheEnabled(true);
-       //webSettings.setDatabaseEnabled(true);
         webSettings.setLoadsImagesAutomatically(false);
         mEdgePage.clearHistory();
 
@@ -228,7 +241,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
             }
         }
     }
-    private boolean isAfterEdgeClasses(){
+    static boolean isAfterEdgeClasses(){
         boolean after = false;
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
@@ -276,11 +289,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
             date2 = date2.substring(0, (date2.indexOf("pm") - 5));
         }
         Log.d("edge2 date", date2);
-        if (Math.abs(Integer.parseInt(date1) - Integer.parseInt(date2)) >= 7){
-            return false;
-        } else {
-            return true;
-        }
+        return Math.abs(Integer.parseInt(date1) - Integer.parseInt(date2)) < 7;
     }
 
     private void savePreferences() {

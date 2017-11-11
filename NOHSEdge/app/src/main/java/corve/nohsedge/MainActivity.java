@@ -177,16 +177,16 @@ public class MainActivity extends AppCompatActivity
         }
         if (calledForeign) {
             //setupDrawer();
-            mLoginPage = (WebView) findViewById(R.id.loginWebview);
-            mLoadingCircle = (ProgressBar) findViewById(R.id.progressBar);
-            mLoadingText = (TextView) findViewById(R.id.LoadingText);
-            mWelcome = (TextView) findViewById(R.id.helloTextView);
-            mEdgeTitle = (TextView) findViewById(R.id.edgeClassTitle);
-            mEdgeText = (TextView) findViewById(R.id.edgeClassText);
-            mEdgeTime = (TextView) findViewById(R.id.edgeClassTime);
-            mEdgeTitleConst = (TextView) findViewById(R.id.edgeTitleTextView);
-            mEdgeTextConst = (TextView) findViewById(R.id.edgeTextTextView);
-            mEdgeTimeConst = (TextView) findViewById(R.id.edgeTimeTextView);
+            mLoginPage = findViewById(R.id.loginWebview);
+            mLoadingCircle = findViewById(R.id.progressBar);
+            mLoadingText = findViewById(R.id.LoadingText);
+            mWelcome = findViewById(R.id.helloTextView);
+            mEdgeTitle = findViewById(R.id.edgeClassTitle);
+            mEdgeText = findViewById(R.id.edgeClassText);
+            mEdgeTime = findViewById(R.id.edgeClassTime);
+            mEdgeTitleConst = findViewById(R.id.edgeTitleTextView);
+            mEdgeTextConst = findViewById(R.id.edgeTextTextView);
+            mEdgeTimeConst = findViewById(R.id.edgeTimeTextView);
             NotificationSet = 0;
             if (Login == 1) {
                 mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
@@ -218,15 +218,15 @@ public class MainActivity extends AppCompatActivity
     }
     private void setupDrawer(){
         //setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.nav_homescreen);
         getSupportActionBar().setTitle("Home");
@@ -272,7 +272,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         }
@@ -428,17 +428,17 @@ public class MainActivity extends AppCompatActivity
             editor.putString(PREF_EDGE5, "");
             editor.putString(PREF_EDGE5Cur, "");
             editor.putInt(PREF_MIN, 5);
-            editor.apply();
+            editor.commit();
             mLoginPage.clearHistory();
             mLoginPage.clearCache(true);
             clearCookies(this);
             WebView obj = mLoginPage;
             obj.clearCache(true);
-            Intent mStartActivity = new Intent(getBaseContext(), MainActivity.class);
+            /*Intent mStartActivity = new Intent(getBaseContext(), MainActivity.class);
             int mPendingIntentId = 123456;
             PendingIntent mPendingIntent = PendingIntent.getActivity(getBaseContext(), mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
             AlarmManager mgr = (AlarmManager)getBaseContext().getSystemService(Context.ALARM_SERVICE);
-            mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+            mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);*/
             android.os.Process.killProcess(android.os.Process.myPid());
             /*Intent intent = new Intent(getBaseContext(), LoginActivity.class);
             startActivity(intent);
@@ -446,7 +446,7 @@ public class MainActivity extends AppCompatActivity
             finish();*/
         }
         if (drawerClose) {
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            DrawerLayout drawer = findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
         }
         return true;
@@ -499,11 +499,11 @@ public class MainActivity extends AppCompatActivity
                     editor.putBoolean(PREF_PREMEM, PRememValue);
                     editor.putBoolean(PREF_AUTOLOGIN, false);
                     editor.commit();
-                    Intent mStartActivity = new Intent(getBaseContext(), MainActivity.class);
+                    /*Intent mStartActivity = new Intent(getBaseContext(), LoginActivity.class);
                     int mPendingIntentId = 123456;
                     PendingIntent mPendingIntent = PendingIntent.getActivity(getBaseContext(), mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
                     AlarmManager mgr = (AlarmManager)getBaseContext().getSystemService(Context.ALARM_SERVICE);
-                    mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+                    mgr.setExact(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);*/
                     android.os.Process.killProcess(android.os.Process.myPid());
                 }
                 if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(UnameValue.toLowerCase())&& x == 1)) {
@@ -828,7 +828,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setHeaderDetails(String message){
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         View hView =  navigationView.getHeaderView(0);
         TextView nav_user = hView.findViewById(R.id.HeaderName);
         TextView nav_username = hView.findViewById(R.id.HeaderUsername);

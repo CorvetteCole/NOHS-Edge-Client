@@ -40,7 +40,7 @@ public class EdgeViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setContentView(R.layout.activity_edge_view);
-        mList = (ListView) findViewById(R.id.listview);
+        mList = findViewById(R.id.listview);
         loadPreferences();
     }
 
