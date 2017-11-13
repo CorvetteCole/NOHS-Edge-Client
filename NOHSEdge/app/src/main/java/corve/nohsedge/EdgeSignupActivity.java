@@ -210,7 +210,8 @@ public class EdgeSignupActivity extends AppCompatActivity {
             if (EdgeDay5Ar[0].equals("notSet")){
                 EdgeDay5Ar[0] = consoleMessage;
                 Log.d(TAG, "Friday Array 0 set");
-            } else if (!EdgeDay5Ar[0].equals(consoleMessage) && !isSameWeek(EdgeDay5Ar[0], consoleMessage)){
+            }
+            if (!EdgeDay5Ar[0].equals(consoleMessage) && !isSameWeek(EdgeDay5Ar[0], consoleMessage)){
                 Log.d(TAG, "Friday Array 1 set");
                 EdgeDay5Ar[1] = consoleMessage;
                 if (!showPage) {
@@ -229,8 +230,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
                     MainActivity.currentSet = 0;
                     finish();
                 }
-            }
-            if (isAfterEdgeClasses() && Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY){
+            } else if (isAfterEdgeClasses() && Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY){
                 EdgeDay5 = EdgeDay5Ar[0];
                 Log.d(TAG, "is after edge classes, only next is set");
                 if (!showPage) {
@@ -302,7 +302,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
         EdgeDay3Value = EdgeDay3;
         EdgeDay4Value = EdgeDay4;
         EdgeDay5Value = EdgeDay5;
-        if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY && EdgeDay5Cur != null) {
+        if (EdgeDay5Cur != null) {
             EdgeDay5CurValue = EdgeDay5Cur;
         }
         editor.putString(PREF_EDGE1, EdgeDay1Value);
