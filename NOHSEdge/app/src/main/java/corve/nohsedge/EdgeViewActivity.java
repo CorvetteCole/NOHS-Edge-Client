@@ -82,10 +82,10 @@ public class EdgeViewActivity extends AppCompatActivity {
         EdgeDay[1] = settings.getString(PREF_EDGE2, DefaultEdgeDay2Value);
         EdgeDay[2] = settings.getString(PREF_EDGE3, DefaultEdgeDay3Value);
         EdgeDay[3] = settings.getString(PREF_EDGE4, DefaultEdgeDay4Value);
-        EdgeDay[4] = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
-        EdgeDay5Cur = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
-        if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY && !isAfterEdgeClass(parseEdgeTime(EdgeDay5Cur))) {
-            EdgeDay[4] = EdgeDay5Cur;
+        EdgeDay[4] = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
+        String EdgeDay5Next = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
+        if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY && isAfterEdgeClass(parseEdgeTime(EdgeDay5Cur))) {
+            EdgeDay[4] = EdgeDay5Next;
         }
         int i = 0;
         while (i != 5) {
