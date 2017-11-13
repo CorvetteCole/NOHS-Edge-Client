@@ -18,7 +18,9 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -122,16 +124,15 @@ public class MainActivity extends AppCompatActivity
     static int REQUEST_CODE = 0;
     static int REQUEST_CODE_EDGE = 1;
     static int REQUEST_CODE_WEEKLY = 2;
-    static String EdgeDay1;
-    static String EdgeDay2;
-    static String EdgeDay3;
-    static String EdgeDay4;
-    static String EdgeDay5;
+    static String EdgeDay1 = "MonUndefined";
+    static String EdgeDay2 = "TueUndefined";
+    static String EdgeDay3 = "WedUndefined";
+    static String EdgeDay4 = "ThuUndefined";
+    static String EdgeDay5 = "FriUndefined";
     static String EdgeDay5Cur;
     public int NotificationSet;
     static int notifyMinutes = 5;
     private boolean settingsOpen = false;
-    static String[] EdgeDay5Ar = new String[2];
     public static int Login = 0;
     public static int Register = 0;
     public static boolean calledForeign;
@@ -147,6 +148,7 @@ public class MainActivity extends AppCompatActivity
     private TextView mEdgeTimeConst;
     private ConnectivityManager cm;
     private String fullName = "";
+    private Context context = this;
 
 
     @Override
@@ -175,16 +177,16 @@ public class MainActivity extends AppCompatActivity
         }
         if (calledForeign) {
             //setupDrawer();
-            mLoginPage = (WebView) findViewById(R.id.loginWebview);
-            mLoadingCircle = (ProgressBar) findViewById(R.id.progressBar);
-            mLoadingText = (TextView) findViewById(R.id.LoadingText);
-            mWelcome = (TextView) findViewById(R.id.helloTextView);
-            mEdgeTitle = (TextView) findViewById(R.id.edgeClassTitle);
-            mEdgeText = (TextView) findViewById(R.id.edgeClassText);
-            mEdgeTime = (TextView) findViewById(R.id.edgeClassTime);
-            mEdgeTitleConst = (TextView) findViewById(R.id.edgeTitleTextView);
-            mEdgeTextConst = (TextView) findViewById(R.id.edgeTextTextView);
-            mEdgeTimeConst = (TextView) findViewById(R.id.edgeTimeTextView);
+            mLoginPage = findViewById(R.id.loginWebview);
+            mLoadingCircle = findViewById(R.id.progressBar);
+            mLoadingText = findViewById(R.id.LoadingText);
+            mWelcome = findViewById(R.id.helloTextView);
+            mEdgeTitle = findViewById(R.id.edgeClassTitle);
+            mEdgeText = findViewById(R.id.edgeClassText);
+            mEdgeTime = findViewById(R.id.edgeClassTime);
+            mEdgeTitleConst = findViewById(R.id.edgeTitleTextView);
+            mEdgeTextConst = findViewById(R.id.edgeTextTextView);
+            mEdgeTimeConst = findViewById(R.id.edgeTimeTextView);
             NotificationSet = 0;
             if (Login == 1) {
                 mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
@@ -201,13 +203,13 @@ public class MainActivity extends AppCompatActivity
                 ShortcutInfo wNOHSShortcut = new ShortcutInfo.Builder(this, "shortcut_nohs")
                         .setShortLabel("NOHS Website")
                         .setLongLabel("Open NOHS Website")
-                        .setIcon(Icon.createWithResource(this, R.drawable.nohs))
+                        .setIcon(Icon.createWithResource(this, R.mipmap.nohs))
                         .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.oldham.kyschools.us/nohs/")))
                         .build();
                 ShortcutInfo wCampusShortcut = new ShortcutInfo.Builder(this, "shortcut_campus")
                         .setShortLabel("Campus Portal")
                         .setLongLabel("Open Campus Portal")
-                        .setIcon(Icon.createWithResource(this, R.drawable.infinitecampus))
+                        .setIcon(Icon.createWithResource(this, R.mipmap.infinitecampus))
                         .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://kyede10.infinitecampus.org/campus/portal/oldham.jsp")))
                         .build();
                 shortcutManager.setDynamicShortcuts(Arrays.asList(wNOHSShortcut, wCampusShortcut));
@@ -216,16 +218,17 @@ public class MainActivity extends AppCompatActivity
     }
     private void setupDrawer(){
         //setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setCheckedItem(R.id.nav_homescreen);
         getSupportActionBar().setTitle("Home");
     }
 
@@ -269,7 +272,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         }
@@ -345,8 +348,17 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
         } else if (id == R.id.nav_gear){
             drawerClose = false;
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://sideline.bsnsports.com/schools/kentucky/goshen/north-oldham-high-school"));
-            startActivity(browserIntent);
+            Uri uri = Uri.parse("https://sideline.bsnsports.com/schools/kentucky/goshen/north-oldham-high-school");
+            CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
+            intentBuilder.setStartAnimations(this, R.anim.slide_in_right, R.anim.slide_out_left);
+            intentBuilder.setExitAnimations(this, R.anim.slide_in_left, R.anim.slide_out_right);
+            intentBuilder.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary));
+            intentBuilder.setSecondaryToolbarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+            CustomTabsIntent customTabsIntent = intentBuilder.build();
+            customTabsIntent.launchUrl(this, uri);
+
+            //Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://sideline.bsnsports.com/schools/kentucky/goshen/north-oldham-high-school"));
+            //startActivity(browserIntent);
         } else if (id == R.id.nav_feedback){
             Intent emailIntent = EmailIntentBuilder.from(this)
                     .to("corvettecole@gmail.com")
@@ -416,17 +428,17 @@ public class MainActivity extends AppCompatActivity
             editor.putString(PREF_EDGE5, "");
             editor.putString(PREF_EDGE5Cur, "");
             editor.putInt(PREF_MIN, 5);
-            editor.apply();
+            editor.commit();
             mLoginPage.clearHistory();
             mLoginPage.clearCache(true);
             clearCookies(this);
             WebView obj = mLoginPage;
             obj.clearCache(true);
-            Intent mStartActivity = new Intent(getBaseContext(), MainActivity.class);
+            /*Intent mStartActivity = new Intent(getBaseContext(), MainActivity.class);
             int mPendingIntentId = 123456;
             PendingIntent mPendingIntent = PendingIntent.getActivity(getBaseContext(), mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
             AlarmManager mgr = (AlarmManager)getBaseContext().getSystemService(Context.ALARM_SERVICE);
-            mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+            mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);*/
             android.os.Process.killProcess(android.os.Process.myPid());
             /*Intent intent = new Intent(getBaseContext(), LoginActivity.class);
             startActivity(intent);
@@ -434,7 +446,7 @@ public class MainActivity extends AppCompatActivity
             finish();*/
         }
         if (drawerClose) {
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            DrawerLayout drawer = findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
         }
         return true;
@@ -487,11 +499,11 @@ public class MainActivity extends AppCompatActivity
                     editor.putBoolean(PREF_PREMEM, PRememValue);
                     editor.putBoolean(PREF_AUTOLOGIN, false);
                     editor.commit();
-                    Intent mStartActivity = new Intent(getBaseContext(), MainActivity.class);
+                    /*Intent mStartActivity = new Intent(getBaseContext(), LoginActivity.class);
                     int mPendingIntentId = 123456;
                     PendingIntent mPendingIntent = PendingIntent.getActivity(getBaseContext(), mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
                     AlarmManager mgr = (AlarmManager)getBaseContext().getSystemService(Context.ALARM_SERVICE);
-                    mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+                    mgr.setExact(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);*/
                     android.os.Process.killProcess(android.os.Process.myPid());
                 }
                 if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(UnameValue.toLowerCase())&& x == 1)) {
@@ -500,7 +512,7 @@ public class MainActivity extends AppCompatActivity
                         mLoadingCircle.setVisibility(View.INVISIBLE);
                         setHeaderDetails(cm.message());
                         setWelcomeVisible(true);
-                        if (!EdgeDay5Value.toLowerCase().contains("Fri".toLowerCase())){
+                        if (!EdgeDay5CurValue.toLowerCase().contains("Fri".toLowerCase()) && !EdgeDay5Value.toLowerCase().contains("Fri".toLowerCase())){
                             EdgeSignupActivity.showPage = false;
                             uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
                             Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
@@ -569,8 +581,14 @@ public class MainActivity extends AppCompatActivity
                     mLoginPage.stopLoading();
                     mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + edgePage);
                     if (!webUrl.equals(newUrl)) {
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webUrl));
-                        startActivity(browserIntent);
+                        Uri uri = Uri.parse(webUrl);
+                        CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
+                        intentBuilder.setStartAnimations(getBaseContext(), R.anim.slide_in_right, R.anim.slide_out_left);
+                        intentBuilder.setExitAnimations(getBaseContext(), R.anim.slide_in_left, R.anim.slide_out_right);
+                        intentBuilder.setToolbarColor(ContextCompat.getColor(getBaseContext(), R.color.colorPrimary));
+                        intentBuilder.setSecondaryToolbarColor(ContextCompat.getColor(getBaseContext(), R.color.colorPrimaryDark));
+                        CustomTabsIntent customTabsIntent = intentBuilder.build();
+                        customTabsIntent.launchUrl(context, uri);
                         newUrl = webUrl;
                     }
                 }
@@ -638,13 +656,31 @@ public class MainActivity extends AppCompatActivity
         EdgeDay5 = EdgeDay5Value;
         EdgeDay5Cur = EdgeDay5CurValue;
         notifyMinutes = MinValue;
-        if (calledForeign) {
+        if (calledForeign && EdgeDay5CurValue.toLowerCase().contains("Fri".toLowerCase())) {
             Log.d("loadPrefs", "interpreting edge data...");
-            InterpretEdgeData(EdgeDay1);
-            InterpretEdgeData(EdgeDay2);
-            InterpretEdgeData(EdgeDay3);
-            InterpretEdgeData(EdgeDay4);
-            InterpretEdgeData(EdgeDay5);
+            //Calendar.Friday equals 6, thursday equals 5, use this in the future with the edgeday arrays
+            switch (Calendar.getInstance().get(Calendar.DAY_OF_WEEK)){
+                case Calendar.MONDAY:
+                    setEdgeMessage(EdgeDay1);
+                    setEdgeNotifications(parseEdgeTitle(EdgeDay1), parseEdgeText(EdgeDay1), parseEdgeSession(EdgeDay1), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
+                    break;
+                case Calendar.TUESDAY:
+                    setEdgeMessage(EdgeDay2);
+                    setEdgeNotifications(parseEdgeTitle(EdgeDay2), parseEdgeText(EdgeDay2), parseEdgeSession(EdgeDay2), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
+                    break;
+                case Calendar.WEDNESDAY:
+                    setEdgeMessage(EdgeDay3);
+                    setEdgeNotifications(parseEdgeTitle(EdgeDay3), parseEdgeText(EdgeDay3), parseEdgeSession(EdgeDay3), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
+                    break;
+                case Calendar.THURSDAY:
+                    setEdgeMessage(EdgeDay4);
+                    setEdgeNotifications(parseEdgeTitle(EdgeDay4), parseEdgeText(EdgeDay4), parseEdgeSession(EdgeDay4), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
+                    break;
+                case Calendar.FRIDAY:
+                    setEdgeMessage(EdgeDay5Cur);
+                    setEdgeNotifications(parseEdgeTitle(EdgeDay5Cur), parseEdgeText(EdgeDay5Cur), parseEdgeSession(EdgeDay5Cur), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
+                    break;
+            }
         }
         if (FirstLoadValue && UnameValue == null){
             SharedPreferences oldSettings = getSharedPreferences("preferences",
@@ -792,7 +828,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setHeaderDetails(String message){
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         View hView =  navigationView.getHeaderView(0);
         TextView nav_user = hView.findViewById(R.id.HeaderName);
         TextView nav_username = hView.findViewById(R.id.HeaderUsername);
@@ -819,65 +855,6 @@ public class MainActivity extends AppCompatActivity
                 .execute(imageurl);*/
     }
 
-     private void InterpretEdgeData(String consoleMessage) {
-        if (consoleMessage.toLowerCase().contains("Mon".toLowerCase())) {
-            EdgeDay1 = consoleMessage;
-            Log.d("Monday Edge Class", EdgeDay1);
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY && !consoleMessage.toLowerCase().contains("undefined")) {
-                setEdgeMessage(consoleMessage);
-                setEdgeNotifications(parseEdgeTitle(EdgeDay1), parseEdgeText(EdgeDay1), parseEdgeSession(EdgeDay1), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
-            }
-        }
-        if (consoleMessage.toLowerCase().contains("Tue".toLowerCase()) && !consoleMessage.toLowerCase().contains("undefined")) {
-            EdgeDay2 = consoleMessage;
-            Log.d("Tuesday Edge Class", EdgeDay2);
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY) {
-                setEdgeMessage(consoleMessage);
-                setEdgeNotifications(parseEdgeTitle(EdgeDay2), parseEdgeText(EdgeDay2), parseEdgeSession(EdgeDay2), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
-            }
-        }
-        if (consoleMessage.toLowerCase().contains("Wed".toLowerCase()) && !consoleMessage.toLowerCase().contains("undefined")) {
-            EdgeDay3 = consoleMessage;
-            Log.d("Wednesday Edge Class", EdgeDay3);
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY) {
-                setEdgeMessage(consoleMessage);
-                setEdgeNotifications(parseEdgeTitle(EdgeDay3), parseEdgeText(EdgeDay3), parseEdgeSession(EdgeDay3), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
-            }
-        }
-        if (consoleMessage.toLowerCase().contains("Thu".toLowerCase()) && !consoleMessage.toLowerCase().contains("undefined")) {
-            EdgeDay4 = consoleMessage;   //Thursday
-            Log.d("Thursday Edge Class", EdgeDay4);
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY) {
-                setEdgeMessage(consoleMessage);
-                setEdgeNotifications(parseEdgeTitle(EdgeDay4), parseEdgeText(EdgeDay4), parseEdgeSession(EdgeDay4), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
-            }
-        }
-        if (consoleMessage.toLowerCase().contains("Fri".toLowerCase())) {
-            Log.d(TAG, consoleMessage);
-            if (consoleMessage.toLowerCase().contains("undefined".toLowerCase())){
-                EdgeDay5Ar[1] = consoleMessage;
-            } else if (currentSet == 0) {
-                EdgeDay5Ar[0] = consoleMessage;
-                EdgeDay5 = consoleMessage;
-                currentSet = 1;
-            } else {
-                EdgeDay5Ar[1] = consoleMessage;
-            }
-
-            Log.d("Day5Ar0", EdgeDay5Ar[0]);
-            if ( EdgeDay5Ar[1] != null){
-                Log.d("Day5Ar1", EdgeDay5Ar[1]);
-            }
-            EdgeDay5Cur = EdgeDay5Ar[0];
-            Log.d(TAG, EdgeDay5Cur);
-            Log.d("Cur Friday Edge Class", EdgeDay5Cur);
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
-                setEdgeMessage(consoleMessage);
-                setEdgeNotifications(parseEdgeTitle(EdgeDay5Cur), parseEdgeText(EdgeDay5Cur), parseEdgeSession(EdgeDay5Cur), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
-                EdgeDay5CurValue = EdgeDay5Cur;
-            }
-        }
-    }
     public String parseEdgeTime(String EdgeString) {
         String time = "";
         if (EdgeString.toLowerCase().contains("12:43")) {

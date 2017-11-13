@@ -34,31 +34,17 @@ public class LoginActivity extends AppCompatActivity {
     private Intent loginIntent;
 
     @Override
-    protected void onPause(){
-        super.onPause();
-    }
-    @Override
-    protected void onResume(){
-        super.onResume();
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        mLogin = (Button) findViewById(R.id.loginButton);
-        mCredit = (TextView) findViewById(R.id.creditText);
-        mUsername = (TextView) findViewById(R.id.usernameField);
-        mPassword = (TextView) findViewById(R.id.passwordField);
-        mRemember = (CheckBox) findViewById(R.id.rememberPassword);
-        mRegister = (Button) findViewById(R.id.RegisterButton);
-        mEmail = (TextView) findViewById(R.id.emailField);
-        mActivateRegister = (TextView) findViewById(R.id.ActivateRegister);
+        mLogin = findViewById(R.id.loginButton);
+        mCredit = findViewById(R.id.creditText);
+        mUsername = findViewById(R.id.usernameField);
+        mPassword = findViewById(R.id.passwordField);
+        mRemember = findViewById(R.id.rememberPassword);
+        mRegister = findViewById(R.id.RegisterButton);
+        mEmail = findViewById(R.id.emailField);
+        mActivateRegister = findViewById(R.id.ActivateRegister);
         mRemember.setChecked(PRememValue);
         loginIntent = new Intent(getBaseContext(), MainActivity.class);
         if (PRememValue) {
@@ -66,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
             mPassword.setText(PasswordValue);
         }
         if (invalid) {
-            TextView mInvalid = (TextView) findViewById(R.id.invalidLogin);
+            TextView mInvalid = findViewById(R.id.invalidLogin);
             mInvalid.setVisibility(View.VISIBLE);
         }
         if (MainActivity.AutologinValue) {
@@ -83,6 +69,7 @@ public class LoginActivity extends AppCompatActivity {
                 PasswordValue = mPassword.getText().toString();
                 MainActivity.PRememValue = mRemember.isChecked();
                 startActivity(loginIntent);
+                finish();
             }
 
             mActivateRegister.setOnClickListener(
@@ -139,7 +126,7 @@ public class LoginActivity extends AppCompatActivity {
                                 MainActivity.PRememValue = mRemember.isChecked();
                                 setContentView(R.layout.activity_main);
                                 startActivity(loginIntent);
-
+                                finish();
                             }
                         }
                     }
@@ -169,6 +156,7 @@ public class LoginActivity extends AppCompatActivity {
                             editor.putBoolean(PREF_PREMEM, mRemember.isChecked());
                             editor.apply();
                             startActivity(loginIntent);
+                            finish();
                         }
                     }
             );
