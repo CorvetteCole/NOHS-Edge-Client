@@ -16,9 +16,9 @@ import android.widget.TextView;
 import static corve.nohsedge.MainActivity.PREF_PASSWORD;
 import static corve.nohsedge.MainActivity.PREF_PREMEM;
 import static corve.nohsedge.MainActivity.PREF_UNAME;
-import static corve.nohsedge.MainActivity.PRememValue;
-import static corve.nohsedge.MainActivity.PasswordValue;
-import static corve.nohsedge.MainActivity.UnameValue;
+import static corve.nohsedge.MainActivity.pRememValue;
+import static corve.nohsedge.MainActivity.passwordValue;
+import static corve.nohsedge.MainActivity.unameValue;
 
 public class LoginActivity extends AppCompatActivity {
     private TextView mUsername;
@@ -30,7 +30,6 @@ public class LoginActivity extends AppCompatActivity {
     private Button mLogin;
     static boolean invalid;
     private Intent loginIntent;
-    private int a = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,17 +42,17 @@ public class LoginActivity extends AppCompatActivity {
         mRegister = findViewById(R.id.RegisterButton);
         mEmail = findViewById(R.id.emailField);
         mActivateRegister = findViewById(R.id.ActivateRegister);
-        mRemember.setChecked(PRememValue);
+        mRemember.setChecked(pRememValue);
         loginIntent = new Intent(getBaseContext(), MainActivity.class);
-        if (PRememValue) {
-            mUsername.setText(UnameValue);
-            mPassword.setText(PasswordValue);
+        if (pRememValue) {
+            mUsername.setText(unameValue);
+            mPassword.setText(passwordValue);
         }
         if (invalid) {
             TextView mInvalid = findViewById(R.id.invalidLogin);
             mInvalid.setVisibility(View.VISIBLE);
         }
-        if (MainActivity.AutologinValue) {
+        if (MainActivity.autoLoginValue) {
             InputMethodManager inputManager = (InputMethodManager)
                     getSystemService(Context.INPUT_METHOD_SERVICE);
             if (getCurrentFocus() != null) {
@@ -62,9 +61,9 @@ public class LoginActivity extends AppCompatActivity {
             }
             MainActivity.Login = 1;
                 MainActivity.calledForeign = true;
-                UnameValue = mUsername.getText().toString();
-                PasswordValue = mPassword.getText().toString();
-                MainActivity.PRememValue = mRemember.isChecked();
+                unameValue = mUsername.getText().toString();
+                passwordValue = mPassword.getText().toString();
+                MainActivity.pRememValue = mRemember.isChecked();
                 startActivity(loginIntent);
                 finish();
             }
@@ -72,21 +71,13 @@ public class LoginActivity extends AppCompatActivity {
             mActivateRegister.setOnClickListener(
                     new View.OnClickListener() {
                         public void onClick(View view) {
-                            if (mActivateRegister.getText().equals("Back to login")) {
-                                a = 1;
-                            }
                             if (mActivateRegister.getText().equals("Need to register?")) {
-                                a = 0;
-                            }
-
-                            if (a == 0) {
                                 mRegister.setVisibility(View.VISIBLE);
                                 mEmail.setVisibility(View.VISIBLE);
                                 mActivateRegister.setText("Back to login");
                                 mLogin.setVisibility(View.INVISIBLE);
 
-                            }
-                            if (a == 1) {
+                            } else if (mActivateRegister.getText().equals("Back to login")) {
                                 mRegister.setVisibility(View.INVISIBLE);
                                 mEmail.setVisibility(View.INVISIBLE);
                                 mActivateRegister.setText("Need to register?");
@@ -109,8 +100,8 @@ public class LoginActivity extends AppCompatActivity {
 
                                 MainActivity.Login = 1;
                                 MainActivity.calledForeign = true;
-                                UnameValue = mUsername.getText().toString();
-                                PasswordValue = mPassword.getText().toString();
+                                unameValue = mUsername.getText().toString();
+                                passwordValue = mPassword.getText().toString();
                                 SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
                                 SharedPreferences.Editor editor = settings.edit();
                                 if (mRemember.isChecked()) {
@@ -119,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                                 editor.putBoolean(PREF_PREMEM, mRemember.isChecked());
                                 editor.apply();
-                                MainActivity.PRememValue = mRemember.isChecked();
+                                MainActivity.pRememValue = mRemember.isChecked();
                                 setContentView(R.layout.activity_main);
                                 startActivity(loginIntent);
                                 finish();
@@ -138,10 +129,10 @@ public class LoginActivity extends AppCompatActivity {
                             }
                             MainActivity.Register = 1;
                             MainActivity.calledForeign = true;
-                            UnameValue = mUsername.getText().toString();
-                            PasswordValue = mPassword.getText().toString();
-                            MainActivity.PRememValue = mRemember.isChecked();
-                            MainActivity.EmailValue = mEmail.getText().toString();
+                            unameValue = mUsername.getText().toString();
+                            passwordValue = mPassword.getText().toString();
+                            MainActivity.pRememValue = mRemember.isChecked();
+                            MainActivity.emailValue = mEmail.getText().toString();
                             SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
                             SharedPreferences.Editor editor = settings.edit();
                             if (mRemember.isChecked()) {

@@ -54,45 +54,20 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
     public void loadPreferences() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context1);
         // Get value
-        String EdgeDay1 = settings.getString(PREF_EDGE1, DefaultEdgeDay1Value);
-        String EdgeDay2 = settings.getString(PREF_EDGE2, DefaultEdgeDay2Value);
-        String EdgeDay3 = settings.getString(PREF_EDGE3, DefaultEdgeDay3Value);
-        String EdgeDay4 = settings.getString(PREF_EDGE4, DefaultEdgeDay4Value);
-        String EdgeDay5 = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
+        String mEdgeDay[] = new String[7];
+        mEdgeDay[2] = settings.getString(PREF_EDGE1, DefaultEdgeDay1Value);
+        mEdgeDay[3] = settings.getString(PREF_EDGE2, DefaultEdgeDay2Value);
+        mEdgeDay[4] = settings.getString(PREF_EDGE3, DefaultEdgeDay3Value);
+        mEdgeDay[5] = settings.getString(PREF_EDGE4, DefaultEdgeDay4Value);
+        mEdgeDay[6] = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
         String edgeDay5Cur = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
         notifyMinutes = settings.getInt(PREF_MIN, DefaultMinValue);
         NotificationEnabled = settings.getBoolean(PREF_NOTIFYEDGE, true);
-        //Calendar.Friday equals 6, thursday equals 5, use this in the future with the edgeday arrays
-        switch (Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
-            case Calendar.MONDAY:
-                if (EdgeDay1.contains("Mon")) {
-                    setEdgeNotifications(parseEdgeTitle(EdgeDay1), parseEdgeText(EdgeDay1), parseEdgeSession(EdgeDay1));
-                }
-                break;
-            case Calendar.TUESDAY:
-                if (EdgeDay2.contains("Tue")) {
-                    setEdgeNotifications(parseEdgeTitle(EdgeDay2), parseEdgeText(EdgeDay2), parseEdgeSession(EdgeDay2));
-                }
-                break;
-            case Calendar.WEDNESDAY:
-                if (EdgeDay3.contains("Wed")) {
-                    setEdgeNotifications(parseEdgeTitle(EdgeDay3), parseEdgeText(EdgeDay3), parseEdgeSession(EdgeDay3));
-                }
-                break;
-            case Calendar.THURSDAY:
-                if (EdgeDay4.contains("Thu")) {
-                    setEdgeNotifications(parseEdgeTitle(EdgeDay4), parseEdgeText(EdgeDay4), parseEdgeSession(EdgeDay4));
-                }
-                break;
-            case Calendar.FRIDAY:
-                if (edgeDay5Cur.contains("Fri")) {
-                    setEdgeNotifications(parseEdgeTitle(edgeDay5Cur), parseEdgeText(edgeDay5Cur), parseEdgeSession(edgeDay5Cur));
-                }
-                break;
-            case Calendar.SATURDAY:
-                SharedPreferences.Editor editor = settings.edit();
-                editor.putString(PREF_EDGE5Cur, EdgeDay5);
-                editor.apply();
+        int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        if (dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY){
+            setEdgeNotifications(parseEdgeTitle(mEdgeDay[dayOfWeek]), parseEdgeText(mEdgeDay[dayOfWeek]), parseEdgeSession(mEdgeDay[dayOfWeek]));
+        } else {
+            setEdgeNotifications(parseEdgeTitle(edgeDay5Cur), parseEdgeText(edgeDay5Cur), parseEdgeSession(edgeDay5Cur));
         }
     }
 

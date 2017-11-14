@@ -74,44 +74,32 @@ public class MainActivity extends AppCompatActivity
     static final String PREF_FIRSTLOAD = "FirstLoad";
     private String webUrl;
     String newUrl = "";
-    static boolean ImageLoadOnWiFiValue;
-    private final Boolean DefaultFirstLoadVaue = true;
+    static boolean imageLoadOnWiFiValue;
+
     private Boolean FirstLoadValue = true;
+    private final Boolean DefaultFirstLoadVaue = true;
     private final String DefaultUnameValue = "";
-    @Nullable
-    static String UnameValue;
     private final String DefaultPasswordValue = "";
-    @Nullable
-    static String PasswordValue;
     private final boolean DefaultPRememValue = false;
-    static boolean PRememValue;
     private final boolean DefaultEdgeNotificationValue = true;
-    static boolean EdgeNotificationValue;
     private final boolean DefaultWeeklyNotificationValue = true;
-    static boolean WeeklyNotificationValue;
     private final boolean DefaultAutologinValue = false;
-    static boolean AutologinValue;
+
+    static String unameValue;
+    static String passwordValue;
+    static boolean pRememValue;
+    static boolean edgeNotificationValue;
+    static boolean weeklyNotificationValue;
+    static boolean autoLoginValue;
     public static final int DefaultMinValue = 5;
-    static int MinValue;
+    static int minValue;
     public final static String DefaultEdgeDay1Value = "";
     public final static String DefaultEdgeDay2Value = "";
     public final static String DefaultEdgeDay3Value = "";
     public final static String DefaultEdgeDay4Value = "";
     public final static String DefaultEdgeDay5Value = "";
     public final static String DefaultEdgeDay5CurValue = "";
-    @Nullable
-    static String EdgeDay1Value;
-    @Nullable
-    static String EdgeDay2Value;
-    @Nullable
-    static String EdgeDay3Value;
-    @Nullable
-    static String EdgeDay4Value;
-    @Nullable
-    static String EdgeDay5Value;
-    @Nullable
-    static String EdgeDay5CurValue;
-    static String EmailValue;
+    static String emailValue;
     ProgressBar mLoadingCircle;
     private static final String TAG = "MainActivity";
     private WebView mLoginPage;
@@ -119,18 +107,10 @@ public class MainActivity extends AppCompatActivity
     static int REQUEST_CODE = 0;
     static int REQUEST_CODE_EDGE = 1;
     static int REQUEST_CODE_WEEKLY = 2;
+    static String mEdgeDay[] = new String[7];
+
     @Nullable
-    static String EdgeDay1 = "MonUndefined";
-    @Nullable
-    static String EdgeDay2 = "TueUndefined";
-    @Nullable
-    static String EdgeDay3 = "WedUndefined";
-    @Nullable
-    static String EdgeDay4 = "ThuUndefined";
-    @Nullable
-    static String EdgeDay5 = "FriUndefined";
-    @Nullable
-    static String EdgeDay5Cur;
+    static String mEdgeDay5Cur;
     public int NotificationSet;
     static int notifyMinutes = 5;
     public static int Login = 0;
@@ -159,16 +139,13 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onResume() {
         super.onResume();
-        //if (!calledForeign){
             loadPreferences();
-        //}
     }
 
     @Override
     public void onPause() {
         super.onPause();
         savePreferences();
-        //finish();
     }
 
     @Override
@@ -325,16 +302,16 @@ public class MainActivity extends AppCompatActivity
         //boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
         boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
         Log.d("isWiFi?", isWiFi + "");
-        if (!ImageLoadOnWiFiValue){
+        if (!imageLoadOnWiFiValue){
             WebSettings webSettings = mLoginPage.getSettings();
             webSettings.setLoadsImagesAutomatically(true);
             Log.d("ImgLoadStatus", "Cell&WiFi");
         }
-        if (ImageLoadOnWiFiValue && isWiFi){
+        if (imageLoadOnWiFiValue && isWiFi){
             WebSettings webSettings = mLoginPage.getSettings();
             webSettings.setLoadsImagesAutomatically(true);
             Log.d("ImgLoadStatus", "WiFi");
-        } if (ImageLoadOnWiFiValue && !isWiFi) {
+        } if (imageLoadOnWiFiValue && !isWiFi) {
             WebSettings webSettings = mLoginPage.getSettings();
             webSettings.setLoadsImagesAutomatically(false);
             Log.d("ImgLoadStatus", "Disabled");
@@ -411,16 +388,14 @@ public class MainActivity extends AppCompatActivity
             edgePage = "fancam";
             setWelcomeVisible(false);
         } else if (id == R.id.nav_logout){
-            AutologinValue = false;
-            PRememValue = false;
-            UnameValue = "";
-            PasswordValue = "";
-            EdgeDay1 = "";
-            EdgeDay2 = "";
-            EdgeDay3 = "";
-            EdgeDay4 = "";
-            EdgeDay5 = "";
-            EdgeDay5Cur = "";
+            autoLoginValue = false;
+            pRememValue = false;
+            unameValue = "";
+            passwordValue = "";
+            for (int i = 0; i < mEdgeDay.length; i++){
+                mEdgeDay[i] = "";
+            }
+            mEdgeDay5Cur = "";
             SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             SharedPreferences.Editor editor = settings.edit();
             editor.putString(PREF_PASSWORD, "");
@@ -440,16 +415,7 @@ public class MainActivity extends AppCompatActivity
             clearCookies(this);
             WebView obj = mLoginPage;
             obj.clearCache(true);
-            /*Intent mStartActivity = new Intent(getBaseContext(), MainActivity.class);
-            int mPendingIntentId = 123456;
-            PendingIntent mPendingIntent = PendingIntent.getActivity(getBaseContext(), mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
-            AlarmManager mgr = (AlarmManager)getBaseContext().getSystemService(Context.ALARM_SERVICE);
-            mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);*/
             android.os.Process.killProcess(android.os.Process.myPid());
-            /*Intent intent = new Intent(getBaseContext(), LoginActivity.class);
-            startActivity(intent);
-            drawerClose = false;
-            finish();*/
         }
         if (drawerClose) {
             DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -493,16 +459,16 @@ public class MainActivity extends AppCompatActivity
                         + cm.lineNumber() + " of "
                         + cm.sourceId());
                 if (cm.message().toLowerCase().contains("pass did not match".toLowerCase())) {
-                    AutologinValue = false;
-                    PRememValue = false;
-                    UnameValue = "";
-                    PasswordValue = "";
+                    autoLoginValue = false;
+                    pRememValue = false;
+                    unameValue = "";
+                    passwordValue = "";
                     SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
                     SharedPreferences.Editor editor = settings.edit();
                     editor.putBoolean("invalid", true);
-                    editor.putString(PREF_UNAME, UnameValue);
-                    editor.putString(PREF_PASSWORD, PasswordValue);
-                    editor.putBoolean(PREF_PREMEM, PRememValue);
+                    editor.putString(PREF_UNAME, unameValue);
+                    editor.putString(PREF_PASSWORD, passwordValue);
+                    editor.putBoolean(PREF_PREMEM, pRememValue);
                     editor.putBoolean(PREF_AUTOLOGIN, false);
                     editor.commit();
                     /*Intent mStartActivity = new Intent(getBaseContext(), LoginActivity.class);
@@ -512,13 +478,13 @@ public class MainActivity extends AppCompatActivity
                     mgr.setExact(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);*/
                     android.os.Process.killProcess(android.os.Process.myPid());
                 }
-                if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(UnameValue.toLowerCase())&& !loggedIn)) {
+                if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(unameValue.toLowerCase())&& !loggedIn)) {
                     if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
                         setupDrawer();
                         mLoadingCircle.setVisibility(View.INVISIBLE);
                         setHeaderDetails(cm.message());
                         setWelcomeVisible(true);
-                        if (!EdgeDay5CurValue.toLowerCase().contains("Fri".toLowerCase()) && !EdgeDay5Value.toLowerCase().contains("Fri".toLowerCase())){
+                        if (!mEdgeDay5Cur.toLowerCase().contains("Fri".toLowerCase()) && !mEdgeDay[6].toLowerCase().contains("Fri".toLowerCase())){
                             EdgeSignupActivity.showPage = false;
                             uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
                             Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
@@ -545,8 +511,8 @@ public class MainActivity extends AppCompatActivity
                 super.onPageFinished(view, url);
                 if (mLoginPage.getUrl().toLowerCase().contains("login")) {
                     mLoginPage.loadUrl("javascript:(function(){" +
-                            "document.getElementById('login-username').value = '" + UnameValue + "';" +
-                            "document.getElementById('login-password').value = '" + PasswordValue + "';" +
+                            "document.getElementById('login-username').value = '" + unameValue + "';" +
+                            "document.getElementById('login-password').value = '" + passwordValue + "';" +
                             "l=document.getElementById('login-btn');" +
                             "e=document.createEvent('HTMLEvents');" +
                             "e.initEvent('click',true,true);" +
@@ -556,9 +522,9 @@ public class MainActivity extends AppCompatActivity
                 }
                 if (mLoginPage.getUrl().toLowerCase().contains("register")) {
                     mLoginPage.loadUrl("javascript:(function(){" +
-                            "document.getElementById('register-username').value = '" + UnameValue + "';" +
-                            "document.getElementById('register-password').value = '" + PasswordValue + "';" +
-                            "document.getElementById('register-email').value = '" + EmailValue + "';" +
+                            "document.getElementById('register-username').value = '" + unameValue + "';" +
+                            "document.getElementById('register-password').value = '" + passwordValue + "';" +
+                            "document.getElementById('register-email').value = '" + emailValue + "';" +
                             "l=document.getElementById('register-btn');" +
                             "e=document.createEvent('HTMLEvents');" +
                             "e.initEvent('click',true,true);" +
@@ -607,23 +573,17 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences.Editor editor = settings.edit();
 
         // Edit and commit
-        EdgeDay1Value = EdgeDay1;
-        EdgeDay2Value = EdgeDay2;
-        EdgeDay3Value = EdgeDay3;
-        EdgeDay4Value = EdgeDay4;
-        EdgeDay5Value = EdgeDay5;
-        EdgeDay5CurValue = EdgeDay5Cur;
-        if (PRememValue) {
-            editor.putString(PREF_UNAME, UnameValue);
-            editor.putString(PREF_PASSWORD, PasswordValue);
+        if (pRememValue) {
+            editor.putString(PREF_UNAME, unameValue);
+            editor.putString(PREF_PASSWORD, passwordValue);
         }
-        editor.putBoolean(PREF_PREMEM, PRememValue);
-        editor.putString(PREF_EDGE1, EdgeDay1Value);
-        editor.putString(PREF_EDGE2, EdgeDay2Value);
-        editor.putString(PREF_EDGE3, EdgeDay3Value);
-        editor.putString(PREF_EDGE4, EdgeDay4Value);
-        editor.putString(PREF_EDGE5, EdgeDay5Value);
-        editor.putString(PREF_EDGE5Cur, EdgeDay5CurValue);
+        editor.putBoolean(PREF_PREMEM, pRememValue);
+        editor.putString(PREF_EDGE1, mEdgeDay[2]);
+        editor.putString(PREF_EDGE2, mEdgeDay[3]);
+        editor.putString(PREF_EDGE3, mEdgeDay[4]);
+        editor.putString(PREF_EDGE4, mEdgeDay[5]);
+        editor.putString(PREF_EDGE5, mEdgeDay[6]);
+        editor.putString(PREF_EDGE5Cur, mEdgeDay5Cur);
         editor.putString("fullName", fullName);
         editor.apply();
     }
@@ -631,83 +591,63 @@ public class MainActivity extends AppCompatActivity
     public void loadPreferences() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         if (!calledForeign) {
-            UnameValue = settings.getString(PREF_UNAME, DefaultUnameValue);
-            PasswordValue = settings.getString(PREF_PASSWORD, DefaultPasswordValue);
-            PRememValue = settings.getBoolean(PREF_PREMEM, DefaultPRememValue);
+            unameValue = settings.getString(PREF_UNAME, DefaultUnameValue);
+            passwordValue = settings.getString(PREF_PASSWORD, DefaultPasswordValue);
+            pRememValue = settings.getBoolean(PREF_PREMEM, DefaultPRememValue);
         }
-        EdgeNotificationValue = settings.getBoolean(PREF_NOTIFYEDGE, DefaultEdgeNotificationValue);
-        AutologinValue = settings.getBoolean(PREF_AUTOLOGIN, DefaultAutologinValue);
-        WeeklyNotificationValue = settings.getBoolean(PREF_NOTIFYWEEKLY, DefaultWeeklyNotificationValue);
-        EdgeDay1Value = settings.getString(PREF_EDGE1, DefaultEdgeDay1Value);
-        EdgeDay2Value = settings.getString(PREF_EDGE2, DefaultEdgeDay2Value);
-        EdgeDay3Value = settings.getString(PREF_EDGE3, DefaultEdgeDay3Value);
-        EdgeDay4Value = settings.getString(PREF_EDGE4, DefaultEdgeDay4Value);
-        EdgeDay5Value = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
-        EdgeDay5CurValue = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
+        edgeNotificationValue = settings.getBoolean(PREF_NOTIFYEDGE, DefaultEdgeNotificationValue);
+        autoLoginValue = settings.getBoolean(PREF_AUTOLOGIN, DefaultAutologinValue);
+        weeklyNotificationValue = settings.getBoolean(PREF_NOTIFYWEEKLY, DefaultWeeklyNotificationValue);
+        mEdgeDay[2] = settings.getString(PREF_EDGE1, DefaultEdgeDay1Value);
+        mEdgeDay[3] = settings.getString(PREF_EDGE2, DefaultEdgeDay2Value);
+        mEdgeDay[4] = settings.getString(PREF_EDGE3, DefaultEdgeDay3Value);
+        mEdgeDay[5] = settings.getString(PREF_EDGE4, DefaultEdgeDay4Value);
+        mEdgeDay[6] = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
+        mEdgeDay5Cur = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
         FirstLoadValue = settings.getBoolean(PREF_FIRSTLOAD, DefaultFirstLoadVaue);
-        MinValue = settings.getInt(PREF_MIN, DefaultMinValue);
+        minValue = settings.getInt(PREF_MIN, DefaultMinValue);
         LoginActivity.invalid = settings.getBoolean("invalid", false);
         fullName = settings.getString("fullName", " ");
-        ImageLoadOnWiFiValue = settings.getBoolean("ImageLoad", false);
-        Log.d("LoadImagesOnWiFi", ImageLoadOnWiFiValue + "");
-        Log.d("EdgeNotificationValue", EdgeNotificationValue + "");
-        if (WeeklyNotificationValue) {
+        imageLoadOnWiFiValue = settings.getBoolean("ImageLoad", false);
+        Log.d("LoadImagesOnWiFi", imageLoadOnWiFiValue + "");
+        Log.d("edgeNotificationValue", edgeNotificationValue + "");
+        if (weeklyNotificationValue) {
             Log.d("SettingWeeklyNotif", "SettingWeeklyNotif");
             setWeeklyNotifications();
         }
-        EdgeDay1 = EdgeDay1Value;
-        EdgeDay2 = EdgeDay2Value;
-        EdgeDay3 = EdgeDay3Value;
-        EdgeDay4 = EdgeDay4Value;
-        EdgeDay5 = EdgeDay5Value;
-        EdgeDay5Cur = EdgeDay5CurValue;
-        notifyMinutes = MinValue;
-        if (calledForeign && EdgeDay5CurValue.toLowerCase().contains("Fri".toLowerCase())) {
+        notifyMinutes = minValue;
+        if (calledForeign && mEdgeDay5Cur.toLowerCase().contains("Fri".toLowerCase())) {
             Log.d("loadPrefs", "interpreting edge data...");
             //Calendar.Friday equals 6, thursday equals 5, use this in the future with the edgeday arrays
-            switch (Calendar.getInstance().get(Calendar.DAY_OF_WEEK)){
-                case Calendar.MONDAY:
-                    setEdgeMessage(EdgeDay1);
-                    setEdgeNotifications(parseEdgeTitle(EdgeDay1), parseEdgeText(EdgeDay1), parseEdgeSession(EdgeDay1), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
-                    break;
-                case Calendar.TUESDAY:
-                    setEdgeMessage(EdgeDay2);
-                    setEdgeNotifications(parseEdgeTitle(EdgeDay2), parseEdgeText(EdgeDay2), parseEdgeSession(EdgeDay2), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
-                    break;
-                case Calendar.WEDNESDAY:
-                    setEdgeMessage(EdgeDay3);
-                    setEdgeNotifications(parseEdgeTitle(EdgeDay3), parseEdgeText(EdgeDay3), parseEdgeSession(EdgeDay3), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
-                    break;
-                case Calendar.THURSDAY:
-                    setEdgeMessage(EdgeDay4);
-                    setEdgeNotifications(parseEdgeTitle(EdgeDay4), parseEdgeText(EdgeDay4), parseEdgeSession(EdgeDay4), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
-                    break;
-                case Calendar.FRIDAY:
-                    setEdgeMessage(EdgeDay5Cur);
-                    setEdgeNotifications(parseEdgeTitle(EdgeDay5Cur), parseEdgeText(EdgeDay5Cur), parseEdgeSession(EdgeDay5Cur), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
-                    break;
+            int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+            if (dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY){
+                setEdgeMessage(mEdgeDay[dayOfWeek]);
+                setEdgeNotifications(parseEdgeTitle(mEdgeDay[dayOfWeek]), parseEdgeText(mEdgeDay[dayOfWeek]), parseEdgeSession(mEdgeDay[dayOfWeek]));
+            } else {
+                setEdgeMessage(mEdgeDay5Cur);
+                setEdgeNotifications(parseEdgeTitle(mEdgeDay5Cur), parseEdgeText(mEdgeDay5Cur), parseEdgeSession(mEdgeDay5Cur));
             }
         }
-        if (FirstLoadValue && UnameValue == null){
+        if (FirstLoadValue && unameValue == null){
             SharedPreferences oldSettings = getSharedPreferences("preferences",
                     Context.MODE_PRIVATE);
-            UnameValue = oldSettings.getString(PREF_UNAME, DefaultUnameValue);
-            PasswordValue = oldSettings.getString(PREF_PASSWORD, DefaultPasswordValue);
-            PRememValue = oldSettings.getBoolean(PREF_PREMEM, DefaultPRememValue);
-            EdgeNotificationValue = oldSettings.getBoolean(PREF_NOTIFYEDGE, DefaultEdgeNotificationValue);
-            AutologinValue = oldSettings.getBoolean(PREF_AUTOLOGIN, DefaultAutologinValue);
-            MinValue = oldSettings.getInt(PREF_MIN, DefaultMinValue);
+            unameValue = oldSettings.getString(PREF_UNAME, DefaultUnameValue);
+            passwordValue = oldSettings.getString(PREF_PASSWORD, DefaultPasswordValue);
+            pRememValue = oldSettings.getBoolean(PREF_PREMEM, DefaultPRememValue);
+            edgeNotificationValue = oldSettings.getBoolean(PREF_NOTIFYEDGE, DefaultEdgeNotificationValue);
+            autoLoginValue = oldSettings.getBoolean(PREF_AUTOLOGIN, DefaultAutologinValue);
+            minValue = oldSettings.getInt(PREF_MIN, DefaultMinValue);
             FirstLoadValue = false;
             SharedPreferences.Editor editor = settings.edit();
-            if (PRememValue) {
-                editor.putString(PREF_UNAME, UnameValue);
-                editor.putString(PREF_PASSWORD, PasswordValue);
+            if (pRememValue) {
+                editor.putString(PREF_UNAME, unameValue);
+                editor.putString(PREF_PASSWORD, passwordValue);
             }
-            editor.putBoolean(PREF_NOTIFYEDGE, EdgeNotificationValue);
-            editor.putBoolean(PREF_PREMEM, PRememValue);
-            editor.putBoolean(PREF_AUTOLOGIN, AutologinValue);
+            editor.putBoolean(PREF_NOTIFYEDGE, edgeNotificationValue);
+            editor.putBoolean(PREF_PREMEM, pRememValue);
+            editor.putBoolean(PREF_AUTOLOGIN, autoLoginValue);
             editor.putBoolean(PREF_FIRSTLOAD, FirstLoadValue);
-            editor.putInt(PREF_MIN, MinValue);
+            editor.putInt(PREF_MIN, minValue);
             editor.apply();
         }
     }
@@ -720,7 +660,7 @@ public class MainActivity extends AppCompatActivity
         calendar3.set(Calendar.MINUTE, 0);
         calendar3.set(Calendar.SECOND, 0);
         calendar3.set(Calendar.AM_PM, Calendar.PM);
-        if ((calendar3.getTimeInMillis() - System.currentTimeMillis()) > 0 && WeeklyNotificationValue) {
+        if ((calendar3.getTimeInMillis() - System.currentTimeMillis()) > 0 && weeklyNotificationValue) {
             Intent intent3 = new Intent(this, WeeklyReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
                     REQUEST_CODE_WEEKLY, intent3, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -751,7 +691,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         Log.d("edgehelptime", (activateTime - System.currentTimeMillis()) + "");
-        if (EdgeNotificationValue) {
+        if (edgeNotificationValue) {
             Intent intent2 = new Intent(this, EdgeClassNotifHelper.class);
             PendingIntent pendingIntent2 = PendingIntent.getBroadcast(this,
                     REQUEST_CODE, intent2, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -764,7 +704,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void setEdgeNotifications(String EdgeTitle, String EdgeText, int EdgeSession, int DayofWeek) {
+    private void setEdgeNotifications(String EdgeTitle, String EdgeText, int EdgeSession) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         int edgeMin1 = 43 - notifyMinutes;
@@ -795,7 +735,7 @@ public class MainActivity extends AppCompatActivity
         editor.putString("TEXT", EdgeText);
         editor.apply();
         Log.d("edgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
-        if ((calendar.getTimeInMillis() - System.currentTimeMillis()) > 0 && EdgeNotificationValue) {
+        if ((calendar.getTimeInMillis() - System.currentTimeMillis()) > 0 && edgeNotificationValue) {
             Log.d("NotificationSet", EdgeTitle);
             Intent intent1 = new Intent(this, EdgeReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this,

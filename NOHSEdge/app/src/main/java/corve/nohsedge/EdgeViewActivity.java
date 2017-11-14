@@ -19,7 +19,6 @@ import static corve.nohsedge.MainActivity.DefaultEdgeDay3Value;
 import static corve.nohsedge.MainActivity.DefaultEdgeDay4Value;
 import static corve.nohsedge.MainActivity.DefaultEdgeDay5CurValue;
 import static corve.nohsedge.MainActivity.DefaultEdgeDay5Value;
-import static corve.nohsedge.MainActivity.EdgeDay5;
 import static corve.nohsedge.MainActivity.PREF_EDGE1;
 import static corve.nohsedge.MainActivity.PREF_EDGE2;
 import static corve.nohsedge.MainActivity.PREF_EDGE3;
