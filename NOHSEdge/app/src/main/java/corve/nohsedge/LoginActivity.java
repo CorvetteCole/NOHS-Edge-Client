@@ -28,17 +28,15 @@ public class LoginActivity extends AppCompatActivity {
     private TextView mEmail;
     private TextView mActivateRegister;
     private Button mLogin;
-    private TextView mCredit;
-    private int a = 0;
     static boolean invalid;
     private Intent loginIntent;
+    private int a = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         mLogin = findViewById(R.id.loginButton);
-        mCredit = findViewById(R.id.creditText);
         mUsername = findViewById(R.id.usernameField);
         mPassword = findViewById(R.id.passwordField);
         mRemember = findViewById(R.id.rememberPassword);
@@ -62,8 +60,7 @@ public class LoginActivity extends AppCompatActivity {
                 inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
                         InputMethodManager.HIDE_NOT_ALWAYS);
             }
-                MainActivity.currentSet = 0;
-                MainActivity.Login = 1;
+            MainActivity.Login = 1;
                 MainActivity.calledForeign = true;
                 UnameValue = mUsername.getText().toString();
                 PasswordValue = mPassword.getText().toString();
@@ -110,7 +107,6 @@ public class LoginActivity extends AppCompatActivity {
                                 inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
                                         InputMethodManager.HIDE_NOT_ALWAYS);
 
-                                MainActivity.currentSet = 0;
                                 MainActivity.Login = 1;
                                 MainActivity.calledForeign = true;
                                 UnameValue = mUsername.getText().toString();
@@ -140,7 +136,6 @@ public class LoginActivity extends AppCompatActivity {
                                 inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
                                         InputMethodManager.HIDE_NOT_ALWAYS);
                             }
-                            MainActivity.currentSet = 0;
                             MainActivity.Register = 1;
                             MainActivity.calledForeign = true;
                             UnameValue = mUsername.getText().toString();

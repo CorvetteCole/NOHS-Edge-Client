@@ -3,6 +3,7 @@ package corve.nohsedge;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.preference.DialogPreference;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -16,10 +17,10 @@ import android.widget.NumberPicker;
 public class NumberPickerPreference extends DialogPreference {
 
     // allowed range
-    public static final int MAX_VALUE = 40;
-    public static final int MIN_VALUE = 0;
+    private static final int MAX_VALUE = 40;
+    private static final int MIN_VALUE = 0;
     // enable or disable the 'circular behavior'
-    public static final boolean WRAP_SELECTOR_WHEEL = true;
+    private static final boolean WRAP_SELECTOR_WHEEL = true;
 
     private NumberPicker picker;
     private int value;
@@ -32,6 +33,7 @@ public class NumberPickerPreference extends DialogPreference {
         super(context, attrs, defStyleAttr);
     }
 
+    @NonNull
     @Override
     protected View onCreateDialogView() {
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
@@ -68,7 +70,7 @@ public class NumberPickerPreference extends DialogPreference {
     }
 
     @Override
-    protected Object onGetDefaultValue(TypedArray a, int index) {
+    protected Object onGetDefaultValue(@NonNull TypedArray a, int index) {
         return a.getInt(index, MIN_VALUE);
     }
 
@@ -77,12 +79,12 @@ public class NumberPickerPreference extends DialogPreference {
         setValue(restorePersistedValue ? getPersistedInt(MIN_VALUE) : (Integer) defaultValue);
     }
 
-    public void setValue(int value) {
+    private void setValue(int value) {
         this.value = value;
         persistInt(this.value);
     }
 
-    public int getValue() {
+    private int getValue() {
         return this.value;
     }
 }

@@ -17,21 +17,14 @@ import java.util.ArrayList;
 
 public class EdgeBaseAdapter extends BaseAdapter {
     private static final String TAG = "EDGE_BASE_ADAPTER";
-    ArrayList<SingleRow> list;
-    Context context;
-    String[] EdgeTitle;
-    String[] EdgeText;
-    String[] EdgeTime;
-    String[] EdgeDate;
+    private ArrayList<SingleRow> list;
+    private Context context;
+
     EdgeBaseAdapter(Context c, String[] Title, String[] Text, String[] Time, String[] Date){
         list = new ArrayList<SingleRow>();
         context = c;
-        EdgeTitle = Title;
-        EdgeText = Text;
-        EdgeTime = Time;
-        EdgeDate = Date;
         for(int i= 0; i< EdgeViewActivity.EdgeTitle.length; i++){
-            list.add(new SingleRow(EdgeTitle[i], EdgeText[i], EdgeTime[i], EdgeDate[i]));
+            list.add(new SingleRow(Title[i], Text[i], Time[i], Date[i]));
         }
     }
     @Override

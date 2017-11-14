@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 
@@ -19,7 +20,7 @@ import static corve.nohsedge.R.attr.colorAccent;
 
 public class WeeklyReceiver extends BroadcastReceiver {
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(@NonNull Context context, Intent intent) {
         showNotification(context);
     }
 
@@ -34,7 +35,7 @@ public class WeeklyReceiver extends BroadcastReceiver {
         return true;
     }
     */
-        private void showNotification(Context context){
+        private void showNotification(@NonNull Context context){
         String Title="Schedule your Edge classes today!";
         String Text="Get ahead of the crowd!";
         int reqCode = 0;

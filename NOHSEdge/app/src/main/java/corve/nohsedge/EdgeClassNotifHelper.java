@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.util.Calendar;
@@ -39,7 +41,6 @@ import static corve.nohsedge.MainActivity.PREF_NOTIFYEDGE;
 public class EdgeClassNotifHelper extends BroadcastReceiver {
     private int notifyMinutes;
     private Context context1;
-    private String EdgeDay5Cur;
     private Boolean NotificationEnabled;
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -62,7 +63,7 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
         String EdgeDay3 = settings.getString(PREF_EDGE3, DefaultEdgeDay3Value);
         String EdgeDay4 = settings.getString(PREF_EDGE4, DefaultEdgeDay4Value);
         String EdgeDay5 = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
-        EdgeDay5Cur = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
+        String edgeDay5Cur = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
         notifyMinutes = settings.getInt(PREF_MIN, DefaultMinValue);
         NotificationEnabled = settings.getBoolean(PREF_NOTIFYEDGE, true);
         //Calendar.Friday equals 6, thursday equals 5, use this in the future with the edgeday arrays
@@ -88,8 +89,8 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
                 }
                 break;
             case Calendar.FRIDAY:
-                if (EdgeDay5Cur.contains("Fri")) {
-                    setEdgeNotifications(parseEdgeTitle(EdgeDay5Cur), parseEdgeText(EdgeDay5Cur), parseEdgeSession(EdgeDay5Cur), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
+                if (edgeDay5Cur.contains("Fri")) {
+                    setEdgeNotifications(parseEdgeTitle(edgeDay5Cur), parseEdgeText(edgeDay5Cur), parseEdgeSession(edgeDay5Cur), Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
                 }
                 break;
             case Calendar.SATURDAY:
@@ -154,7 +155,7 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
         return EdgeString;
     }
 
-    public int parseEdgeSession(String EdgeString){
+    public int parseEdgeSession(@NonNull String EdgeString){
         int session = 0;
         if (EdgeString.toLowerCase().contains("12:43")){
             session = 1;

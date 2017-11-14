@@ -18,6 +18,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
@@ -38,7 +40,6 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -73,72 +74,72 @@ public class MainActivity extends AppCompatActivity
     static final String PREF_FIRSTLOAD = "FirstLoad";
     private String webUrl;
     String newUrl = "";
-    public static int currentSet = 0;
-
     static boolean ImageLoadOnWiFiValue;
-
     private final Boolean DefaultFirstLoadVaue = true;
     private Boolean FirstLoadValue = true;
-
     private final String DefaultUnameValue = "";
+    @Nullable
     static String UnameValue;
-
     private final String DefaultPasswordValue = "";
+    @Nullable
     static String PasswordValue;
-
     private final boolean DefaultPRememValue = false;
     static boolean PRememValue;
-
     private final boolean DefaultEdgeNotificationValue = true;
     static boolean EdgeNotificationValue;
-
     private final boolean DefaultWeeklyNotificationValue = true;
     static boolean WeeklyNotificationValue;
-
     private final boolean DefaultAutologinValue = false;
     static boolean AutologinValue;
-
     public static final int DefaultMinValue = 5;
     static int MinValue;
-
-
     public final static String DefaultEdgeDay1Value = "";
     public final static String DefaultEdgeDay2Value = "";
     public final static String DefaultEdgeDay3Value = "";
     public final static String DefaultEdgeDay4Value = "";
     public final static String DefaultEdgeDay5Value = "";
     public final static String DefaultEdgeDay5CurValue = "";
+    @Nullable
     static String EdgeDay1Value;
+    @Nullable
     static String EdgeDay2Value;
+    @Nullable
     static String EdgeDay3Value;
+    @Nullable
     static String EdgeDay4Value;
+    @Nullable
     static String EdgeDay5Value;
+    @Nullable
     static String EdgeDay5CurValue;
     static String EmailValue;
-
     ProgressBar mLoadingCircle;
     private static final String TAG = "MainActivity";
-    int x = 0;
     private WebView mLoginPage;
     private TextView mLoadingText;
     static int REQUEST_CODE = 0;
     static int REQUEST_CODE_EDGE = 1;
     static int REQUEST_CODE_WEEKLY = 2;
+    @Nullable
     static String EdgeDay1 = "MonUndefined";
+    @Nullable
     static String EdgeDay2 = "TueUndefined";
+    @Nullable
     static String EdgeDay3 = "WedUndefined";
+    @Nullable
     static String EdgeDay4 = "ThuUndefined";
+    @Nullable
     static String EdgeDay5 = "FriUndefined";
+    @Nullable
     static String EdgeDay5Cur;
     public int NotificationSet;
     static int notifyMinutes = 5;
-    private boolean settingsOpen = false;
     public static int Login = 0;
     public static int Register = 0;
     public static boolean calledForeign;
     private TextView mWelcome;
     private String edgePage;
     private int id;
+    @Nullable
     static String uuid;
     private TextView mEdgeTitle;
     private TextView mEdgeText;
@@ -146,9 +147,13 @@ public class MainActivity extends AppCompatActivity
     private TextView mEdgeTitleConst;
     private TextView mEdgeTextConst;
     private TextView mEdgeTimeConst;
+    @Nullable
     private ConnectivityManager cm;
+    @Nullable
     private String fullName = "";
+    @NonNull
     private Context context = this;
+    private boolean loggedIn = false;
 
 
     @Override
@@ -252,7 +257,8 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public String getCookie(String siteName, String CookieName) {
+    @Nullable
+    public String getCookie(String siteName, @NonNull String CookieName) {
         String CookieValue = null;
 
         CookieManager cookieManager = CookieManager.getInstance();
@@ -276,7 +282,7 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         }
-        if (mLoginPage.canGoBack() && !settingsOpen) {
+        if (mLoginPage.canGoBack()) {
             mLoginPage.goBack();
             if (mLoginPage.getUrl().toLowerCase().contains("edgetime".toLowerCase())) {
                 Toast.makeText(this, "Click again to exit Edge", Toast.LENGTH_SHORT).show();
@@ -295,11 +301,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        //int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
         //if (id == R.id.action_settings) {
@@ -482,7 +488,7 @@ public class MainActivity extends AppCompatActivity
                 }
 
             }
-            public boolean onConsoleMessage(ConsoleMessage cm) {
+            public boolean onConsoleMessage(@NonNull ConsoleMessage cm) {
                 Log.d(TAG, cm.message() + " -- From line "
                         + cm.lineNumber() + " of "
                         + cm.sourceId());
@@ -506,7 +512,7 @@ public class MainActivity extends AppCompatActivity
                     mgr.setExact(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);*/
                     android.os.Process.killProcess(android.os.Process.myPid());
                 }
-                if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(UnameValue.toLowerCase())&& x == 1)) {
+                if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(UnameValue.toLowerCase())&& !loggedIn)) {
                     if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
                         setupDrawer();
                         mLoadingCircle.setVisibility(View.INVISIBLE);
@@ -522,13 +528,13 @@ public class MainActivity extends AppCompatActivity
                         SharedPreferences.Editor editor = settings.edit();
                         editor.putBoolean("invalid", false);
                         editor.apply();
-                        x = 2;
+                        loggedIn = true;
                     }
                 }
                 return true;
             }
 
-            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+            public void onGeolocationPermissionsShowPrompt(String origin, @NonNull GeolocationPermissions.Callback callback) {
                 callback.invoke(origin, true, false);
             }
         });
@@ -546,7 +552,7 @@ public class MainActivity extends AppCompatActivity
                             "e.initEvent('click',true,true);" +
                             "l.dispatchEvent(e);" +
                             "})()");
-                    x = 1;
+                    loggedIn = false;
                 }
                 if (mLoginPage.getUrl().toLowerCase().contains("register")) {
                     mLoginPage.loadUrl("javascript:(function(){" +
@@ -558,9 +564,9 @@ public class MainActivity extends AppCompatActivity
                             "e.initEvent('click',true,true);" +
                             "l.dispatchEvent(e);" +
                             "})()");
-                    x = 1;
+                    loggedIn = false;
                 }
-                if ((mLoginPage.getUrl().toLowerCase().contains("nohsstampede")) && (x == 2)) {
+                if ((mLoginPage.getUrl().toLowerCase().contains("nohsstampede")) && (loggedIn)) {
                     mLoadingCircle.setVisibility(View.INVISIBLE);
                     newUrl = "";
                 }
@@ -704,7 +710,6 @@ public class MainActivity extends AppCompatActivity
             editor.putInt(PREF_MIN, MinValue);
             editor.apply();
         }
-        currentSet = 0;
     }
 
 
@@ -810,7 +815,7 @@ public class MainActivity extends AppCompatActivity
         return EdgeString;
     }
 
-    public static int parseEdgeSession(String EdgeString) {
+    public static int parseEdgeSession(@NonNull String EdgeString) {
         int session = 0;
         if (EdgeString.toLowerCase().contains("12:43")) {
             session = 1;
@@ -827,7 +832,7 @@ public class MainActivity extends AppCompatActivity
         return EdgeString;
     }
 
-    private void setHeaderDetails(String message){
+    private void setHeaderDetails(@NonNull String message){
         NavigationView navigationView = findViewById(R.id.nav_view);
         View hView =  navigationView.getHeaderView(0);
         TextView nav_user = hView.findViewById(R.id.HeaderName);
@@ -855,7 +860,8 @@ public class MainActivity extends AppCompatActivity
                 .execute(imageurl);*/
     }
 
-    public String parseEdgeTime(String EdgeString) {
+    @NonNull
+    public String parseEdgeTime(@NonNull String EdgeString) {
         String time = "";
         if (EdgeString.toLowerCase().contains("12:43")) {
             time = "12:43";
@@ -887,7 +893,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void setEdgeMessage(String consoleMessage){
+    private void setEdgeMessage(@NonNull String consoleMessage){
         mEdgeTitle.setText(parseEdgeTitle(consoleMessage));
         mEdgeText.setText(parseEdgeText(consoleMessage));
         mEdgeTime.setText(parseEdgeTime(consoleMessage));
@@ -900,6 +906,7 @@ public class MainActivity extends AppCompatActivity
             this.bmImage = bmImage;
         }
 
+        @Nullable
         protected Bitmap doInBackground(String... urls) {
             String urldisplay = urls[0];
             Bitmap mIcon11 = null;

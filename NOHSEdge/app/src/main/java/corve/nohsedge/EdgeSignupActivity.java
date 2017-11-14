@@ -2,6 +2,7 @@ package corve.nohsedge;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,15 +33,12 @@ import static corve.nohsedge.MainActivity.EdgeDay5;
 import static corve.nohsedge.MainActivity.EdgeDay5Cur;
 import static corve.nohsedge.MainActivity.EdgeDay5CurValue;
 import static corve.nohsedge.MainActivity.EdgeDay5Value;
-import static corve.nohsedge.MainActivity.EdgeNotificationValue;
 import static corve.nohsedge.MainActivity.PREF_EDGE1;
 import static corve.nohsedge.MainActivity.PREF_EDGE2;
 import static corve.nohsedge.MainActivity.PREF_EDGE3;
 import static corve.nohsedge.MainActivity.PREF_EDGE4;
 import static corve.nohsedge.MainActivity.PREF_EDGE5;
 import static corve.nohsedge.MainActivity.PREF_EDGE5Cur;
-import static corve.nohsedge.MainActivity.clearCookies;
-import static corve.nohsedge.MainActivity.currentSet;
 import static corve.nohsedge.MainActivity.uuid;
 
 public class EdgeSignupActivity extends AppCompatActivity {
@@ -50,8 +48,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
     private TextView mLoadingText;
     private ProgressBar mLoadingCircle;
     static boolean showPage = false;
-    private Button mSkipButton;
-    private ConstraintLayout mSkipLayout;
+    @NonNull
     private String[] EdgeDay5Ar = new String[2];
 
 
@@ -68,8 +65,8 @@ public class EdgeSignupActivity extends AppCompatActivity {
         mEdgePage = findViewById(R.id.edgePage);
         mLoadingText = findViewById(R.id.LoadingTextEdge);
         mLoadingCircle = findViewById(R.id.LoadingCircleEdge);
-        mSkipButton = findViewById(R.id.skipButton);
-        mSkipLayout = findViewById(R.id.skipLayout);
+        Button mSkipButton = findViewById(R.id.skipButton);
+        ConstraintLayout mSkipLayout = findViewById(R.id.skipLayout);
 
         MainActivity.calledForeign = true;
         if (showPage){
@@ -141,7 +138,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
 
             }*/
 
-            public boolean onConsoleMessage(ConsoleMessage cm) {
+            public boolean onConsoleMessage(@NonNull ConsoleMessage cm) {
                 Log.d(TAG, cm.message() + " -- From line "
                         + cm.lineNumber() + " of "
                         + cm.sourceId());
@@ -160,7 +157,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
                 return true;
             }
 
-            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+            public void onGeolocationPermissionsShowPrompt(String origin, @NonNull GeolocationPermissions.Callback callback) {
                 callback.invoke(origin, true, false);
             }
         });
@@ -180,7 +177,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
             }
         });
     }
-    private void InterpretEdgeData(String consoleMessage) {
+    private void InterpretEdgeData(@NonNull String consoleMessage) {
         if (consoleMessage.toLowerCase().contains("Mon".toLowerCase())) {
             EdgeDay1 = consoleMessage;
             Log.d("Monday Edge Class", EdgeDay1);
@@ -216,7 +213,6 @@ public class EdgeSignupActivity extends AppCompatActivity {
                 EdgeDay5Ar[1] = consoleMessage;
                 if (!showPage) {
                     savePreferences();
-                    MainActivity.currentSet = 0;
                     finish();
                 }
                 EdgeDay5 = EdgeDay5Ar[1];
@@ -227,7 +223,6 @@ public class EdgeSignupActivity extends AppCompatActivity {
                 EdgeDay5Cur = EdgeDay5Ar[0];
                 if (!showPage) {
                     savePreferences();
-                    MainActivity.currentSet = 0;
                     finish();
                 }
             } else if (isAfterEdgeClasses() && Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY){
@@ -235,7 +230,6 @@ public class EdgeSignupActivity extends AppCompatActivity {
                 Log.d(TAG, "is after edge classes, only next is set");
                 if (!showPage) {
                     savePreferences();
-                    MainActivity.currentSet = 0;
                     finish();
                 }
             }
@@ -272,7 +266,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
             ClassElement++;
         }
     }
-    private boolean isSameWeek (String edge1, String edge2){
+    private boolean isSameWeek (@NonNull String edge1, @NonNull String edge2){
         String date1 = edge1.substring(edge1.indexOf("\"datetime\">") + 16);
         date1 = date1.substring(date1.indexOf("/") + 1);
         if (edge1.contains("12:")) {
