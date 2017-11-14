@@ -3,7 +3,7 @@ package corve.nohsedge;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import static corve.nohsedge.MainActivity.MinValue;
+import static corve.nohsedge.MainActivity.minValue;
 
 /**
  * Created by Cole on 9/27/2017.
@@ -19,7 +19,7 @@ public class SettingsFragment extends PreferenceFragment {
         addPreferencesFromResource(R.xml.preferences);
 
         final Preference NumberPickerPref = this.findPreference("Notify_min");
-        NumberPickerPref.setSummary("Notifications will be sent " + MinValue+ " minutes before class starts");
+        NumberPickerPref.setSummary("Notifications will be sent " + minValue + " minutes before class starts");
         NumberPickerPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 
             @Override

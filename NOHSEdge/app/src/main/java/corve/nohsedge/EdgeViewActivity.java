@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -18,7 +19,6 @@ import static corve.nohsedge.MainActivity.DefaultEdgeDay3Value;
 import static corve.nohsedge.MainActivity.DefaultEdgeDay4Value;
 import static corve.nohsedge.MainActivity.DefaultEdgeDay5CurValue;
 import static corve.nohsedge.MainActivity.DefaultEdgeDay5Value;
-import static corve.nohsedge.MainActivity.EdgeDay5;
 import static corve.nohsedge.MainActivity.PREF_EDGE1;
 import static corve.nohsedge.MainActivity.PREF_EDGE2;
 import static corve.nohsedge.MainActivity.PREF_EDGE3;
@@ -27,13 +27,17 @@ import static corve.nohsedge.MainActivity.PREF_EDGE5;
 import static corve.nohsedge.MainActivity.PREF_EDGE5Cur;
 
 public class EdgeViewActivity extends AppCompatActivity {
+    @NonNull
     private String[] EdgeDay = new String[5];
     private ListView mList;
+    @NonNull
     public static String[] EdgeTitle = new String[5];
+    @NonNull
     public static String[] EdgeText = new String[5];
+    @NonNull
     public static String[] EdgeTime = new String[5];
+    @NonNull
     public static String[] EdgeDate = new String[5];
-    private String EdgeDay5Cur;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +88,7 @@ public class EdgeViewActivity extends AppCompatActivity {
         EdgeDay[3] = settings.getString(PREF_EDGE4, DefaultEdgeDay4Value);
         EdgeDay[4] = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
         String EdgeDay5Next = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
-        if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY && isAfterEdgeClass(parseEdgeTime(EdgeDay5Cur))) {
+        if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY && isAfterEdgeClass(parseEdgeTime(EdgeDay[4]))) {
             EdgeDay[4] = EdgeDay5Next;
         }
         int i = 0;
@@ -105,7 +109,7 @@ public class EdgeViewActivity extends AppCompatActivity {
         setList();
     }
 
-    private boolean isAfterEdgeClass(String EdgeSession){
+    private boolean isAfterEdgeClass(@NonNull String EdgeSession){
         boolean after = false;
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
@@ -128,6 +132,7 @@ public class EdgeViewActivity extends AppCompatActivity {
         return after;
     }
 
+    @NonNull
     public String parseEdgeDate (int i){
         String date = "N/A";
         switch(i){
@@ -149,7 +154,8 @@ public class EdgeViewActivity extends AppCompatActivity {
         }
         return date;
     }
-    public String parseEdgeTitle(String EdgeString) {
+    @NonNull
+    public String parseEdgeTitle(@NonNull String EdgeString) {
         if (EdgeString.toLowerCase().contains("h3")) {
             EdgeString = EdgeString.substring(EdgeString.indexOf(">") + 1);
             EdgeString = EdgeString.substring(0, EdgeString.indexOf("</h3>"));
@@ -160,7 +166,8 @@ public class EdgeViewActivity extends AppCompatActivity {
         return EdgeString;
     }
 
-    public String parseEdgeTime(String EdgeString) {
+    @NonNull
+    public String parseEdgeTime(@NonNull String EdgeString) {
         String session = "";
         if (EdgeString.toLowerCase().contains("12:43")) {
             session = "12:43";
@@ -171,7 +178,8 @@ public class EdgeViewActivity extends AppCompatActivity {
         return session;
     }
 
-    public String parseEdgeText(String EdgeString) {
+    @NonNull
+    public String parseEdgeText(@NonNull String EdgeString) {
         if (EdgeString.toLowerCase().contains("g>")) {
             EdgeString = EdgeString.substring(EdgeString.indexOf("g>") + 2);
             EdgeString = EdgeString.substring(0, EdgeString.indexOf("</"));

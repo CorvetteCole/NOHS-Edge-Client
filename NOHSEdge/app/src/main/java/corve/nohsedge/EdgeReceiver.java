@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 
@@ -21,7 +22,7 @@ import static android.R.attr.colorAccent;
 
 public class EdgeReceiver extends BroadcastReceiver {
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(@NonNull Context context, Intent intent) {
         showNotification(context);
     }
 
@@ -37,7 +38,7 @@ public class EdgeReceiver extends BroadcastReceiver {
         return true;
     }
 */
-    public void showNotification(Context context) {
+    public void showNotification(@NonNull Context context) {
 
         final SharedPreferences mSharedPreference= PreferenceManager.getDefaultSharedPreferences(context);
         String Title=(mSharedPreference.getString("TITLE", "Title"));
