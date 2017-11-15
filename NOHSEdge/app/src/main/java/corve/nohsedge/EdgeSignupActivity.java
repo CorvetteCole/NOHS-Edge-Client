@@ -1,6 +1,7 @@
 package corve.nohsedge;
 
 import android.content.SharedPreferences;
+import android.net.http.SslError;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -11,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.ConsoleMessage;
 import android.webkit.GeolocationPermissions;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -107,10 +109,11 @@ public class EdgeSignupActivity extends AppCompatActivity {
         if(showPage) {
             mEdgePage.setVisibility(View.VISIBLE);
         }
-        mEdgePage.loadUrl("https://api.superfanu.com/6.0.0/gen/link_track.php?platform=Web:%20chrome&uuid=" + uuid + "&nid=305&lkey=nohsstampede-edgetime-module");
+        mEdgePage.loadUrl("http://api.superfanu.com/6.0.0/gen/link_track.php?platform=Web:%20chrome&uuid=" + uuid + "&nid=305&lkey=nohsstampede-edgetime-module");
         WebSettings webSettings = mEdgePage.getSettings();
         webSettings.setDomStorageEnabled(true);
         webSettings.setJavaScriptEnabled(true);
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
         webSettings.setLoadsImagesAutomatically(false);
         mEdgePage.clearHistory();
 
@@ -162,6 +165,10 @@ public class EdgeSignupActivity extends AppCompatActivity {
                         mLoadingText.setVisibility(View.VISIBLE);
                     }
                 }
+            }
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error){
+                handler.proceed(); //ignore SSL errors and proceed
             }
         });
     }
