@@ -166,10 +166,6 @@ public class EdgeSignupActivity extends AppCompatActivity {
                     }
                 }
             }
-            @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error){
-                handler.proceed(); //ignore SSL errors and proceed
-            }
         });
     }
     private void InterpretEdgeData(@NonNull String consoleMessage) {
