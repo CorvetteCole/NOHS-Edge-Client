@@ -259,13 +259,14 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         }
-        if (mLoginPage.canGoBack()) {
-            mLoginPage.goBack();
-            if (mLoginPage.getUrl().toLowerCase().contains("edgetime".toLowerCase())) {
-                Toast.makeText(this, "Click again to exit Edge", Toast.LENGTH_SHORT).show();
+        try {
+            if (mLoginPage.canGoBack()) {
+                mLoginPage.goBack();
+            } else {
+                super.onBackPressed();
             }
-        }  else {
-            Log.d("not good", "kill me");
+        }
+        catch (NullPointerException e){
             super.onBackPressed();
         }
     }
