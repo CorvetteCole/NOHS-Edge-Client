@@ -107,7 +107,8 @@ public class MainActivity extends AppCompatActivity
     static int REQUEST_CODE = 0;
     static int REQUEST_CODE_EDGE = 1;
     static int REQUEST_CODE_WEEKLY = 2;
-    static String mEdgeDay[] = new String[7];
+    static String[] mEdgeDay = new String[7];
+    static String[] mDay = new String[7];
 
     @Nullable
     static String mEdgeDay5Cur;
@@ -590,6 +591,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void loadPreferences() {
+        mDay[2] = "Mon";
+        mDay[3] = "Tue";
+        mDay[4] = "Wed";
+        mDay[5] = "Thu";
+        mDay[6] = "Fri";
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         if (!calledForeign) {
             unameValue = settings.getString(PREF_UNAME, DefaultUnameValue);
@@ -622,8 +628,11 @@ public class MainActivity extends AppCompatActivity
             //Calendar.Friday equals 6, thursday equals 5, use this in the future with the edgeday arrays
             int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
             if (dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY){
-                setEdgeMessage(mEdgeDay[dayOfWeek]);
-                setEdgeNotifications(parseEdgeTitle(mEdgeDay[dayOfWeek]), parseEdgeText(mEdgeDay[dayOfWeek]), parseEdgeSession(mEdgeDay[dayOfWeek]));
+                Log.d(TAG, mEdgeDay[dayOfWeek]);
+                if (mEdgeDay[dayOfWeek].toLowerCase().contains(mDay[dayOfWeek].toLowerCase())) {
+                    setEdgeMessage(mEdgeDay[dayOfWeek]);
+                    setEdgeNotifications(parseEdgeTitle(mEdgeDay[dayOfWeek]), parseEdgeText(mEdgeDay[dayOfWeek]), parseEdgeSession(mEdgeDay[dayOfWeek]));
+                }
             } else {
                 setEdgeMessage(mEdgeDay5Cur);
                 setEdgeNotifications(parseEdgeTitle(mEdgeDay5Cur), parseEdgeText(mEdgeDay5Cur), parseEdgeSession(mEdgeDay5Cur));
