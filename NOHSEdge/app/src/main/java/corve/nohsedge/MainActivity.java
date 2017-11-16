@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity
     static int register = 0;
     static boolean calledForeign;
     private TextView mWelcome;
-    private String currentPage;
+    static String currentPage = "homescreen";
     private int id;
     @Nullable
     static String uuid;
@@ -341,9 +341,6 @@ public class MainActivity extends AppCompatActivity
             intentBuilder.setSecondaryToolbarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
             CustomTabsIntent customTabsIntent = intentBuilder.build();
             customTabsIntent.launchUrl(this, uri);
-
-            //Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://sideline.bsnsports.com/schools/kentucky/goshen/north-oldham-high-school"));
-            //startActivity(browserIntent);
         } else if (id == R.id.nav_feedback){
             Intent emailIntent = EmailIntentBuilder.from(this)
                     .to("corvettecole@gmail.com")
@@ -450,9 +447,14 @@ public class MainActivity extends AppCompatActivity
                 mLoadingText.setText(progress + "%");
                 if (progress == 100) {
                     mLoadingText.setVisibility(View.INVISIBLE);
+                    if (!currentPage.equals("homescreen")){
+                        mLoadingCircle.setVisibility(View.INVISIBLE);
+                        mLoginPage.setVisibility(VISIBLE);
+                    }
                 } else {
                     mLoadingText.setVisibility(VISIBLE);
                     mLoadingCircle.setVisibility(VISIBLE);
+                    mLoginPage.setVisibility(View.INVISIBLE);
                 }
 
             }
@@ -473,11 +475,6 @@ public class MainActivity extends AppCompatActivity
                     editor.putBoolean(PREF_PREMEM, pRememValue);
                     editor.putBoolean(PREF_AUTOLOGIN, false);
                     editor.commit();
-                    /*Intent mStartActivity = new Intent(getBaseContext(), LoginActivity.class);
-                    int mPendingIntentId = 123456;
-                    PendingIntent mPendingIntent = PendingIntent.getActivity(getBaseContext(), mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
-                    AlarmManager mgr = (AlarmManager)getBaseContext().getSystemService(Context.ALARM_SERVICE);
-                    mgr.setExact(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);*/
                     android.os.Process.killProcess(android.os.Process.myPid());
                 }
                 if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(unameValue.toLowerCase())&& !loggedIn)) {
@@ -538,13 +535,20 @@ public class MainActivity extends AppCompatActivity
                     loggedIn = false;
                 }
                 if ((mLoginPage.getUrl().toLowerCase().contains("nohsstampede")) && (loggedIn)) {
-                    mLoadingCircle.setVisibility(View.INVISIBLE);
+                    mLoginPage.setVisibility(VISIBLE);
                 }
-                if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && currentPage != null){
+                if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && currentPage != null && !currentPage.equals("homescreen")){
                     mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
                 }
 
+            }
 
+            @Override
+            public void onLoadResource(WebView view, String url){
+                super.onLoadResource(view, url);
+                if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && currentPage != null && !currentPage.equals("homescreen")){
+                    mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
+                }
             }
 
             @Override
@@ -590,6 +594,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void loadPreferences() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O && mLoginPage != null) {
+            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
+        }
         mDay[2] = "Mon";
         mDay[3] = "Tue";
         mDay[4] = "Wed";

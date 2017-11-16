@@ -45,8 +45,10 @@ public class EdgeSignupActivity extends AppCompatActivity {
     @Override
     protected void onPause(){
         super.onPause();
+        mEdgePage.loadUrl("about:blank");
         finish();
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
