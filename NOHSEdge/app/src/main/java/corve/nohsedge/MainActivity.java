@@ -1,7 +1,6 @@
 package corve.nohsedge;
 
 
-import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -11,7 +10,6 @@ import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.Icon;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -25,7 +23,6 @@ import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.IconCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -40,6 +37,7 @@ import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -75,7 +73,6 @@ public class MainActivity extends AppCompatActivity
     static final String PREF_EDGE5Cur = "Current Friday Edge Class";
     static final String PREF_FIRSTLOAD = "FirstLoad";
     private String webUrl;
-    String newUrl = "";
     static boolean imageLoadOnWiFiValue;
 
     private Boolean FirstLoadValue = true;
@@ -119,7 +116,7 @@ public class MainActivity extends AppCompatActivity
     static int register = 0;
     static boolean calledForeign;
     private TextView mWelcome;
-    private String edgePage;
+    private String currentPage;
     private int id;
     @Nullable
     static String uuid;
@@ -326,10 +323,12 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(getBaseContext(), EdgeViewActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_signup) {
-            mLoginPage.stopLoading();
             EdgeSignupActivity.showPage = true;
             drawerClose = false;
             uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                mLoginPage.loadUrl("about:blank");
+            }
             Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_gear){
@@ -355,7 +354,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_profile) {
             getSupportActionBar().setTitle("Profile");
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#profile-edit");
-            edgePage = "profile-edit";
+            currentPage = "profile-edit";
             mLoginPage.setVisibility(VISIBLE);
             setWelcomeVisible(false);
         } else if (id == R.id.nav_settings) {
@@ -369,26 +368,26 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_notifications){
             getSupportActionBar().setTitle("Notifications");
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#notifications");
-            edgePage = "notifications";
+            currentPage = "notifications";
             mLoginPage.setVisibility(VISIBLE);
             setWelcomeVisible(false);
         } else if (id == R.id.nav_events){
             getSupportActionBar().setTitle("Events");
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#events");
             mLoginPage.setVisibility(VISIBLE);
-            edgePage = "events";
+            currentPage = "events";
             setWelcomeVisible(false);
         } else if (id == R.id.nav_leaderboard){
             getSupportActionBar().setTitle("Leaderboard");
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#leaderboard");
             mLoginPage.setVisibility(VISIBLE);
-            edgePage = "leaderboard";
+            currentPage = "leaderboard";
             setWelcomeVisible(false);
         } else if (id == R.id.nav_fancam){
             getSupportActionBar().setTitle("Fancam");
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#fancam");
             mLoginPage.setVisibility(VISIBLE);
-            edgePage = "fancam";
+            currentPage = "fancam";
             setWelcomeVisible(false);
         } else if (id == R.id.nav_logout){
             autoLoginValue = false;
@@ -490,6 +489,9 @@ public class MainActivity extends AppCompatActivity
                         if (!mEdgeDay5Cur.toLowerCase().contains("Fri".toLowerCase()) && !mEdgeDay[6].toLowerCase().contains("Fri".toLowerCase())){
                             EdgeSignupActivity.showPage = false;
                             uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
+                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                                mLoginPage.loadUrl("about:blank");
+                            }
                             Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
                             startActivity(intent);
                         }
@@ -537,35 +539,31 @@ public class MainActivity extends AppCompatActivity
                 }
                 if ((mLoginPage.getUrl().toLowerCase().contains("nohsstampede")) && (loggedIn)) {
                     mLoadingCircle.setVisibility(View.INVISIBLE);
-                    newUrl = "";
                 }
-                if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && edgePage != null){
-                    mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + edgePage);
+                if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && currentPage != null){
+                    mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
                 }
 
 
             }
 
             @Override
-            public void onLoadResource(WebView view, String url) {
-                super.onLoadResource(view, url);
-                webUrl = mLoginPage.getUrl();
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request){
+                super.shouldOverrideUrlLoading(view, request);
+                webUrl = request.getUrl().toString();
                 Log.d("!URL", webUrl);
                 if ((!webUrl.toLowerCase().contains("edgetime".toLowerCase())) && (!webUrl.toLowerCase().contains("nohs".toLowerCase()))) {
-                    //check to make sure web page hasn't been opened already (avoids opening 20+ chrome tabs upon one button click)
-                    mLoginPage.stopLoading();
-                    mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + edgePage);
-                    if (!webUrl.equals(newUrl)) {
-                        Uri uri = Uri.parse(webUrl);
-                        CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
-                        intentBuilder.setStartAnimations(getBaseContext(), R.anim.slide_in_right, R.anim.slide_out_left);
-                        intentBuilder.setExitAnimations(getBaseContext(), R.anim.slide_in_left, R.anim.slide_out_right);
-                        intentBuilder.setToolbarColor(ContextCompat.getColor(getBaseContext(), R.color.colorPrimary));
-                        intentBuilder.setSecondaryToolbarColor(ContextCompat.getColor(getBaseContext(), R.color.colorPrimaryDark));
-                        CustomTabsIntent customTabsIntent = intentBuilder.build();
-                        customTabsIntent.launchUrl(context, uri);
-                        newUrl = webUrl;
-                    }
+                    Uri uri = request.getUrl();
+                    CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
+                    intentBuilder.setStartAnimations(getBaseContext(), R.anim.slide_in_right, R.anim.slide_out_left);
+                    intentBuilder.setExitAnimations(getBaseContext(), R.anim.slide_in_left, R.anim.slide_out_right);
+                    intentBuilder.setToolbarColor(ContextCompat.getColor(getBaseContext(), R.color.colorPrimary));
+                    intentBuilder.setSecondaryToolbarColor(ContextCompat.getColor(getBaseContext(), R.color.colorPrimaryDark));
+                    CustomTabsIntent customTabsIntent = intentBuilder.build();
+                    customTabsIntent.launchUrl(context, uri);
+                    return true;
+                } else {
+                    return false;
                 }
             }
         });
