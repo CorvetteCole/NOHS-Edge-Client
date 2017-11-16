@@ -1,6 +1,7 @@
 package corve.nohsedge;
 
 
+import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -10,6 +11,7 @@ import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.Icon;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -23,6 +25,7 @@ import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.IconCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -178,18 +181,19 @@ public class MainActivity extends AppCompatActivity
             }
 
             activateEdgeHelper();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
-                ShortcutInfo wNOHSShortcut = new ShortcutInfo.Builder(this, "shortcut_nohs")
+                ShortcutInfo wNOHSShortcut = new ShortcutInfo.Builder(context, "shortcut_nohs")
                         .setShortLabel("NOHS Website")
                         .setLongLabel("Open NOHS Website")
-                        .setIcon(Icon.createWithResource(this, R.mipmap.nohs))
+                        .setIcon(Icon.createWithResource(context, R.mipmap.ic_nohs_shortcut))
                         .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.oldham.kyschools.us/nohs/")))
                         .build();
-                ShortcutInfo wCampusShortcut = new ShortcutInfo.Builder(this, "shortcut_campus")
+                ShortcutInfo wCampusShortcut = new ShortcutInfo.Builder(context, "shortcut_campus")
                         .setShortLabel("Campus Portal")
                         .setLongLabel("Open Campus Portal")
-                        .setIcon(Icon.createWithResource(this, R.mipmap.infinitecampus))
+                        .setIcon(Icon.createWithResource(context, R.mipmap.ic_infinitecampus_shortcut))
                         .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://kyede10.infinitecampus.org/campus/portal/oldham.jsp")))
                         .build();
                 shortcutManager.setDynamicShortcuts(Arrays.asList(wNOHSShortcut, wCampusShortcut));
