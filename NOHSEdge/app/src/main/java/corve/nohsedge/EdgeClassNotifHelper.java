@@ -40,24 +40,19 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
     private Context context1;
     private Boolean NotificationEnabled;
     private String[] mDay = new String[7];
+
     @Override
     public void onReceive(Context context, Intent intent) {
         context1 = context;
-        setNewEdgeNotif();
-
-
-    }
-    public void setNewEdgeNotif(){
-        Log.d("!edgehelper worked", "im ok with life");
-        loadPreferences();
-
-    }
-    public void loadPreferences() {
         mDay[2] = "Mon";
         mDay[3] = "Tue";
         mDay[4] = "Wed";
         mDay[5] = "Thu";
         mDay[6] = "Fri";
+        loadPreferences();
+    }
+
+    public void loadPreferences() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context1);
         // Get value
         String mEdgeDay[] = new String[7];
@@ -74,7 +69,7 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
             if (mEdgeDay[dayOfWeek].toLowerCase().contains(mDay[dayOfWeek].toLowerCase())) {
                 setEdgeNotifications(parseEdgeTitle(mEdgeDay[dayOfWeek]), parseEdgeText(mEdgeDay[dayOfWeek]), parseEdgeSession(mEdgeDay[dayOfWeek]));
             }
-        } else {
+        } else if (dayOfWeek == Calendar.FRIDAY) {
             setEdgeNotifications(parseEdgeTitle(edgeDay5Cur), parseEdgeText(edgeDay5Cur), parseEdgeSession(edgeDay5Cur));
         }
     }

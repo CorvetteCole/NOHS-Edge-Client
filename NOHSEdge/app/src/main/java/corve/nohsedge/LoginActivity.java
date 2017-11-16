@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
                 inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
                         InputMethodManager.HIDE_NOT_ALWAYS);
             }
-            MainActivity.Login = 1;
+            MainActivity.login = 1;
                 MainActivity.calledForeign = true;
                 unameValue = mUsername.getText().toString();
                 passwordValue = mPassword.getText().toString();
@@ -97,8 +97,9 @@ public class LoginActivity extends AppCompatActivity {
                             if (getCurrentFocus() != null) {
                                 inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
                                         InputMethodManager.HIDE_NOT_ALWAYS);
+                            }
 
-                                MainActivity.Login = 1;
+                                MainActivity.login = 1;
                                 MainActivity.calledForeign = true;
                                 unameValue = mUsername.getText().toString();
                                 passwordValue = mPassword.getText().toString();
@@ -114,7 +115,6 @@ public class LoginActivity extends AppCompatActivity {
                                 setContentView(R.layout.activity_main);
                                 startActivity(loginIntent);
                                 finish();
-                            }
                         }
                     }
             );
@@ -127,7 +127,7 @@ public class LoginActivity extends AppCompatActivity {
                                 inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
                                         InputMethodManager.HIDE_NOT_ALWAYS);
                             }
-                            MainActivity.Register = 1;
+                            MainActivity.register = 1;
                             MainActivity.calledForeign = true;
                             unameValue = mUsername.getText().toString();
                             passwordValue = mPassword.getText().toString();

@@ -43,7 +43,6 @@ import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -57,20 +56,20 @@ import static android.view.View.VISIBLE;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    public static final String PREFS_NAME = "preferences";
+    static final String PREFS_NAME = "preferences";
     static final String PREF_UNAME = "Username";
     static final String PREF_PASSWORD = "Password";
     static final String PREF_PREMEM = "RememPass";
     static final String PREF_NOTIFYEDGE = "NotifyEdge";
     static final String PREF_NOTIFYWEEKLY = "NotifyWeekly";
     static final String PREF_AUTOLOGIN = "AutoLogin";
-    public static final String PREF_EDGE1 = "Edge 1";
-    public static final String PREF_EDGE2 = "Edge 2";
-    public static final String PREF_EDGE3 = "Edge 3";
-    public static final String PREF_EDGE4 = "Edge 4";
-    public static final String PREF_EDGE5 = "Edge 5";
-    public static final String PREF_MIN = "Notify_min";
-    public static final String PREF_EDGE5Cur = "Current Friday Edge Class";
+    static final String PREF_EDGE1 = "Edge 1";
+    static final String PREF_EDGE2 = "Edge 2";
+    static final String PREF_EDGE3 = "Edge 3";
+    static final String PREF_EDGE4 = "Edge 4";
+    static final String PREF_EDGE5 = "Edge 5";
+    static final String PREF_MIN = "Notify_min";
+    static final String PREF_EDGE5Cur = "Current Friday Edge Class";
     static final String PREF_FIRSTLOAD = "FirstLoad";
     private String webUrl;
     String newUrl = "";
@@ -91,14 +90,14 @@ public class MainActivity extends AppCompatActivity
     static boolean edgeNotificationValue;
     static boolean weeklyNotificationValue;
     static boolean autoLoginValue;
-    public static final int DefaultMinValue = 5;
+    static final int DefaultMinValue = 5;
     static int minValue;
-    public final static String DefaultEdgeDay1Value = "";
-    public final static String DefaultEdgeDay2Value = "";
-    public final static String DefaultEdgeDay3Value = "";
-    public final static String DefaultEdgeDay4Value = "";
-    public final static String DefaultEdgeDay5Value = "";
-    public final static String DefaultEdgeDay5CurValue = "";
+    final static String DefaultEdgeDay1Value = "";
+    final static String DefaultEdgeDay2Value = "";
+    final static String DefaultEdgeDay3Value = "";
+    final static String DefaultEdgeDay4Value = "";
+    final static String DefaultEdgeDay5Value = "";
+    final static String DefaultEdgeDay5CurValue = "";
     static String emailValue;
     ProgressBar mLoadingCircle;
     private static final String TAG = "MainActivity";
@@ -112,11 +111,10 @@ public class MainActivity extends AppCompatActivity
 
     @Nullable
     static String mEdgeDay5Cur;
-    public int NotificationSet;
     static int notifyMinutes = 5;
-    public static int Login = 0;
-    public static int Register = 0;
-    public static boolean calledForeign;
+    static int login = 0;
+    static int register = 0;
+    static boolean calledForeign;
     private TextView mWelcome;
     private String edgePage;
     private int id;
@@ -170,12 +168,11 @@ public class MainActivity extends AppCompatActivity
             mEdgeTitleConst = findViewById(R.id.edgeTitleTextView);
             mEdgeTextConst = findViewById(R.id.edgeTextTextView);
             mEdgeTimeConst = findViewById(R.id.edgeTimeTextView);
-            NotificationSet = 0;
-            if (Login == 1) {
+            if (login == 1) {
                 mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
                 openLoginpage();
             }
-            if (Register == 1) {
+            if (register == 1) {
                 mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#register");
                 openLoginpage();
             }
@@ -628,12 +625,11 @@ public class MainActivity extends AppCompatActivity
             //Calendar.Friday equals 6, thursday equals 5, use this in the future with the edgeday arrays
             int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
             if (dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY){
-                Log.d(TAG, mEdgeDay[dayOfWeek]);
                 if (mEdgeDay[dayOfWeek].toLowerCase().contains(mDay[dayOfWeek].toLowerCase())) {
                     setEdgeMessage(mEdgeDay[dayOfWeek]);
                     setEdgeNotifications(parseEdgeTitle(mEdgeDay[dayOfWeek]), parseEdgeText(mEdgeDay[dayOfWeek]), parseEdgeSession(mEdgeDay[dayOfWeek]));
                 }
-            } else {
+            } else if (dayOfWeek == Calendar.FRIDAY){
                 setEdgeMessage(mEdgeDay5Cur);
                 setEdgeNotifications(parseEdgeTitle(mEdgeDay5Cur), parseEdgeText(mEdgeDay5Cur), parseEdgeSession(mEdgeDay5Cur));
             }
