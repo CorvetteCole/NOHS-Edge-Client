@@ -132,7 +132,6 @@ public class MainActivity extends AppCompatActivity
     private String fullName = "";
     @NonNull
     private Context context = this;
-    private boolean loggedIn = false;
 
 
     @Override
@@ -198,7 +197,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
     private void setupDrawer(){
-        //setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -273,7 +271,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        //getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.action_bar_buttons, menu);
         return true;
     }
 
@@ -282,12 +280,13 @@ public class MainActivity extends AppCompatActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        //int id = item.getItemId();
+        int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        //if (id == R.id.action_settings) {
-        //    return true;
-        //}
+        if (id == R.id.action_refresh) {
+            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -298,23 +297,9 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         id = item.getItemId();
         boolean drawerClose = true;
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        //boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-        boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
-        Log.d("isWiFi?", isWiFi + "");
-        if (!imageLoadOnWiFiValue){
-            WebSettings webSettings = mLoginPage.getSettings();
-            webSettings.setLoadsImagesAutomatically(true);
-            Log.d("ImgLoadStatus", "Cell&WiFi");
-        }
-        if (imageLoadOnWiFiValue && isWiFi){
-            WebSettings webSettings = mLoginPage.getSettings();
-            webSettings.setLoadsImagesAutomatically(true);
-            Log.d("ImgLoadStatus", "WiFi");
-        } if (imageLoadOnWiFiValue && !isWiFi) {
-            WebSettings webSettings = mLoginPage.getSettings();
-            webSettings.setLoadsImagesAutomatically(false);
-            Log.d("ImgLoadStatus", "Disabled");
+        WebSettings webSettings = mLoginPage.getSettings();
+        if (imageLoadOnWiFiValue){
+            webSettings.setLoadsImagesAutomatically(onWifi());
         }
 
         if (id == R.id.nav_schedule) {
@@ -423,22 +408,20 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    private boolean onWifi() {
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
+    }
+
 
     private void openLoginpage() {
-        //mLoginPage.setVisibility(VISIBLE);
         mLoadingCircle.setVisibility(VISIBLE);
         mLoadingText.setText("Checking login details...");
         WebSettings webSettings = mLoginPage.getSettings();
         webSettings.setLoadsImagesAutomatically(false);
-        webSettings.setDomStorageEnabled(true);
         webSettings.setJavaScriptEnabled(true);
         webSettings.setGeolocationEnabled(true);
-        //webSettings.setAllowContentAccess(true);
-        //webSettings.setAllowFileAccess(true);
-        //webSettings.setAllowUniversalAccessFromFileURLs(true);
-        //webSettings.setAllowFileAccessFromFileURLs(true);
         webSettings.setAppCacheEnabled(true);
-        webSettings.setDatabaseEnabled(true);
 
         mLoginPage.clearHistory();
         clearCookies(this);
@@ -447,7 +430,7 @@ public class MainActivity extends AppCompatActivity
                 mLoadingText.setText(progress + "%");
                 if (progress == 100) {
                     mLoadingText.setVisibility(View.INVISIBLE);
-                    if (!currentPage.equals("homescreen")){
+                    if (!currentPage.equals("homescreen") && mLoginPage.getUrl().equals("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage)){
                         mLoadingCircle.setVisibility(View.INVISIBLE);
                         mLoginPage.setVisibility(VISIBLE);
                     }
@@ -477,7 +460,7 @@ public class MainActivity extends AppCompatActivity
                     editor.commit();
                     android.os.Process.killProcess(android.os.Process.myPid());
                 }
-                if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(unameValue.toLowerCase())&& !loggedIn)) {
+                if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(unameValue.toLowerCase()))) {
                     if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
                         setupDrawer();
                         mLoadingCircle.setVisibility(View.INVISIBLE);
@@ -496,7 +479,6 @@ public class MainActivity extends AppCompatActivity
                         SharedPreferences.Editor editor = settings.edit();
                         editor.putBoolean("invalid", false);
                         editor.apply();
-                        loggedIn = true;
                     }
                 }
                 return true;
@@ -520,7 +502,6 @@ public class MainActivity extends AppCompatActivity
                             "e.initEvent('click',true,true);" +
                             "l.dispatchEvent(e);" +
                             "})()");
-                    loggedIn = false;
                 }
                 if (mLoginPage.getUrl().toLowerCase().contains("register")) {
                     mLoginPage.loadUrl("javascript:(function(){" +
@@ -532,10 +513,6 @@ public class MainActivity extends AppCompatActivity
                             "e.initEvent('click',true,true);" +
                             "l.dispatchEvent(e);" +
                             "})()");
-                    loggedIn = false;
-                }
-                if ((mLoginPage.getUrl().toLowerCase().contains("nohsstampede")) && (loggedIn)) {
-                    mLoginPage.setVisibility(VISIBLE);
                 }
                 if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && currentPage != null && !currentPage.equals("homescreen")){
                     mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
