@@ -300,6 +300,8 @@ public class MainActivity extends AppCompatActivity
         WebSettings webSettings = mLoginPage.getSettings();
         if (imageLoadOnWiFiValue){
             webSettings.setLoadsImagesAutomatically(onWifi());
+        } else {
+            webSettings.setLoadsImagesAutomatically(true);
         }
 
         if (id == R.id.nav_schedule) {
@@ -599,7 +601,7 @@ public class MainActivity extends AppCompatActivity
         LoginActivity.invalid = settings.getBoolean("invalid", false);
         fullName = settings.getString("fullName", " ");
         imageLoadOnWiFiValue = settings.getBoolean("ImageLoad", false);
-        Log.d("LoadImagesOnWiFi", imageLoadOnWiFiValue + "");
+        Log.d("LoadImagesOnWiFiOnly", imageLoadOnWiFiValue + "");
         Log.d("edgeNotificationValue", edgeNotificationValue + "");
         if (weeklyNotificationValue) {
             Log.d("SettingWeeklyNotif", "SettingWeeklyNotif");
