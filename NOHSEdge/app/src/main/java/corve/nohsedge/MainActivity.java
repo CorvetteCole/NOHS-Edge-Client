@@ -437,8 +437,10 @@ public class MainActivity extends AppCompatActivity
                         mLoginPage.setVisibility(VISIBLE);
                     }
                 } else {
+                    if (!currentPage.equals("homescreen")){
+                        mLoadingCircle.setVisibility(VISIBLE);
+                    }
                     mLoadingText.setVisibility(VISIBLE);
-                    mLoadingCircle.setVisibility(VISIBLE);
                     mLoginPage.setVisibility(View.INVISIBLE);
                 }
 
@@ -465,7 +467,7 @@ public class MainActivity extends AppCompatActivity
                 if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(unameValue.toLowerCase()))) {
                     if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
                         setupDrawer();
-                        mLoadingCircle.setVisibility(View.INVISIBLE);
+
                         setHeaderDetails(cm.message());
                         setWelcomeVisible(true);
                         if (!mEdgeDay5Cur.toLowerCase().contains("Fri".toLowerCase()) && !mEdgeDay[6].toLowerCase().contains("Fri".toLowerCase())){
@@ -482,6 +484,7 @@ public class MainActivity extends AppCompatActivity
                         editor.putBoolean("invalid", false);
                         editor.apply();
                     }
+                    mLoadingCircle.setVisibility(View.INVISIBLE);
                 }
                 return true;
             }
