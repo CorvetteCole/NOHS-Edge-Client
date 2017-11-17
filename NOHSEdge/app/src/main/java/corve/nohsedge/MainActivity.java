@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Icon;
@@ -20,6 +21,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
@@ -29,6 +31,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -295,7 +298,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+        int dpBarVisible = 56;
+        int dpBarInvisible = 10;
         id = item.getItemId();
+        Resources r = getResources();
         boolean drawerClose = true;
         WebSettings webSettings = mLoginPage.getSettings();
         if (imageLoadOnWiFiValue){
@@ -339,6 +345,10 @@ public class MainActivity extends AppCompatActivity
             startActivity(emailIntent);
         } else if (id == R.id.nav_profile) {
             getSupportActionBar().setTitle("Profile");
+            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)mLoginPage.getLayoutParams();
+            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpBarVisible, r.getDisplayMetrics());
+            params.setMargins(0, (int)px, 0, 0); //substitute parameters for left, top, right, bottom
+            mLoginPage.setLayoutParams(params);
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#profile-edit");
             currentPage = "profile-edit";
             mLoginPage.setVisibility(VISIBLE);
@@ -353,24 +363,40 @@ public class MainActivity extends AppCompatActivity
             setWelcomeVisible(true);
         } else if (id == R.id.nav_notifications){
             getSupportActionBar().setTitle("Notifications");
+            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)mLoginPage.getLayoutParams();
+            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpBarInvisible, r.getDisplayMetrics());
+            params.setMargins(0, (int)px, 0, 0); //substitute parameters for left, top, right, bottom
+            mLoginPage.setLayoutParams(params);
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#notifications");
             currentPage = "notifications";
             mLoginPage.setVisibility(VISIBLE);
             setWelcomeVisible(false);
         } else if (id == R.id.nav_events){
             getSupportActionBar().setTitle("Events");
+            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)mLoginPage.getLayoutParams();
+            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpBarVisible, r.getDisplayMetrics());
+            params.setMargins(0, (int)px, 0, 0); //substitute parameters for left, top, right, bottom
+            mLoginPage.setLayoutParams(params);
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#events");
             mLoginPage.setVisibility(VISIBLE);
             currentPage = "events";
             setWelcomeVisible(false);
         } else if (id == R.id.nav_leaderboard){
             getSupportActionBar().setTitle("Leaderboard");
+            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)mLoginPage.getLayoutParams();
+            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpBarInvisible, r.getDisplayMetrics());
+            params.setMargins(0, (int)px, 0, 0); //substitute parameters for left, top, right, bottom
+            mLoginPage.setLayoutParams(params);
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#leaderboard");
             mLoginPage.setVisibility(VISIBLE);
             currentPage = "leaderboard";
             setWelcomeVisible(false);
         } else if (id == R.id.nav_fancam){
             getSupportActionBar().setTitle("Fancam");
+            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)mLoginPage.getLayoutParams();
+            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpBarInvisible, r.getDisplayMetrics());
+            params.setMargins(0, (int)px, 0, 0); //substitute parameters for left, top, right, bottom
+            mLoginPage.setLayoutParams(params);
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#fancam");
             mLoginPage.setVisibility(VISIBLE);
             currentPage = "fancam";
@@ -545,6 +571,7 @@ public class MainActivity extends AppCompatActivity
                 Log.d("!URL", webUrl);
                 if ((!webUrl.toLowerCase().contains("edgetime".toLowerCase())) && (!webUrl.toLowerCase().contains("nohs".toLowerCase()))) {
                     Uri uri = request.getUrl();
+                    Log.d("!URI", uri.toString());
                     CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
                     intentBuilder.setStartAnimations(getBaseContext(), R.anim.slide_in_right, R.anim.slide_out_left);
                     intentBuilder.setExitAnimations(getBaseContext(), R.anim.slide_in_left, R.anim.slide_out_right);

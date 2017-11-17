@@ -275,7 +275,6 @@ public class EdgeSignupActivity extends AppCompatActivity {
     private void savePreferences() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         SharedPreferences.Editor editor = settings.edit();
-
         // Edit and commit
         if (edgeDay5Cur != null) {
             editor.putString(PREF_EDGE5Cur, edgeDay5Cur);

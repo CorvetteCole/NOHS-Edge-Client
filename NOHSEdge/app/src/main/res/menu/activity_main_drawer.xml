@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+
+
+    <group android:checkableBehavior="single" android:id="@+id/drawer_part2">
         <item
             android:id="@+id/nav_homescreen"
             android:icon="@drawable/ic_home"
@@ -28,38 +30,39 @@
             android:icon="@drawable/ic_photo"
             android:title="Fancam"/>
         <item
-            android:checkable="false"
             android:id="@+id/nav_gear"
+            android:checkable="false"
             android:icon="@drawable/ic_open_in_browser"
             android:title="Gear"/>
-        <item android:title="Edge">
+    </group>
+
+    <group android:id="@+id/drawer_part1" android:checkableBehavior="none">
+            <item
+                android:id="@+id/nav_schedule"
+                android:icon="@drawable/ic_schedule"
+                android:title="Edge Schedule"/>
+            <item
+                android:id="@+id/nav_signup"
+                android:icon="@drawable/ic_update"
+                android:title="Edge Sign up"/>
+
+        <item android:title="Options">
             <menu>
                 <item
-                    android:id="@+id/nav_schedule"
-                    android:icon="@drawable/ic_schedule"
-                    android:title="Edge Schedule"/>
+                    android:id="@+id/nav_logout"
+                    android:icon="@drawable/ic_logout"
+                    android:title="Logout"/>
                 <item
-                    android:id="@+id/nav_signup"
-                    android:icon="@drawable/ic_update"
-                    android:title="Edge Sign up"/>
+                    android:id="@+id/nav_settings"
+                    android:icon="@drawable/ic_menu_settings"
+                    android:title="Settings"/>
+                <item
+                    android:id="@+id/nav_feedback"
+                    android:icon="@drawable/ic_feedback"
+                    android:title="Send Feedback"/>
             </menu>
         </item>
-        <item android:title="Options">
-                    <menu>
-                        <item
-                            android:id="@+id/nav_logout"
-                            android:icon="@drawable/ic_logout"
-                            android:title="Logout"/>
-                        <item
-                            android:id="@+id/nav_settings"
-                            android:icon="@drawable/ic_menu_settings"
-                            android:title="Settings"/>
-                        <item
-                            android:id="@+id/nav_feedback"
-                            android:icon="@drawable/ic_feedback"
-                            android:title="Send Feedback"/>
-                    </menu>
-                </item>
     </group>
+
 
 </menu>

@@ -1,10 +1,12 @@
 package corve.nohsedge;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -53,10 +55,10 @@ public class EdgeViewActivity extends AppCompatActivity {
         super.onPause();
         finish();
     }
-    /*@Override
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.clear_all, menu);
         return true;
     }
 
@@ -68,15 +70,44 @@ public class EdgeViewActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_refresh) {
-            EdgeSignupActivity.showPage = false;
-            Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
-            startActivity(intent);
+        if (id == R.id.action_clear) {
+            AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+            builder1.setMessage("Clear saved Edge schedule? (This will not make you leave any of your classes)");
+            builder1.setCancelable(true);
+
+            builder1.setPositiveButton(
+                    "Yes",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                            SharedPreferences.Editor editor = settings.edit();
+                            editor.putString(PREF_EDGE1, "");
+                            editor.putString(PREF_EDGE2, "");
+                            editor.putString(PREF_EDGE3, "");
+                            editor.putString(PREF_EDGE4, "");
+                            editor.putString(PREF_EDGE5, "");
+                            editor.putString(PREF_EDGE5Cur, "");
+                            editor.commit();
+                            dialog.cancel();
+                            loadPreferences();
+                        }
+                    });
+
+            builder1.setNegativeButton(
+                    "No",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+
+            AlertDialog alert11 = builder1.create();
+            alert11.show();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
-    }*/
+    }
 
     public void loadPreferences() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
