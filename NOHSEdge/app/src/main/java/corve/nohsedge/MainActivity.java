@@ -560,6 +560,7 @@ public class MainActivity extends AppCompatActivity
             public void onLoadResource(WebView view, String url){
                 super.onLoadResource(view, url);
                 if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && currentPage != null && !currentPage.equals("homescreen")){
+                    Log.d("Unwanted resource, url:", url);
                     mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
                 }
             }
@@ -569,7 +570,7 @@ public class MainActivity extends AppCompatActivity
                 super.shouldOverrideUrlLoading(view, request);
                 webUrl = request.getUrl().toString();
                 Log.d("!URL", webUrl);
-                if ((!webUrl.toLowerCase().contains("edgetime".toLowerCase())) && (!webUrl.toLowerCase().contains("nohs".toLowerCase()))) {
+                if (((!webUrl.toLowerCase().contains("edgetime".toLowerCase())) && (!webUrl.toLowerCase().contains("nohs".toLowerCase()))) || webUrl.contains("https://api.superfanu.com/revpass/landers/nohs/")) {
                     Uri uri = request.getUrl();
                     Log.d("!URI", uri.toString());
                     CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();

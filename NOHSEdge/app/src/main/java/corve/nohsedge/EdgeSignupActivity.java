@@ -40,6 +40,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
     private String[] edgeDay = new String[7];
     private String[] edgeDayFriday = new String[2];
     private String edgeDay5Cur;
+    private boolean alreadyRan = false;
 
 
     @Override
@@ -72,12 +73,8 @@ public class EdgeSignupActivity extends AppCompatActivity {
         mSkipButton.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        mEdgePage.stopLoading();
-                        mEdgePage.clearHistory();
-                        mEdgePage.clearCache(true);
-                        WebView obj = mEdgePage;
-                        obj.clearCache(true);
-                        finish();
+                        showPage = false;
+                        getEdgeClasses();
                     }
                 });
         openEdgepage();
@@ -101,6 +98,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
 
     private void openEdgepage() {
         edgeDayFriday[0] = "notSet";
+        edgeDayFriday[1] = "notSet";
         mEdgePage.clearHistory();
         mEdgePage.clearCache(true);
         //clearCookies(this);
@@ -193,6 +191,10 @@ public class EdgeSignupActivity extends AppCompatActivity {
             if (edgeDayFriday[0].equals("notSet")){
                 edgeDayFriday[0] = consoleMessage;
                 Log.d(TAG, "Friday Array 0 set");
+            } else if (alreadyRan) {
+                edgeDay5Cur = edgeDayFriday[0];
+                savePreferences();
+                finish();
             }
             if (!edgeDayFriday[0].equals(consoleMessage) && !isSameWeek(edgeDayFriday[0], consoleMessage)){
                 Log.d(TAG, "Friday Array 1 set");
@@ -239,6 +241,9 @@ public class EdgeSignupActivity extends AppCompatActivity {
     }
 
     private void getEdgeClasses() {
+        if (!edgeDayFriday[0].equals("notSet") && edgeDayFriday[1].equals("notSet")) {
+            alreadyRan = true;
+        }
         int ClassElement = 0;
         while (ClassElement != 6) {
             mEdgePage.loadUrl("javascript:(function(){" +
@@ -284,7 +289,6 @@ public class EdgeSignupActivity extends AppCompatActivity {
         editor.putString(PREF_EDGE3, edgeDay[4]);
         editor.putString(PREF_EDGE4, edgeDay[5]);
         editor.putString(PREF_EDGE5, edgeDay[6]);
-
         editor.apply();
     }
 }
