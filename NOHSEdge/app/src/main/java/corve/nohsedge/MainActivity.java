@@ -314,7 +314,9 @@ public class MainActivity extends AppCompatActivity
             drawerClose = false;
             uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                mLoginPage.loadUrl("about:blank");
+                webSettings.setJavaScriptEnabled(false);
+                mLoginPage.stopLoading();
+                //mLoginPage.loadUrl("about:blank");
             }
             Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
             startActivity(intent);
@@ -432,7 +434,7 @@ public class MainActivity extends AppCompatActivity
                 mLoadingText.setText(progress + "%");
                 if (progress == 100) {
                     mLoadingText.setVisibility(View.INVISIBLE);
-                    if (!currentPage.equals("homescreen") && mLoginPage.getUrl().equals("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage)){
+                    if (!currentPage.equals("homescreen") && mLoginPage.getUrl().contains("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage)){
                         mLoadingCircle.setVisibility(View.INVISIBLE);
                         mLoginPage.setVisibility(VISIBLE);
                     }
@@ -474,7 +476,10 @@ public class MainActivity extends AppCompatActivity
                             EdgeSignupActivity.showPage = false;
                             uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
                             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                                mLoginPage.loadUrl("about:blank");
+                                WebSettings webSettings = mLoginPage.getSettings();
+                                webSettings.setJavaScriptEnabled(false);
+                                mLoginPage.stopLoading();
+                                //mLoginPage.loadUrl("about:blank");
                             }
                             Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
                             startActivity(intent);
@@ -577,7 +582,9 @@ public class MainActivity extends AppCompatActivity
 
     public void loadPreferences() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O && mLoginPage != null) {
-            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
+            WebSettings webSettings = mLoginPage.getSettings();
+            webSettings.setJavaScriptEnabled(true);
+            //mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
         }
         mDay[2] = "Mon";
         mDay[3] = "Tue";
