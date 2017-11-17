@@ -241,7 +241,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
     }
 
     private void getEdgeClasses() {
-        if (!edgeDayFriday[0].equals("notSet") && edgeDayFriday[1].equals("notSet")) {
+        if (!edgeDayFriday[0].equals("notSet") && edgeDayFriday[1].equals("notSet") && !showPage) {
             alreadyRan = true;
         }
         int ClassElement = 0;
