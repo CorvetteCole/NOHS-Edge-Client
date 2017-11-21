@@ -41,7 +41,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
     private String[] edgeDayFriday = new String[2];
     private String edgeDay5Cur;
     private boolean alreadyRan = false;
-
+    private int classesRetrieved = 0;
 
     @Override
     protected void onPause(){
@@ -73,8 +73,8 @@ public class EdgeSignupActivity extends AppCompatActivity {
         mSkipButton.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        showPage = false;
-                        getEdgeClasses();
+                        savePreferences();
+                        finish();
                     }
                 });
         openEdgepage();
@@ -171,19 +171,23 @@ public class EdgeSignupActivity extends AppCompatActivity {
     private void InterpretEdgeData(@NonNull String consoleMessage) {
         if (consoleMessage.toLowerCase().contains("Mon".toLowerCase())) {
             edgeDay[2] = consoleMessage;
+            classesRetrieved++;
             Log.d("Monday Edge Class", edgeDay[2]);
         }
         if (consoleMessage.toLowerCase().contains("Tue".toLowerCase())) {
             edgeDay[3] = consoleMessage;
+            classesRetrieved++;
             Log.d("Tuesday Edge Class", edgeDay[3]);
         }
         if (consoleMessage.toLowerCase().contains("Wed".toLowerCase())) {
             edgeDay[4] = consoleMessage;
+            classesRetrieved++;
             Log.d("Wednesday Edge Class", edgeDay[4]);
 
         }
         if (consoleMessage.toLowerCase().contains("Thu".toLowerCase())) {
             edgeDay[5] = consoleMessage;   //Thursday
+            classesRetrieved++;
             Log.d("Thursday Edge Class", edgeDay[5]);
         }
         if (consoleMessage.toLowerCase().contains("Fri".toLowerCase())) {
@@ -199,6 +203,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
             if (!edgeDayFriday[0].equals(consoleMessage) && !isSameWeek(edgeDayFriday[0], consoleMessage)){
                 Log.d(TAG, "Friday Array 1 set");
                 edgeDayFriday[1] = consoleMessage;
+                classesRetrieved++;
                 if (!showPage) {
                     savePreferences();
                     finish();
@@ -209,6 +214,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
                 Log.d("Next Friday Edge", edgeDay[6]);
             } else if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) != Calendar.FRIDAY){
                 edgeDay5Cur = edgeDayFriday[0];
+                classesRetrieved++;
                 if (!showPage) {
                     savePreferences();
                     finish();
@@ -216,11 +222,17 @@ public class EdgeSignupActivity extends AppCompatActivity {
             } else if (isAfterEdgeClasses() && Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY){
                 edgeDay[6] = edgeDayFriday[0];
                 Log.d(TAG, "is after edge classes, only next is set");
+                classesRetrieved++;
                 if (!showPage) {
                     savePreferences();
                     finish();
                 }
             }
+        }
+        Log.d("classesRetrieved", classesRetrieved + "");
+        if (consoleMessage.toLowerCase().contains("undefined") && classesRetrieved > 0 && !showPage){
+            savePreferences();
+            finish();
         }
     }
     static boolean isAfterEdgeClasses(){

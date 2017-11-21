@@ -443,6 +443,19 @@ public class MainActivity extends AppCompatActivity
         return activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
     }
 
+    private boolean edgeRetrieved() {
+        for (int i = 1; i < mEdgeDay.length; i++){
+            Log.d("mEdgeDay[]", i + "  :  " + mEdgeDay[i]);
+            if (mEdgeDay[i] != null && mEdgeDay[i].contains(mDay[i])){
+                return true;
+            }
+        }
+        if (mEdgeDay5Cur != null && mEdgeDay5Cur.contains("Fri")){
+            return true;
+        }
+        return false;
+    }
+
 
     private void openLoginpage() {
         mLoadingCircle.setVisibility(VISIBLE);
@@ -498,7 +511,8 @@ public class MainActivity extends AppCompatActivity
 
                         setHeaderDetails(cm.message());
                         setWelcomeVisible(true);
-                        if (!mEdgeDay5Cur.toLowerCase().contains("Fri".toLowerCase()) && !mEdgeDay[6].toLowerCase().contains("Fri".toLowerCase())){
+                        Log.d("edgeRetrieved?", edgeRetrieved() + "");
+                        if (!edgeRetrieved()){
                             EdgeSignupActivity.showPage = false;
                             uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
                             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
@@ -646,7 +660,7 @@ public class MainActivity extends AppCompatActivity
             setWeeklyNotifications();
         }
         notifyMinutes = minValue;
-        if (calledForeign && mEdgeDay5Cur.toLowerCase().contains("Fri".toLowerCase())) {
+        if (calledForeign) {
             Log.d("loadPrefs", "interpreting edge data...");
             //Calendar.Friday equals 6, thursday equals 5, use this in the future with the edgeday arrays
             int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
@@ -655,7 +669,7 @@ public class MainActivity extends AppCompatActivity
                     setEdgeMessage(mEdgeDay[dayOfWeek]);
                     setEdgeNotifications(parseEdgeTitle(mEdgeDay[dayOfWeek]), parseEdgeText(mEdgeDay[dayOfWeek]), parseEdgeSession(mEdgeDay[dayOfWeek]));
                 }
-            } else if (dayOfWeek == Calendar.FRIDAY){
+            } else if (dayOfWeek == Calendar.FRIDAY && mEdgeDay5Cur.toLowerCase().contains(mDay[dayOfWeek])){
                 setEdgeMessage(mEdgeDay5Cur);
                 setEdgeNotifications(parseEdgeTitle(mEdgeDay5Cur), parseEdgeText(mEdgeDay5Cur), parseEdgeSession(mEdgeDay5Cur));
             }
