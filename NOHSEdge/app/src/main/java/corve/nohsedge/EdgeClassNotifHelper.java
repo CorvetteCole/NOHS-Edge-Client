@@ -39,18 +39,19 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
     private int notifyMinutes;
     private Context context1;
     private Boolean NotificationEnabled;
+    private String[] mDay = new String[7];
+
     @Override
     public void onReceive(Context context, Intent intent) {
         context1 = context;
-        setNewEdgeNotif();
-
-
-    }
-    public void setNewEdgeNotif(){
-        Log.d("!edgehelper worked", "im ok with life");
+        mDay[2] = "Mon";
+        mDay[3] = "Tue";
+        mDay[4] = "Wed";
+        mDay[5] = "Thu";
+        mDay[6] = "Fri";
         loadPreferences();
-
     }
+
     public void loadPreferences() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context1);
         // Get value
@@ -65,8 +66,10 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
         NotificationEnabled = settings.getBoolean(PREF_NOTIFYEDGE, true);
         int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         if (dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY){
-            setEdgeNotifications(parseEdgeTitle(mEdgeDay[dayOfWeek]), parseEdgeText(mEdgeDay[dayOfWeek]), parseEdgeSession(mEdgeDay[dayOfWeek]));
-        } else {
+            if (mEdgeDay[dayOfWeek].toLowerCase().contains(mDay[dayOfWeek].toLowerCase())) {
+                setEdgeNotifications(parseEdgeTitle(mEdgeDay[dayOfWeek]), parseEdgeText(mEdgeDay[dayOfWeek]), parseEdgeSession(mEdgeDay[dayOfWeek]));
+            }
+        } else if (dayOfWeek == Calendar.FRIDAY) {
             setEdgeNotifications(parseEdgeTitle(edgeDay5Cur), parseEdgeText(edgeDay5Cur), parseEdgeSession(edgeDay5Cur));
         }
     }
