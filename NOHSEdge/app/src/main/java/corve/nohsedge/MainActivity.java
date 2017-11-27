@@ -4,8 +4,10 @@ package corve.nohsedge;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.content.res.Resources;
@@ -28,6 +30,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -153,6 +156,33 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        PackageManager pm = context.getPackageManager();
+        if (!isPackageInstalled("com.android.chrome", pm)){
+            AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+            builder1.setMessage("This app requires Chrome to work optimally");
+            builder1.setCancelable(true);
+
+            builder1.setPositiveButton(
+                    "Install",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.android.chrome"));
+                            marketIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                            startActivity(marketIntent);
+                        }
+                    });
+
+            builder1.setNegativeButton(
+                    "Cancel",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+
+            AlertDialog alert11 = builder1.create();
+            alert11.show();
+        }
         cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (!calledForeign) {
             Intent intent = new Intent(this, LoginActivity.class);
@@ -441,6 +471,15 @@ public class MainActivity extends AppCompatActivity
     private boolean onWifi() {
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
+    }
+
+    private boolean isPackageInstalled(String packagename, PackageManager packageManager) {
+        try {
+            packageManager.getPackageInfo(packagename, 0);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
     }
 
     private boolean edgeRetrieved() {
