@@ -7,13 +7,13 @@ android {
         applicationId "corve.nohsedge"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 53
-        versionName "2.3.4"
+        versionCode 54
+        versionName "2.3.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

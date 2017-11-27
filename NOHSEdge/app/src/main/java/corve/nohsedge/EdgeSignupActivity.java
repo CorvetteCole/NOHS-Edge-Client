@@ -99,6 +99,10 @@ public class EdgeSignupActivity extends AppCompatActivity {
     private void openEdgepage() {
         edgeDayFriday[0] = "notSet";
         edgeDayFriday[1] = "notSet";
+        Log.d(TAG, "Clearing edgeDay Array");
+        for (int i = 0; i < edgeDay.length; i++){
+            edgeDay[i] = "";
+        }
         mEdgePage.clearHistory();
         mEdgePage.clearCache(true);
         //clearCookies(this);
