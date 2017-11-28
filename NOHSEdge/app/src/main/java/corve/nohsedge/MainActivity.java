@@ -138,6 +138,8 @@ public class MainActivity extends AppCompatActivity
     private String fullName = "";
     @NonNull
     private Context context = this;
+    private boolean loggedIn = false;
+    private boolean autoEdgeRan = false;
 
 
     @Override
@@ -245,42 +247,38 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    @SuppressWarnings("deprecation")
-    public static void clearCookies(Context context) {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+    public static void clearCookies() {
+        try {
             Log.d(TAG, "Using clearCookies code for API >=" + String.valueOf(Build.VERSION_CODES.LOLLIPOP_MR1));
             CookieManager.getInstance().removeAllCookies(null);
             CookieManager.getInstance().flush();
-        } else {
-            Log.d(TAG, "Using clearCookies code for API <" + String.valueOf(Build.VERSION_CODES.LOLLIPOP_MR1));
-            CookieSyncManager cookieSyncMngr = CookieSyncManager.createInstance(context);
-            cookieSyncMngr.startSync();
-            CookieManager cookieManager = CookieManager.getInstance();
-            cookieManager.removeAllCookie();
-            cookieManager.removeSessionCookie();
-            cookieSyncMngr.stopSync();
-            cookieSyncMngr.sync();
+        } catch(StringIndexOutOfBoundsException e){
+            Log.d(TAG, "clearCookies failed!" + e);
         }
     }
 
-    @Nullable
-    public String getCookie(String siteName, @NonNull String CookieName) {
-        String CookieValue = null;
 
-        CookieManager cookieManager = CookieManager.getInstance();
-        String cookies = cookieManager.getCookie(siteName);
-        if (cookies != null){
-        String[] temp = cookies.split(";");
-        for (String ar1 : temp) {
-            if (ar1.contains(CookieName)) {
-                String[] temp1 = ar1.split("=");
-                CookieValue = temp1[1];
-                break;
+    public String getCookie(String siteName, String CookieName) {
+        try {
+            String CookieValue = null;
+            CookieManager cookieManager = CookieManager.getInstance();
+            String cookies = cookieManager.getCookie(siteName);
+            if (cookies != null) {
+                String[] temp = cookies.split(";");
+                for (String ar1 : temp) {
+                    if (ar1.contains(CookieName)) {
+                        String[] temp1 = ar1.split("=");
+                        CookieValue = temp1[1];
+                        break;
+                    }
+                }
             }
-          }
+            return CookieValue;
+        } catch (StringIndexOutOfBoundsException e){
+            Log.d(TAG, "getCookie failed!" + e);
+            return null;
         }
-        return CookieValue;
     }
 
     @Override
@@ -345,6 +343,7 @@ public class MainActivity extends AppCompatActivity
             uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
             Intent intent = new Intent(getBaseContext(), EdgeViewActivity.class);
             startActivity(intent);
+
         } else if (id == R.id.nav_signup) {
             EdgeSignupActivity.showPage = true;
             drawerClose = false;
@@ -356,6 +355,7 @@ public class MainActivity extends AppCompatActivity
             }
             Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
             startActivity(intent);
+
         } else if (id == R.id.nav_gear){
             drawerClose = false;
             Uri uri = Uri.parse("https://sideline.bsnsports.com/schools/kentucky/goshen/north-oldham-high-school");
@@ -366,6 +366,7 @@ public class MainActivity extends AppCompatActivity
             intentBuilder.setSecondaryToolbarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
             CustomTabsIntent customTabsIntent = intentBuilder.build();
             customTabsIntent.launchUrl(this, uri);
+
         } else if (id == R.id.nav_feedback){
             Intent emailIntent = EmailIntentBuilder.from(this)
                     .to("corvettecole@gmail.com")
@@ -373,6 +374,7 @@ public class MainActivity extends AppCompatActivity
                     .body("[insert feature request or bug report here]")
                     .build();
             startActivity(emailIntent);
+
         } else if (id == R.id.nav_profile) {
             getSupportActionBar().setTitle("Profile");
             ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)mLoginPage.getLayoutParams();
@@ -383,14 +385,17 @@ public class MainActivity extends AppCompatActivity
             currentPage = "profile-edit";
             mLoginPage.setVisibility(VISIBLE);
             setWelcomeVisible(false);
+
         } else if (id == R.id.nav_settings) {
             Intent i = new Intent(this, PreferencesActivity.class);
             startActivity(i);
             drawerClose = false;
+
         } else if (id == R.id.nav_homescreen){
             getSupportActionBar().setTitle("Home");
             mLoginPage.setVisibility(View.INVISIBLE);
             setWelcomeVisible(true);
+
         } else if (id == R.id.nav_notifications){
             getSupportActionBar().setTitle("Notifications");
             ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)mLoginPage.getLayoutParams();
@@ -401,6 +406,7 @@ public class MainActivity extends AppCompatActivity
             currentPage = "notifications";
             mLoginPage.setVisibility(VISIBLE);
             setWelcomeVisible(false);
+
         } else if (id == R.id.nav_events){
             getSupportActionBar().setTitle("Events");
             ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)mLoginPage.getLayoutParams();
@@ -411,6 +417,7 @@ public class MainActivity extends AppCompatActivity
             mLoginPage.setVisibility(VISIBLE);
             currentPage = "events";
             setWelcomeVisible(false);
+
         } else if (id == R.id.nav_leaderboard){
             getSupportActionBar().setTitle("Leaderboard");
             ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)mLoginPage.getLayoutParams();
@@ -421,6 +428,7 @@ public class MainActivity extends AppCompatActivity
             mLoginPage.setVisibility(VISIBLE);
             currentPage = "leaderboard";
             setWelcomeVisible(false);
+
         } else if (id == R.id.nav_fancam){
             getSupportActionBar().setTitle("Fancam");
             ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)mLoginPage.getLayoutParams();
@@ -431,6 +439,7 @@ public class MainActivity extends AppCompatActivity
             mLoginPage.setVisibility(VISIBLE);
             currentPage = "fancam";
             setWelcomeVisible(false);
+
         } else if (id == R.id.nav_logout){
             autoLoginValue = false;
             pRememValue = false;
@@ -456,11 +465,12 @@ public class MainActivity extends AppCompatActivity
             editor.commit();
             mLoginPage.clearHistory();
             mLoginPage.clearCache(true);
-            clearCookies(this);
+            clearCookies();
             WebView obj = mLoginPage;
             obj.clearCache(true);
             android.os.Process.killProcess(android.os.Process.myPid());
         }
+
         if (drawerClose) {
             DrawerLayout drawer = findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
@@ -504,9 +514,8 @@ public class MainActivity extends AppCompatActivity
         webSettings.setJavaScriptEnabled(true);
         webSettings.setGeolocationEnabled(true);
         webSettings.setAppCacheEnabled(true);
-
         mLoginPage.clearHistory();
-        clearCookies(this);
+        clearCookies();
         mLoginPage.setWebChromeClient(new WebChromeClient() {
             public void onProgressChanged(WebView view, int progress) {
                 mLoadingText.setText(progress + "%");
@@ -544,10 +553,18 @@ public class MainActivity extends AppCompatActivity
                     editor.commit();
                     android.os.Process.killProcess(android.os.Process.myPid());
                 }
-                if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(unameValue.toLowerCase()))) {
-                    if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
+                if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(unameValue.toLowerCase())) && !loggedIn) {
+                    loggedIn = true;
+                    setupDrawer();
+                    setHeaderDetails(cm.message());
+                    setWelcomeVisible(true);
+                    mLoadingCircle.setVisibility(View.INVISIBLE);
+                    SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putBoolean("invalid", false);
+                    editor.apply();
+                    /*if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
                         setupDrawer();
-
                         setHeaderDetails(cm.message());
                         setWelcomeVisible(true);
                         Log.d("edgeRetrieved?", edgeRetrieved() + "");
@@ -568,7 +585,7 @@ public class MainActivity extends AppCompatActivity
                         editor.putBoolean("invalid", false);
                         editor.apply();
                     }
-                    mLoadingCircle.setVisibility(View.INVISIBLE);
+                    mLoadingCircle.setVisibility(View.INVISIBLE);*/
                 }
                 return true;
             }
@@ -615,6 +632,21 @@ public class MainActivity extends AppCompatActivity
                 if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && currentPage != null && !currentPage.equals("homescreen")){
                     Log.d("Unwanted resource, url:", url);
                     mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
+                }
+                if (mLoginPage.getUrl().toLowerCase().contains("#homescreen") && loggedIn && !autoEdgeRan) {
+                    autoEdgeRan = true;
+                    if (!edgeRetrieved()){
+                        EdgeSignupActivity.showPage = false;
+                        uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                            WebSettings webSettings = mLoginPage.getSettings();
+                            webSettings.setJavaScriptEnabled(false);
+                            mLoginPage.stopLoading();
+                            //mLoginPage.loadUrl("about:blank");
+                        }
+                        Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
+                        startActivity(intent);
+                    }
                 }
             }
 
