@@ -7,8 +7,8 @@ android {
         applicationId "corve.nohsedge"
         minSdkVersion 23
         targetSdkVersion 27
-        versionCode 59
-        versionName "2.4.0.3"
+        versionCode 60
+        versionName "2.4.0.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -24,13 +24,13 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:customtabs:27.0.1'
-    compile 'com.android.support:appcompat-v7:27.0.1'
+    compile 'com.android.support:customtabs:27.0.2'
+    compile 'com.android.support:appcompat-v7:27.0.2'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.android.support:design:27.0.1'
-    compile 'com.android.support:preference-v7:27.0.1'
-    compile 'com.android.support:preference-v14:27.0.1'
+    compile 'com.android.support:design:27.0.2'
+    compile 'com.android.support:preference-v7:27.0.2'
+    compile 'com.android.support:preference-v14:27.0.2'
     compile 'de.cketti.mailto:email-intent-builder:1.0.0'
     compile 'commons-io:commons-io:2.4'
-    implementation 'com.android.support:support-annotations:27.0.1'
+    implementation 'com.android.support:support-annotations:27.0.2'
 }

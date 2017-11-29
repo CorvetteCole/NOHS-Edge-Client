@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity
     static boolean edgeNotificationValue;
     static boolean weeklyNotificationValue;
     static boolean autoLoginValue;
-    static final int DefaultMinValue = 5;
+    static final int DefaultMinValue = 6;
     static int minValue;
     final static String DefaultEdgeDay1Value = "";
     final static String DefaultEdgeDay2Value = "";
@@ -576,43 +576,47 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                if (mLoginPage.getUrl().toLowerCase().contains("login")) {
-                    mLoginPage.loadUrl("javascript:(function(){" +
-                            "document.getElementById('login-username').value = '" + unameValue + "';" +
-                            "document.getElementById('login-password').value = '" + passwordValue + "';" +
-                            "l=document.getElementById('login-btn');" +
-                            "e=document.createEvent('HTMLEvents');" +
-                            "e.initEvent('click',true,true);" +
-                            "l.dispatchEvent(e);" +
-                            "})()");
-                }
-                if (mLoginPage.getUrl().toLowerCase().contains("register")) {
-                    mLoginPage.loadUrl("javascript:(function(){" +
-                            "document.getElementById('register-username').value = '" + unameValue + "';" +
-                            "document.getElementById('register-password').value = '" + passwordValue + "';" +
-                            "document.getElementById('register-email').value = '" + emailValue + "';" +
-                            "l=document.getElementById('register-btn');" +
-                            "e=document.createEvent('HTMLEvents');" +
-                            "e.initEvent('click',true,true);" +
-                            "l.dispatchEvent(e);" +
-                            "})()");
-                }
-                if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && currentPage != null && !currentPage.equals("homescreen") && !atHome){
-                    mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
-                }
-                if (mLoginPage.getUrl().contains("fancam") || mLoginPage.getUrl().contains("leaderboard") || mLoginPage.getUrl().contains("notifications")){
-                    int ClassElement = 0;
-                    mLoginPage.loadUrl("javascript:(function(){" +
-                            "var element = document.getElementsByClassName('nav-bar-color ui-header ui-bar-inherit')['" + ClassElement + "'];" +
-                            "element.parentNode.removeChild(element);" +
-                            "})()");
-                    mLoginPage.loadUrl("javascript:(function(){" +
-                            "var element = document.getElementsByClassName('ad-footer ui-footer ui-bar-inherit ui-footer-fixed slideup')['" + ClassElement + "'];" +
-                            "element.parentNode.removeChild(element);" +
-                            "})()");
-                }
-                if (mLoginPage.getUrl().contains("fancam")){
-                    mLoginPage.loadUrl("javascript:document.getElementsByName('viewport')[0].setAttribute('content', 'initial-scale=1.0,maximum-scale=10.0');");
+                try {
+                    if (mLoginPage.getUrl().toLowerCase().contains("login")) {
+                        mLoginPage.loadUrl("javascript:(function(){" +
+                                "document.getElementById('login-username').value = '" + unameValue + "';" +
+                                "document.getElementById('login-password').value = '" + passwordValue + "';" +
+                                "l=document.getElementById('login-btn');" +
+                                "e=document.createEvent('HTMLEvents');" +
+                                "e.initEvent('click',true,true);" +
+                                "l.dispatchEvent(e);" +
+                                "})()");
+                    }
+                    if (mLoginPage.getUrl().toLowerCase().contains("register")) {
+                        mLoginPage.loadUrl("javascript:(function(){" +
+                                "document.getElementById('register-username').value = '" + unameValue + "';" +
+                                "document.getElementById('register-password').value = '" + passwordValue + "';" +
+                                "document.getElementById('register-email').value = '" + emailValue + "';" +
+                                "l=document.getElementById('register-btn');" +
+                                "e=document.createEvent('HTMLEvents');" +
+                                "e.initEvent('click',true,true);" +
+                                "l.dispatchEvent(e);" +
+                                "})()");
+                    }
+                    if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && currentPage != null && !currentPage.equals("homescreen") && !atHome) {
+                        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
+                    }
+                    if (mLoginPage.getUrl().contains("fancam") || mLoginPage.getUrl().contains("leaderboard") || mLoginPage.getUrl().contains("notifications")) {
+                        int ClassElement = 0;
+                        mLoginPage.loadUrl("javascript:(function(){" +
+                                "var element = document.getElementsByClassName('nav-bar-color ui-header ui-bar-inherit')['" + ClassElement + "'];" +
+                                "element.parentNode.removeChild(element);" +
+                                "})()");
+                        mLoginPage.loadUrl("javascript:(function(){" +
+                                "var element = document.getElementsByClassName('ad-footer ui-footer ui-bar-inherit ui-footer-fixed slideup')['" + ClassElement + "'];" +
+                                "element.parentNode.removeChild(element);" +
+                                "})()");
+                    }
+                    if (mLoginPage.getUrl().contains("fancam")) {
+                        mLoginPage.loadUrl("javascript:document.getElementsByName('viewport')[0].setAttribute('content', 'initial-scale=1.0,maximum-scale=10.0');");
+                    }
+                } catch (NullPointerException e){
+                    Log.d(TAG, "Something broke in onPageFinished! " + e.toString());
                 }
 
             }
@@ -728,12 +732,12 @@ public class MainActivity extends AppCompatActivity
             Log.d("loadPrefs", "interpreting edge data...");
             //Calendar.Friday equals 6, thursday equals 5, use this in the future with the edgeday arrays
             int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-            if (dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY){
+            if (dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY && !mEdgeDay[dayOfWeek].toLowerCase().contains("undefined")){
                 if (mEdgeDay[dayOfWeek].toLowerCase().contains(mDay[dayOfWeek].toLowerCase())) {
                     setEdgeMessage(mEdgeDay[dayOfWeek]);
                     setEdgeNotifications(parseEdgeTitle(mEdgeDay[dayOfWeek]), parseEdgeText(mEdgeDay[dayOfWeek]), parseEdgeSession(mEdgeDay[dayOfWeek]));
                 }
-            } else if (dayOfWeek == Calendar.FRIDAY && mEdgeDay5Cur.toLowerCase().contains(mDay[dayOfWeek])){
+            } else if (dayOfWeek == Calendar.FRIDAY && mEdgeDay5Cur.toLowerCase().contains(mDay[dayOfWeek]) && !mEdgeDay[dayOfWeek].toLowerCase().contains("undefined")){
                 setEdgeMessage(mEdgeDay5Cur);
                 setEdgeNotifications(parseEdgeTitle(mEdgeDay5Cur), parseEdgeText(mEdgeDay5Cur), parseEdgeSession(mEdgeDay5Cur));
             }

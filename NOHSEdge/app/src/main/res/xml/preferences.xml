@@ -2,6 +2,19 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:key="preferences">
     <PreferenceCategory
+        android:title="General">
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="AutoLogin"
+        android:title="Automatic Login"
+        android:summary="Immediately login when app is opened"/>
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="ImageLoad"
+        android:title="Data Saver"
+        android:summary="Load images only while on WiFi"/>
+    </PreferenceCategory>
+    <PreferenceCategory
         android:title="Notifications">
         <SwitchPreference
             android:defaultValue="true"
@@ -22,16 +35,6 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:title="Advanced">
-        <SwitchPreference
-            android:defaultValue="true"
-            android:key="AutoLogin"
-            android:title="Automatic Login"
-            android:summary="Immediately login when app is opened"/>
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="ImageLoad"
-            android:title="Data Saver"
-            android:summary="Load images only while on WiFi"/>
         <SwitchPreference
             android:defaultValue="true"
             android:key="KeepCache"
