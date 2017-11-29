@@ -40,7 +40,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -81,14 +80,14 @@ public class MainActivity extends AppCompatActivity
     private String webUrl;
     static boolean imageLoadOnWiFiValue;
 
-    private Boolean FirstLoadValue = true;
-    private final Boolean DefaultFirstLoadVaue = true;
+    static Boolean FirstLoadValue = true;
+    private final Boolean DefaultFirstLoadValue = true;
     private final String DefaultUnameValue = "";
     private final String DefaultPasswordValue = "";
-    private final boolean DefaultPRememValue = false;
+    private final boolean DefaultPRememValue = true;
     private final boolean DefaultEdgeNotificationValue = true;
     private final boolean DefaultWeeklyNotificationValue = true;
-    private final boolean DefaultAutologinValue = false;
+    private final boolean DefaultAutologinValue = true;
 
     static String unameValue;
     static String passwordValue;
@@ -140,6 +139,7 @@ public class MainActivity extends AppCompatActivity
     private Context context = this;
     private boolean loggedIn = false;
     private boolean autoEdgeRan = false;
+    private boolean atHome = false;
 
 
     @Override
@@ -243,6 +243,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.nav_homescreen);
+        atHome = true;
         getSupportActionBar().setTitle("Home");
     }
 
@@ -314,7 +315,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_refresh) {
+        if (id == R.id.action_refresh && !atHome) {
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
             return true;
         }
@@ -331,6 +332,7 @@ public class MainActivity extends AppCompatActivity
         id = item.getItemId();
         Resources r = getResources();
         boolean drawerClose = true;
+        atHome = false;
         WebSettings webSettings = mLoginPage.getSettings();
         if (imageLoadOnWiFiValue){
             webSettings.setLoadsImagesAutomatically(onWifi());
@@ -393,6 +395,7 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_homescreen){
             getSupportActionBar().setTitle("Home");
+            atHome = true;
             mLoginPage.setVisibility(View.INVISIBLE);
             setWelcomeVisible(true);
 
@@ -453,7 +456,7 @@ public class MainActivity extends AppCompatActivity
             SharedPreferences.Editor editor = settings.edit();
             editor.putString(PREF_PASSWORD, "");
             editor.putString(PREF_UNAME, "");
-            editor.putBoolean(PREF_AUTOLOGIN, false);
+            //editor.putBoolean(PREF_AUTOLOGIN, false);
             editor.putBoolean(PREF_PREMEM, false);
             editor.putString(PREF_EDGE1, "");
             editor.putString(PREF_EDGE2, "");
@@ -521,9 +524,11 @@ public class MainActivity extends AppCompatActivity
                 mLoadingText.setText(progress + "%");
                 if (progress == 100) {
                     mLoadingText.setVisibility(View.INVISIBLE);
-                    if (!currentPage.equals("homescreen") && mLoginPage.getUrl().contains("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage)){
+                    if (!currentPage.equals("homescreen") && mLoginPage.getUrl().contains("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage) && !atHome){
                         mLoadingCircle.setVisibility(View.INVISIBLE);
                         mLoginPage.setVisibility(VISIBLE);
+                    } else if (atHome && !currentPage.equals("homescreen")){
+                        mLoadingCircle.setVisibility(View.INVISIBLE);
                     }
                 } else {
                     if (!currentPage.equals("homescreen")){
@@ -540,7 +545,6 @@ public class MainActivity extends AppCompatActivity
                         + cm.sourceId());
                 if (cm.message().toLowerCase().contains("pass did not match".toLowerCase())) {
                     autoLoginValue = false;
-                    pRememValue = false;
                     unameValue = "";
                     passwordValue = "";
                     SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -548,12 +552,10 @@ public class MainActivity extends AppCompatActivity
                     editor.putBoolean("invalid", true);
                     editor.putString(PREF_UNAME, unameValue);
                     editor.putString(PREF_PASSWORD, passwordValue);
-                    editor.putBoolean(PREF_PREMEM, pRememValue);
-                    editor.putBoolean(PREF_AUTOLOGIN, false);
                     editor.commit();
                     android.os.Process.killProcess(android.os.Process.myPid());
                 }
-                if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(unameValue.toLowerCase())) && !loggedIn) {
+                if ((cm.message().contains("\"ok\"")) && (cm.message().toLowerCase().contains(unameValue.toLowerCase())) && !loggedIn) {
                     loggedIn = true;
                     setupDrawer();
                     setHeaderDetails(cm.message());
@@ -563,29 +565,6 @@ public class MainActivity extends AppCompatActivity
                     SharedPreferences.Editor editor = settings.edit();
                     editor.putBoolean("invalid", false);
                     editor.apply();
-                    /*if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
-                        setupDrawer();
-                        setHeaderDetails(cm.message());
-                        setWelcomeVisible(true);
-                        Log.d("edgeRetrieved?", edgeRetrieved() + "");
-                        if (!edgeRetrieved()){
-                            EdgeSignupActivity.showPage = false;
-                            uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
-                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                                WebSettings webSettings = mLoginPage.getSettings();
-                                webSettings.setJavaScriptEnabled(false);
-                                mLoginPage.stopLoading();
-                                //mLoginPage.loadUrl("about:blank");
-                            }
-                            Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
-                            startActivity(intent);
-                        }
-                        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-                        SharedPreferences.Editor editor = settings.edit();
-                        editor.putBoolean("invalid", false);
-                        editor.apply();
-                    }
-                    mLoadingCircle.setVisibility(View.INVISIBLE);*/
                 }
                 return true;
             }
@@ -620,7 +599,7 @@ public class MainActivity extends AppCompatActivity
                             "l.dispatchEvent(e);" +
                             "})()");
                 }
-                if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && currentPage != null && !currentPage.equals("homescreen")){
+                if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && currentPage != null && !currentPage.equals("homescreen") && !atHome){
                     mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
                 }
 
@@ -629,7 +608,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onLoadResource(WebView view, String url){
                 super.onLoadResource(view, url);
-                if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && currentPage != null && !currentPage.equals("homescreen")){
+                if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && currentPage != null && !currentPage.equals("homescreen") && !atHome){
                     Log.d("Unwanted resource, url:", url);
                     mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
                 }
@@ -709,9 +688,11 @@ public class MainActivity extends AppCompatActivity
             unameValue = settings.getString(PREF_UNAME, DefaultUnameValue);
             passwordValue = settings.getString(PREF_PASSWORD, DefaultPasswordValue);
             pRememValue = settings.getBoolean(PREF_PREMEM, DefaultPRememValue);
+            //Log.d(TAG, "Remember Password? " + pRememValue);
         }
         edgeNotificationValue = settings.getBoolean(PREF_NOTIFYEDGE, DefaultEdgeNotificationValue);
         autoLoginValue = settings.getBoolean(PREF_AUTOLOGIN, DefaultAutologinValue);
+        Log.d(TAG, "AutoLoginValue " + autoLoginValue);
         weeklyNotificationValue = settings.getBoolean(PREF_NOTIFYWEEKLY, DefaultWeeklyNotificationValue);
         mEdgeDay[2] = settings.getString(PREF_EDGE1, DefaultEdgeDay1Value);
         mEdgeDay[3] = settings.getString(PREF_EDGE2, DefaultEdgeDay2Value);
@@ -719,7 +700,7 @@ public class MainActivity extends AppCompatActivity
         mEdgeDay[5] = settings.getString(PREF_EDGE4, DefaultEdgeDay4Value);
         mEdgeDay[6] = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
         mEdgeDay5Cur = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
-        FirstLoadValue = settings.getBoolean(PREF_FIRSTLOAD, DefaultFirstLoadVaue);
+        FirstLoadValue = settings.getBoolean(PREF_FIRSTLOAD, DefaultFirstLoadValue);
         minValue = settings.getInt(PREF_MIN, DefaultMinValue);
         LoginActivity.invalid = settings.getBoolean("invalid", false);
         fullName = settings.getString("fullName", " ");
@@ -727,7 +708,7 @@ public class MainActivity extends AppCompatActivity
         Log.d("LoadImagesOnWiFiOnly", imageLoadOnWiFiValue + "");
         Log.d("edgeNotificationValue", edgeNotificationValue + "");
         if (weeklyNotificationValue) {
-            Log.d("SettingWeeklyNotif", "SettingWeeklyNotif");
+            Log.d(TAG, "SettingWeeklyNotif");
             setWeeklyNotifications();
         }
         notifyMinutes = minValue;
@@ -745,26 +726,10 @@ public class MainActivity extends AppCompatActivity
                 setEdgeNotifications(parseEdgeTitle(mEdgeDay5Cur), parseEdgeText(mEdgeDay5Cur), parseEdgeSession(mEdgeDay5Cur));
             }
         }
-        if (FirstLoadValue && unameValue == null){
-            SharedPreferences oldSettings = getSharedPreferences("preferences",
-                    Context.MODE_PRIVATE);
-            unameValue = oldSettings.getString(PREF_UNAME, DefaultUnameValue);
-            passwordValue = oldSettings.getString(PREF_PASSWORD, DefaultPasswordValue);
-            pRememValue = oldSettings.getBoolean(PREF_PREMEM, DefaultPRememValue);
-            edgeNotificationValue = oldSettings.getBoolean(PREF_NOTIFYEDGE, DefaultEdgeNotificationValue);
-            autoLoginValue = oldSettings.getBoolean(PREF_AUTOLOGIN, DefaultAutologinValue);
-            minValue = oldSettings.getInt(PREF_MIN, DefaultMinValue);
+        if (FirstLoadValue && calledForeign){
             FirstLoadValue = false;
             SharedPreferences.Editor editor = settings.edit();
-            if (pRememValue) {
-                editor.putString(PREF_UNAME, unameValue);
-                editor.putString(PREF_PASSWORD, passwordValue);
-            }
-            editor.putBoolean(PREF_NOTIFYEDGE, edgeNotificationValue);
-            editor.putBoolean(PREF_PREMEM, pRememValue);
-            editor.putBoolean(PREF_AUTOLOGIN, autoLoginValue);
             editor.putBoolean(PREF_FIRSTLOAD, FirstLoadValue);
-            editor.putInt(PREF_MIN, minValue);
             editor.apply();
         }
     }

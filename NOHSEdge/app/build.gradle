@@ -5,16 +5,16 @@ android {
     buildToolsVersion '27.0.1'
     defaultConfig {
         applicationId "corve.nohsedge"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 27
-        versionCode 56
-        versionName "2.3.7"
+        versionCode 57
+        versionName "2.4.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
