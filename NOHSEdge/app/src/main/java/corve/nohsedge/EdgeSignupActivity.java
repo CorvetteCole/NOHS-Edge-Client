@@ -105,9 +105,6 @@ public class EdgeSignupActivity extends AppCompatActivity {
             edgeDay[i] = "";
         }
         mEdgePage.clearHistory();
-        mEdgePage.clearCache(true);
-        WebView obj = mEdgePage;
-        obj.clearCache(true);
         mLoadingText.setVisibility(View.VISIBLE);
         mLoadingCircle.setVisibility(View.VISIBLE);
         if(showPage) {

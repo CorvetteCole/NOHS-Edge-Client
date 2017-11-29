@@ -7,8 +7,8 @@ android {
         applicationId "corve.nohsedge"
         minSdkVersion 23
         targetSdkVersion 27
-        versionCode 57
-        versionName "2.4.0.1"
+        versionCode 58
+        versionName "2.4.0.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -31,5 +31,6 @@ dependencies {
     compile 'com.android.support:preference-v7:27.0.1'
     compile 'com.android.support:preference-v14:27.0.1'
     compile 'de.cketti.mailto:email-intent-builder:1.0.0'
+    compile 'commons-io:commons-io:2.4'
     implementation 'com.android.support:support-annotations:27.0.1'
 }

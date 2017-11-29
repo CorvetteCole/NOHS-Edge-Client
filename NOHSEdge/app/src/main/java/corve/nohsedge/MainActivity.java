@@ -50,6 +50,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -152,6 +154,14 @@ public class MainActivity extends AppCompatActivity
     public void onPause() {
         super.onPause();
         savePreferences();
+    }
+    @Override
+    public void onStop() {
+        super.onStop();
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        if (!settings.getBoolean("KeepCache", true)) {
+            FileUtils.deleteQuietly(context.getCacheDir());
+        }
     }
 
     @Override
@@ -467,10 +477,7 @@ public class MainActivity extends AppCompatActivity
             editor.putInt(PREF_MIN, 5);
             editor.commit();
             mLoginPage.clearHistory();
-            mLoginPage.clearCache(true);
             clearCookies();
-            WebView obj = mLoginPage;
-            obj.clearCache(true);
             android.os.Process.killProcess(android.os.Process.myPid());
         }
 
@@ -515,8 +522,8 @@ public class MainActivity extends AppCompatActivity
         WebSettings webSettings = mLoginPage.getSettings();
         webSettings.setLoadsImagesAutomatically(false);
         webSettings.setJavaScriptEnabled(true);
-        webSettings.setGeolocationEnabled(true);
         webSettings.setAppCacheEnabled(true);
+        webSettings.setGeolocationEnabled(true);
         mLoginPage.clearHistory();
         clearCookies();
         mLoginPage.setWebChromeClient(new WebChromeClient() {
