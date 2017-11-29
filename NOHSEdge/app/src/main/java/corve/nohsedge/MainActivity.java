@@ -337,12 +337,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int dpBarVisible = 56;
-        int dpBarInvisible = 10;
         id = item.getItemId();
         Resources r = getResources();
         boolean drawerClose = true;
         atHome = false;
+        mLoginPage.getSettings().setBuiltInZoomControls(false);
         WebSettings webSettings = mLoginPage.getSettings();
         if (imageLoadOnWiFiValue){
             webSettings.setLoadsImagesAutomatically(onWifi());
@@ -389,12 +388,10 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_profile) {
             getSupportActionBar().setTitle("Profile");
-            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)mLoginPage.getLayoutParams();
-            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpBarVisible, r.getDisplayMetrics());
-            params.setMargins(0, (int)px, 0, 0); //substitute parameters for left, top, right, bottom
-            mLoginPage.setLayoutParams(params);
-            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#profile-edit");
             currentPage = "profile-edit";
+            if (!mLoginPage.getUrl().contains(currentPage)) {
+                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
+            }
             mLoginPage.setVisibility(VISIBLE);
             setWelcomeVisible(false);
 
@@ -411,46 +408,40 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_notifications){
             getSupportActionBar().setTitle("Notifications");
-            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)mLoginPage.getLayoutParams();
-            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpBarInvisible, r.getDisplayMetrics());
-            params.setMargins(0, (int)px, 0, 0); //substitute parameters for left, top, right, bottom
-            mLoginPage.setLayoutParams(params);
-            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#notifications");
             currentPage = "notifications";
+            if (!mLoginPage.getUrl().contains(currentPage)) {
+                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
+            }
             mLoginPage.setVisibility(VISIBLE);
             setWelcomeVisible(false);
 
         } else if (id == R.id.nav_events){
             getSupportActionBar().setTitle("Events");
-            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)mLoginPage.getLayoutParams();
-            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpBarVisible, r.getDisplayMetrics());
-            params.setMargins(0, (int)px, 0, 0); //substitute parameters for left, top, right, bottom
-            mLoginPage.setLayoutParams(params);
-            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#events");
             mLoginPage.setVisibility(VISIBLE);
             currentPage = "events";
+            if (!mLoginPage.getUrl().contains(currentPage)) {
+                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
+            }
             setWelcomeVisible(false);
 
         } else if (id == R.id.nav_leaderboard){
             getSupportActionBar().setTitle("Leaderboard");
-            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)mLoginPage.getLayoutParams();
-            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpBarInvisible, r.getDisplayMetrics());
-            params.setMargins(0, (int)px, 0, 0); //substitute parameters for left, top, right, bottom
-            mLoginPage.setLayoutParams(params);
-            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#leaderboard");
             mLoginPage.setVisibility(VISIBLE);
             currentPage = "leaderboard";
+            if (!mLoginPage.getUrl().contains(currentPage)) {
+                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
+            }
             setWelcomeVisible(false);
 
         } else if (id == R.id.nav_fancam){
             getSupportActionBar().setTitle("Fancam");
-            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)mLoginPage.getLayoutParams();
-            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpBarInvisible, r.getDisplayMetrics());
-            params.setMargins(0, (int)px, 0, 0); //substitute parameters for left, top, right, bottom
-            mLoginPage.setLayoutParams(params);
-            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#fancam");
+            mLoginPage.getSettings().setBuiltInZoomControls(true);
+            mLoginPage.getSettings().setDisplayZoomControls(false);
             mLoginPage.setVisibility(VISIBLE);
             currentPage = "fancam";
+            if (!mLoginPage.getUrl().contains(currentPage)) {
+                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
+            }
             setWelcomeVisible(false);
 
         } else if (id == R.id.nav_logout){
@@ -537,7 +528,7 @@ public class MainActivity extends AppCompatActivity
                     } else if (atHome && !currentPage.equals("homescreen")){
                         mLoadingCircle.setVisibility(View.INVISIBLE);
                     }
-                } else {
+                } else if (!currentPage.equals("fancam")){
                     if (!currentPage.equals("homescreen")){
                         mLoadingCircle.setVisibility(VISIBLE);
                     }
@@ -609,16 +600,30 @@ public class MainActivity extends AppCompatActivity
                 if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && currentPage != null && !currentPage.equals("homescreen") && !atHome){
                     mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
                 }
+                if (mLoginPage.getUrl().contains("fancam") || mLoginPage.getUrl().contains("leaderboard") || mLoginPage.getUrl().contains("notifications")){
+                    int ClassElement = 0;
+                    mLoginPage.loadUrl("javascript:(function(){" +
+                            "var element = document.getElementsByClassName('nav-bar-color ui-header ui-bar-inherit')['" + ClassElement + "'];" +
+                            "element.parentNode.removeChild(element);" +
+                            "})()");
+                    mLoginPage.loadUrl("javascript:(function(){" +
+                            "var element = document.getElementsByClassName('ad-footer ui-footer ui-bar-inherit ui-footer-fixed slideup')['" + ClassElement + "'];" +
+                            "element.parentNode.removeChild(element);" +
+                            "})()");
+                }
+                if (mLoginPage.getUrl().contains("fancam")){
+                    mLoginPage.loadUrl("javascript:document.getElementsByName('viewport')[0].setAttribute('content', 'initial-scale=1.0,maximum-scale=10.0');");
+                }
 
             }
 
             @Override
             public void onLoadResource(WebView view, String url){
                 super.onLoadResource(view, url);
-                if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && currentPage != null && !currentPage.equals("homescreen") && !atHome){
+                /*if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && currentPage != null && !currentPage.equals("homescreen") && !atHome){
                     Log.d("Unwanted resource, url:", url);
                     mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
-                }
+                }*/
                 if (mLoginPage.getUrl().toLowerCase().contains("#homescreen") && loggedIn && !autoEdgeRan) {
                     autoEdgeRan = true;
                     if (!edgeRetrieved()){
