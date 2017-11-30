@@ -36,9 +36,10 @@ public class EdgeSignupActivity extends AppCompatActivity {
     @NonNull
     private String[] edgeDay = new String[7];
     private String[] edgeDayFriday = new String[2];
-    private String edgeDay5Cur;
-    private boolean alreadyRan = false, classSelected = false, edgeLoaded = false;
+    private String edgeDay5Cur = "";
+    private boolean classSelected = false, edgeLoaded = false, exit = false;
     private int classesRetrieved = 0;
+    private long timeElapsed, previousTime = 0, time;
 
     @Override
     protected void onPause(){
@@ -82,18 +83,19 @@ public class EdgeSignupActivity extends AppCompatActivity {
             mEdgePage.goBack();
             mLoadingText.setText("Loading Edge Classes...");
             classSelected = false;
-        } else if (mLoadingCircle.getVisibility() == View.VISIBLE){
+        } else if (mLoadingCircle.getVisibility() == View.VISIBLE && !classSelected){
             super.onBackPressed();
         } else {
             showPage = false;
+            exit = true;
             getEdgeClasses();
         }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        showPage = false;
         getEdgeClasses();
+        savePreferences();
         return(super.onOptionsItemSelected(item));
     }
 
@@ -107,16 +109,12 @@ public class EdgeSignupActivity extends AppCompatActivity {
         mEdgePage.clearHistory();
         mLoadingText.setVisibility(View.VISIBLE);
         mLoadingCircle.setVisibility(View.VISIBLE);
-        if(showPage) {
-            mEdgePage.setVisibility(View.VISIBLE);
-        }
         mEdgePage.loadUrl("http://api.superfanu.com/6.0.0/gen/link_track.php?platform=Web:%20chrome&uuid=" + uuid + "&nid=305&lkey=nohsstampede-edgetime-module");
         WebSettings webSettings = mEdgePage.getSettings();
         webSettings.setDomStorageEnabled(true);
         webSettings.setJavaScriptEnabled(true);
         webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
         webSettings.setLoadsImagesAutomatically(false);
-        mEdgePage.clearHistory();
 
         mEdgePage.setWebChromeClient(new WebChromeClient() {
             /*public void onProgressChanged(WebView view, int progress) {
@@ -138,13 +136,10 @@ public class EdgeSignupActivity extends AppCompatActivity {
                     String consoleMessage = cm.message();
                     InterpretEdgeData(consoleMessage);
                 }
-                if (cm.message().toLowerCase().contains("post_queue")/* && (cm.lineNumber() == 419)*/) {
-                    if (showPage) {
-                        mEdgePage.setVisibility(View.VISIBLE);
-                        mLoadingCircle.setVisibility(View.INVISIBLE);
-                        mLoadingText.setVisibility(View.INVISIBLE);
+                if (cm.message().toLowerCase().contains("post_queue")) {
+                     if (!showPage) {
+                        getEdgeClasses();
                     }
-                    getEdgeClasses();
                 }
                 if (cm.message().contains("object Object") && edgeLoaded){
                     classSelected = true;
@@ -154,7 +149,29 @@ public class EdgeSignupActivity extends AppCompatActivity {
             }
         });
         mEdgePage.setWebViewClient(new WebViewClient() {
+
             @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                time = System.currentTimeMillis();
+                if (previousTime == 0){
+                    previousTime = time;
+                }
+                timeElapsed = time - previousTime;
+                previousTime = time;
+                if (url.toLowerCase().contains("edgetime") && timeElapsed >= 3000) {
+                    Log.d(TAG, "Done loading.");
+                    if (showPage) {
+                        mEdgePage.setVisibility(View.VISIBLE);
+                        mLoadingCircle.setVisibility(View.INVISIBLE);
+                        mLoadingText.setVisibility(View.INVISIBLE);
+                    }
+                    edgeLoaded = true;
+                }
+
+            }
+
+            /*@Override
             public void onLoadResource(WebView view, String url) {
                 super.onLoadResource(view, url);
                 String webUrl = mEdgePage.getUrl();
@@ -166,7 +183,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
                         mLoadingText.setVisibility(View.VISIBLE);
                     }
                 }
-            }
+            }*/
         });
     }
     private void InterpretEdgeData(@NonNull String consoleMessage) {
@@ -196,19 +213,11 @@ public class EdgeSignupActivity extends AppCompatActivity {
             if (edgeDayFriday[0].equals("notSet")){
                 edgeDayFriday[0] = consoleMessage;
                 Log.d(TAG, "Friday Array 0 set");
-            } else if (alreadyRan) {
-                edgeDay5Cur = edgeDayFriday[0];
-                savePreferences();
-                finish();
             }
             if (!edgeDayFriday[0].equals(consoleMessage) && !isSameWeek(edgeDayFriday[0], consoleMessage)){
                 Log.d(TAG, "Friday Array 1 set");
                 edgeDayFriday[1] = consoleMessage;
                 classesRetrieved++;
-                if (!showPage) {
-                    savePreferences();
-                    finish();
-                }
                 edgeDay[6] = edgeDayFriday[1];
                 edgeDay5Cur = edgeDayFriday[0];
                 Log.d("Current Friday Edge", edgeDay5Cur);
@@ -216,26 +225,22 @@ public class EdgeSignupActivity extends AppCompatActivity {
             } else if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) != Calendar.FRIDAY){
                 edgeDay5Cur = edgeDayFriday[0];
                 classesRetrieved++;
-                if (!showPage) {
-                    savePreferences();
-                    finish();
-                }
             } else if (isAfterEdgeClasses() && Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY){
                 edgeDay[6] = edgeDayFriday[0];
                 Log.d(TAG, "is after edge classes, only next is set");
                 classesRetrieved++;
+            }
+        }
+        Log.d("classesRetrieved", classesRetrieved + "");
+        if (consoleMessage.toLowerCase().contains("undefined")){
+
+            if (classesRetrieved > 0) {
+                mLoadingText.setText("Loading Edge Class...");
                 if (!showPage) {
                     savePreferences();
                     finish();
                 }
-            }
-        }
-        Log.d("classesRetrieved", classesRetrieved + "");
-        if (consoleMessage.toLowerCase().contains("undefined") && classesRetrieved > 0){
-            edgeLoaded = true;
-            mLoadingText.setText("Loading Edge Class...");
-            if (!showPage) {
-                savePreferences();
+            } else if (exit){
                 finish();
             }
         }
@@ -258,11 +263,8 @@ public class EdgeSignupActivity extends AppCompatActivity {
     }
 
     private void getEdgeClasses() {
-        if (!edgeDayFriday[0].equals("notSet") && edgeDayFriday[1].equals("notSet") && !showPage) {
-            alreadyRan = true;
-        }
         int ClassElement = 0;
-        while (ClassElement != 6) {
+        while (ClassElement != 7) {
             mEdgePage.loadUrl("javascript:(function(){" +
                     "if (document.getElementsByClassName('class user-in-class')['" + ClassElement + "'] != undefined){" +
                     "console.log('RetrievedEdgeClass' + document.getElementsByClassName('class user-in-class')['" + ClassElement + "'].innerHTML);}" +
@@ -295,12 +297,11 @@ public class EdgeSignupActivity extends AppCompatActivity {
     }
 
     private void savePreferences() {
+        Log.d(TAG, "Saving edge classes");
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         SharedPreferences.Editor editor = settings.edit();
         // Edit and commit
-        if (edgeDay5Cur != null) {
-            editor.putString(PREF_EDGE5Cur, edgeDay5Cur);
-        }
+        editor.putString(PREF_EDGE5Cur, edgeDay5Cur);
         editor.putString(PREF_EDGE1, edgeDay[2]);
         editor.putString(PREF_EDGE2, edgeDay[3]);
         editor.putString(PREF_EDGE3, edgeDay[4]);
