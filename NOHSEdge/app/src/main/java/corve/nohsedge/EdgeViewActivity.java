@@ -76,7 +76,7 @@ public class EdgeViewActivity extends AppCompatActivity {
             builder1.setCancelable(true);
 
             builder1.setPositiveButton(
-                    "Yes",
+                    "Continue",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -94,7 +94,7 @@ public class EdgeViewActivity extends AppCompatActivity {
                     });
 
             builder1.setNegativeButton(
-                    "No",
+                    "Cancel",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             dialog.cancel();

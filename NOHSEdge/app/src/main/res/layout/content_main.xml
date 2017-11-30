@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-                                             tools:context="corve.nohsedge.MainActivity">
+    tools:context="corve.nohsedge.MainActivity">
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_x="162dp"
         android:layout_y="248dp"
@@ -22,11 +22,9 @@
         android:progressDrawable="@color/colorAccent"
         android:progressTint="@color/colorPrimaryDark"
         android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edgeClassTime"
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintTop_creator="1" />
 
@@ -62,26 +60,22 @@
         app:layout_constraintVertical_bias="0.0"
         android:layout_marginTop="56dp"/>
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/helloTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="88dp"
         android:text="Hello,"
         android:textColor="@android:color/black"
         android:textSize="30sp"
         android:textStyle="bold"
         android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/progressBar"
+        app:autoSizeTextType="uniform"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.187" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/edgeTitleTextView"
@@ -98,15 +92,17 @@
         app:layout_constraintTop_toBottomOf="@+id/helloTextView"
         android:layout_marginStart="8dp" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/edgeClassTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:layout_marginStart="8dp"
         android:text="Unscheduled"
         android:textColor="@android:color/black"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintLeft_toLeftOf="@+id/edgeTitleTextView"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edgeTitleTextView" />
 
     <TextView
@@ -120,15 +116,17 @@
         app:layout_constraintLeft_toLeftOf="@+id/edgeTitleTextView"
         app:layout_constraintTop_toBottomOf="@+id/edgeClassTitle"/>
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/edgeClassText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:layout_marginStart="8dp"
         android:text="Unscheduled"
         android:textColor="@android:color/black"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintLeft_toLeftOf="@+id/edgeTitleTextView"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edgeTextTextView" />
 
     <TextView
@@ -142,15 +140,17 @@
         app:layout_constraintLeft_toLeftOf="@+id/edgeTitleTextView"
         app:layout_constraintTop_toBottomOf="@+id/edgeClassText"/>
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/edgeClassTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:layout_marginStart="8dp"
         android:text="Unscheduled"
         android:textColor="@android:color/black"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintLeft_toLeftOf="@+id/edgeTitleTextView"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edgeTimeTextView" />
 
 </android.support.constraint.ConstraintLayout>

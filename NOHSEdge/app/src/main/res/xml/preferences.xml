@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:key="preferences">
+    <PreferenceCategory
+        android:title="General">
     <SwitchPreference
-        android:defaultValue="false"
+        android:defaultValue="true"
         android:key="AutoLogin"
         android:title="Automatic Login"
         android:summary="Immediately login when app is opened"/>
@@ -11,6 +13,7 @@
         android:key="ImageLoad"
         android:title="Data Saver"
         android:summary="Load images only while on WiFi"/>
+    </PreferenceCategory>
     <PreferenceCategory
         android:title="Notifications">
         <SwitchPreference
@@ -29,5 +32,13 @@
            android:summary="Notifications will be sent ... minutes before class starts"
             android:dependency="NotifyEdge"
             android:defaultValue="5" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="Advanced">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="KeepCache"
+            android:title="Resource Caching"
+            android:summary="Disabling this will reduce the storage used but may increase data usage and loading times" />
     </PreferenceCategory>
 </PreferenceScreen>

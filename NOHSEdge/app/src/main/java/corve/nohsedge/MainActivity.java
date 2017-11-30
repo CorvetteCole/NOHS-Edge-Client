@@ -4,8 +4,10 @@ package corve.nohsedge;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.content.res.Resources;
@@ -28,6 +30,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -37,7 +40,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -47,6 +49,8 @@ import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import org.apache.commons.io.FileUtils;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -78,14 +82,14 @@ public class MainActivity extends AppCompatActivity
     private String webUrl;
     static boolean imageLoadOnWiFiValue;
 
-    private Boolean FirstLoadValue = true;
-    private final Boolean DefaultFirstLoadVaue = true;
+    static Boolean FirstLoadValue = true;
+    private final Boolean DefaultFirstLoadValue = true;
     private final String DefaultUnameValue = "";
     private final String DefaultPasswordValue = "";
-    private final boolean DefaultPRememValue = false;
+    private final boolean DefaultPRememValue = true;
     private final boolean DefaultEdgeNotificationValue = true;
     private final boolean DefaultWeeklyNotificationValue = true;
-    private final boolean DefaultAutologinValue = false;
+    private final boolean DefaultAutologinValue = true;
 
     static String unameValue;
     static String passwordValue;
@@ -93,7 +97,7 @@ public class MainActivity extends AppCompatActivity
     static boolean edgeNotificationValue;
     static boolean weeklyNotificationValue;
     static boolean autoLoginValue;
-    static final int DefaultMinValue = 5;
+    static final int DefaultMinValue = 6;
     static int minValue;
     final static String DefaultEdgeDay1Value = "";
     final static String DefaultEdgeDay2Value = "";
@@ -135,6 +139,9 @@ public class MainActivity extends AppCompatActivity
     private String fullName = "";
     @NonNull
     private Context context = this;
+    private boolean loggedIn = false;
+    private boolean autoEdgeRan = false;
+    private boolean atHome = false;
 
 
     @Override
@@ -148,11 +155,46 @@ public class MainActivity extends AppCompatActivity
         super.onPause();
         savePreferences();
     }
+    @Override
+    public void onStop() {
+        super.onStop();
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        if (!settings.getBoolean("KeepCache", true)) {
+            FileUtils.deleteQuietly(context.getCacheDir());
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        PackageManager pm = context.getPackageManager();
+        if (!isPackageInstalled("com.android.chrome", pm)){
+            AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+            builder1.setMessage("This app requires Chrome to work optimally");
+            builder1.setCancelable(true);
+
+            builder1.setPositiveButton(
+                    "Install",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.android.chrome"));
+                            marketIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                            startActivity(marketIntent);
+                        }
+                    });
+
+            builder1.setNegativeButton(
+                    "Cancel",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+
+            AlertDialog alert11 = builder1.create();
+            alert11.show();
+        }
         cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (!calledForeign) {
             Intent intent = new Intent(this, LoginActivity.class);
@@ -211,46 +253,43 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.nav_homescreen);
+        atHome = true;
         getSupportActionBar().setTitle("Home");
     }
 
 
-    @SuppressWarnings("deprecation")
-    public static void clearCookies(Context context) {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+    public static void clearCookies() {
+        try {
             Log.d(TAG, "Using clearCookies code for API >=" + String.valueOf(Build.VERSION_CODES.LOLLIPOP_MR1));
             CookieManager.getInstance().removeAllCookies(null);
             CookieManager.getInstance().flush();
-        } else {
-            Log.d(TAG, "Using clearCookies code for API <" + String.valueOf(Build.VERSION_CODES.LOLLIPOP_MR1));
-            CookieSyncManager cookieSyncMngr = CookieSyncManager.createInstance(context);
-            cookieSyncMngr.startSync();
-            CookieManager cookieManager = CookieManager.getInstance();
-            cookieManager.removeAllCookie();
-            cookieManager.removeSessionCookie();
-            cookieSyncMngr.stopSync();
-            cookieSyncMngr.sync();
+        } catch(StringIndexOutOfBoundsException e){
+            Log.d(TAG, "clearCookies failed!" + e);
         }
     }
 
-    @Nullable
-    public String getCookie(String siteName, @NonNull String CookieName) {
-        String CookieValue = null;
 
-        CookieManager cookieManager = CookieManager.getInstance();
-        String cookies = cookieManager.getCookie(siteName);
-        if (cookies != null){
-        String[] temp = cookies.split(";");
-        for (String ar1 : temp) {
-            if (ar1.contains(CookieName)) {
-                String[] temp1 = ar1.split("=");
-                CookieValue = temp1[1];
-                break;
+    public String getCookie(String siteName, String CookieName) {
+        try {
+            String CookieValue = null;
+            CookieManager cookieManager = CookieManager.getInstance();
+            String cookies = cookieManager.getCookie(siteName);
+            if (cookies != null) {
+                String[] temp = cookies.split(";");
+                for (String ar1 : temp) {
+                    if (ar1.contains(CookieName)) {
+                        String[] temp1 = ar1.split("=");
+                        CookieValue = temp1[1];
+                        break;
+                    }
+                }
             }
-          }
+            return CookieValue;
+        } catch (StringIndexOutOfBoundsException e){
+            Log.d(TAG, "getCookie failed!" + e);
+            return null;
         }
-        return CookieValue;
     }
 
     @Override
@@ -286,7 +325,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_refresh) {
+        if (id == R.id.action_refresh && !atHome) {
             mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
             return true;
         }
@@ -298,11 +337,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int dpBarVisible = 56;
-        int dpBarInvisible = 10;
         id = item.getItemId();
         Resources r = getResources();
         boolean drawerClose = true;
+        atHome = false;
+        mLoginPage.getSettings().setBuiltInZoomControls(false);
         WebSettings webSettings = mLoginPage.getSettings();
         if (imageLoadOnWiFiValue){
             webSettings.setLoadsImagesAutomatically(onWifi());
@@ -315,6 +354,7 @@ public class MainActivity extends AppCompatActivity
             uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
             Intent intent = new Intent(getBaseContext(), EdgeViewActivity.class);
             startActivity(intent);
+
         } else if (id == R.id.nav_signup) {
             EdgeSignupActivity.showPage = true;
             drawerClose = false;
@@ -326,6 +366,7 @@ public class MainActivity extends AppCompatActivity
             }
             Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
             startActivity(intent);
+
         } else if (id == R.id.nav_gear){
             drawerClose = false;
             Uri uri = Uri.parse("https://sideline.bsnsports.com/schools/kentucky/goshen/north-oldham-high-school");
@@ -336,6 +377,7 @@ public class MainActivity extends AppCompatActivity
             intentBuilder.setSecondaryToolbarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
             CustomTabsIntent customTabsIntent = intentBuilder.build();
             customTabsIntent.launchUrl(this, uri);
+
         } else if (id == R.id.nav_feedback){
             Intent emailIntent = EmailIntentBuilder.from(this)
                     .to("corvettecole@gmail.com")
@@ -343,64 +385,65 @@ public class MainActivity extends AppCompatActivity
                     .body("[insert feature request or bug report here]")
                     .build();
             startActivity(emailIntent);
+
         } else if (id == R.id.nav_profile) {
             getSupportActionBar().setTitle("Profile");
-            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)mLoginPage.getLayoutParams();
-            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpBarVisible, r.getDisplayMetrics());
-            params.setMargins(0, (int)px, 0, 0); //substitute parameters for left, top, right, bottom
-            mLoginPage.setLayoutParams(params);
-            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#profile-edit");
             currentPage = "profile-edit";
+            if (!mLoginPage.getUrl().contains(currentPage)) {
+                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
+            }
             mLoginPage.setVisibility(VISIBLE);
             setWelcomeVisible(false);
+
         } else if (id == R.id.nav_settings) {
             Intent i = new Intent(this, PreferencesActivity.class);
             startActivity(i);
             drawerClose = false;
+
         } else if (id == R.id.nav_homescreen){
             getSupportActionBar().setTitle("Home");
+            atHome = true;
             mLoginPage.setVisibility(View.INVISIBLE);
             setWelcomeVisible(true);
+
         } else if (id == R.id.nav_notifications){
             getSupportActionBar().setTitle("Notifications");
-            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)mLoginPage.getLayoutParams();
-            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpBarInvisible, r.getDisplayMetrics());
-            params.setMargins(0, (int)px, 0, 0); //substitute parameters for left, top, right, bottom
-            mLoginPage.setLayoutParams(params);
-            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#notifications");
             currentPage = "notifications";
+            if (!mLoginPage.getUrl().contains(currentPage)) {
+                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
+            }
             mLoginPage.setVisibility(VISIBLE);
             setWelcomeVisible(false);
+
         } else if (id == R.id.nav_events){
             getSupportActionBar().setTitle("Events");
-            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)mLoginPage.getLayoutParams();
-            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpBarVisible, r.getDisplayMetrics());
-            params.setMargins(0, (int)px, 0, 0); //substitute parameters for left, top, right, bottom
-            mLoginPage.setLayoutParams(params);
-            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#events");
             mLoginPage.setVisibility(VISIBLE);
             currentPage = "events";
+            if (!mLoginPage.getUrl().contains(currentPage)) {
+                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
+            }
             setWelcomeVisible(false);
+
         } else if (id == R.id.nav_leaderboard){
             getSupportActionBar().setTitle("Leaderboard");
-            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)mLoginPage.getLayoutParams();
-            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpBarInvisible, r.getDisplayMetrics());
-            params.setMargins(0, (int)px, 0, 0); //substitute parameters for left, top, right, bottom
-            mLoginPage.setLayoutParams(params);
-            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#leaderboard");
             mLoginPage.setVisibility(VISIBLE);
             currentPage = "leaderboard";
+            if (!mLoginPage.getUrl().contains(currentPage)) {
+                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
+            }
             setWelcomeVisible(false);
+
         } else if (id == R.id.nav_fancam){
             getSupportActionBar().setTitle("Fancam");
-            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)mLoginPage.getLayoutParams();
-            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpBarInvisible, r.getDisplayMetrics());
-            params.setMargins(0, (int)px, 0, 0); //substitute parameters for left, top, right, bottom
-            mLoginPage.setLayoutParams(params);
-            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#fancam");
+            mLoginPage.getSettings().setBuiltInZoomControls(true);
+            mLoginPage.getSettings().setDisplayZoomControls(false);
             mLoginPage.setVisibility(VISIBLE);
             currentPage = "fancam";
+            if (!mLoginPage.getUrl().contains(currentPage)) {
+                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
+            }
             setWelcomeVisible(false);
+
         } else if (id == R.id.nav_logout){
             autoLoginValue = false;
             pRememValue = false;
@@ -414,7 +457,7 @@ public class MainActivity extends AppCompatActivity
             SharedPreferences.Editor editor = settings.edit();
             editor.putString(PREF_PASSWORD, "");
             editor.putString(PREF_UNAME, "");
-            editor.putBoolean(PREF_AUTOLOGIN, false);
+            //editor.putBoolean(PREF_AUTOLOGIN, false);
             editor.putBoolean(PREF_PREMEM, false);
             editor.putString(PREF_EDGE1, "");
             editor.putString(PREF_EDGE2, "");
@@ -425,12 +468,10 @@ public class MainActivity extends AppCompatActivity
             editor.putInt(PREF_MIN, 5);
             editor.commit();
             mLoginPage.clearHistory();
-            mLoginPage.clearCache(true);
-            clearCookies(this);
-            WebView obj = mLoginPage;
-            obj.clearCache(true);
+            clearCookies();
             android.os.Process.killProcess(android.os.Process.myPid());
         }
+
         if (drawerClose) {
             DrawerLayout drawer = findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
@@ -441,6 +482,15 @@ public class MainActivity extends AppCompatActivity
     private boolean onWifi() {
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
+    }
+
+    private boolean isPackageInstalled(String packagename, PackageManager packageManager) {
+        try {
+            packageManager.getPackageInfo(packagename, 0);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
     }
 
     private boolean edgeRetrieved() {
@@ -463,21 +513,22 @@ public class MainActivity extends AppCompatActivity
         WebSettings webSettings = mLoginPage.getSettings();
         webSettings.setLoadsImagesAutomatically(false);
         webSettings.setJavaScriptEnabled(true);
-        webSettings.setGeolocationEnabled(true);
         webSettings.setAppCacheEnabled(true);
-
+        webSettings.setGeolocationEnabled(true);
         mLoginPage.clearHistory();
-        clearCookies(this);
+        clearCookies();
         mLoginPage.setWebChromeClient(new WebChromeClient() {
             public void onProgressChanged(WebView view, int progress) {
                 mLoadingText.setText(progress + "%");
                 if (progress == 100) {
                     mLoadingText.setVisibility(View.INVISIBLE);
-                    if (!currentPage.equals("homescreen") && mLoginPage.getUrl().contains("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage)){
+                    if (!currentPage.equals("homescreen") && mLoginPage.getUrl().contains("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage) && !atHome){
                         mLoadingCircle.setVisibility(View.INVISIBLE);
                         mLoginPage.setVisibility(VISIBLE);
+                    } else if (atHome && !currentPage.equals("homescreen")){
+                        mLoadingCircle.setVisibility(View.INVISIBLE);
                     }
-                } else {
+                } else if (!currentPage.equals("fancam")){
                     if (!currentPage.equals("homescreen")){
                         mLoadingCircle.setVisibility(VISIBLE);
                     }
@@ -492,7 +543,6 @@ public class MainActivity extends AppCompatActivity
                         + cm.sourceId());
                 if (cm.message().toLowerCase().contains("pass did not match".toLowerCase())) {
                     autoLoginValue = false;
-                    pRememValue = false;
                     unameValue = "";
                     passwordValue = "";
                     SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -500,36 +550,19 @@ public class MainActivity extends AppCompatActivity
                     editor.putBoolean("invalid", true);
                     editor.putString(PREF_UNAME, unameValue);
                     editor.putString(PREF_PASSWORD, passwordValue);
-                    editor.putBoolean(PREF_PREMEM, pRememValue);
-                    editor.putBoolean(PREF_AUTOLOGIN, false);
                     editor.commit();
                     android.os.Process.killProcess(android.os.Process.myPid());
                 }
-                if ((cm.message().toLowerCase().contains("ok".toLowerCase())) && (cm.message().toLowerCase().contains(unameValue.toLowerCase()))) {
-                    if (mLoginPage.getUrl().toLowerCase().contains("#homescreen")) {
-                        setupDrawer();
-
-                        setHeaderDetails(cm.message());
-                        setWelcomeVisible(true);
-                        Log.d("edgeRetrieved?", edgeRetrieved() + "");
-                        if (!edgeRetrieved()){
-                            EdgeSignupActivity.showPage = false;
-                            uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
-                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                                WebSettings webSettings = mLoginPage.getSettings();
-                                webSettings.setJavaScriptEnabled(false);
-                                mLoginPage.stopLoading();
-                                //mLoginPage.loadUrl("about:blank");
-                            }
-                            Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
-                            startActivity(intent);
-                        }
-                        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-                        SharedPreferences.Editor editor = settings.edit();
-                        editor.putBoolean("invalid", false);
-                        editor.apply();
-                    }
+                if ((cm.message().contains("\"ok\"")) && (cm.message().toLowerCase().contains(unameValue.toLowerCase())) && !loggedIn) {
+                    loggedIn = true;
+                    setupDrawer();
+                    setHeaderDetails(cm.message());
+                    setWelcomeVisible(true);
                     mLoadingCircle.setVisibility(View.INVISIBLE);
+                    SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putBoolean("invalid", false);
+                    editor.apply();
                 }
                 return true;
             }
@@ -543,29 +576,47 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                if (mLoginPage.getUrl().toLowerCase().contains("login")) {
-                    mLoginPage.loadUrl("javascript:(function(){" +
-                            "document.getElementById('login-username').value = '" + unameValue + "';" +
-                            "document.getElementById('login-password').value = '" + passwordValue + "';" +
-                            "l=document.getElementById('login-btn');" +
-                            "e=document.createEvent('HTMLEvents');" +
-                            "e.initEvent('click',true,true);" +
-                            "l.dispatchEvent(e);" +
-                            "})()");
-                }
-                if (mLoginPage.getUrl().toLowerCase().contains("register")) {
-                    mLoginPage.loadUrl("javascript:(function(){" +
-                            "document.getElementById('register-username').value = '" + unameValue + "';" +
-                            "document.getElementById('register-password').value = '" + passwordValue + "';" +
-                            "document.getElementById('register-email').value = '" + emailValue + "';" +
-                            "l=document.getElementById('register-btn');" +
-                            "e=document.createEvent('HTMLEvents');" +
-                            "e.initEvent('click',true,true);" +
-                            "l.dispatchEvent(e);" +
-                            "})()");
-                }
-                if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && currentPage != null && !currentPage.equals("homescreen")){
-                    mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
+                try {
+                    if (mLoginPage.getUrl().toLowerCase().contains("login")) {
+                        mLoginPage.loadUrl("javascript:(function(){" +
+                                "document.getElementById('login-username').value = '" + unameValue + "';" +
+                                "document.getElementById('login-password').value = '" + passwordValue + "';" +
+                                "l=document.getElementById('login-btn');" +
+                                "e=document.createEvent('HTMLEvents');" +
+                                "e.initEvent('click',true,true);" +
+                                "l.dispatchEvent(e);" +
+                                "})()");
+                    }
+                    if (mLoginPage.getUrl().toLowerCase().contains("register")) {
+                        mLoginPage.loadUrl("javascript:(function(){" +
+                                "document.getElementById('register-username').value = '" + unameValue + "';" +
+                                "document.getElementById('register-password').value = '" + passwordValue + "';" +
+                                "document.getElementById('register-email').value = '" + emailValue + "';" +
+                                "l=document.getElementById('register-btn');" +
+                                "e=document.createEvent('HTMLEvents');" +
+                                "e.initEvent('click',true,true);" +
+                                "l.dispatchEvent(e);" +
+                                "})()");
+                    }
+                    if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && currentPage != null && !currentPage.equals("homescreen") && !atHome) {
+                        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
+                    }
+                    if (mLoginPage.getUrl().contains("fancam") || mLoginPage.getUrl().contains("leaderboard") || mLoginPage.getUrl().contains("notifications")) {
+                        int ClassElement = 0;
+                        mLoginPage.loadUrl("javascript:(function(){" +
+                                "var element = document.getElementsByClassName('nav-bar-color ui-header ui-bar-inherit')['" + ClassElement + "'];" +
+                                "element.parentNode.removeChild(element);" +
+                                "})()");
+                        mLoginPage.loadUrl("javascript:(function(){" +
+                                "var element = document.getElementsByClassName('ad-footer ui-footer ui-bar-inherit ui-footer-fixed slideup')['" + ClassElement + "'];" +
+                                "element.parentNode.removeChild(element);" +
+                                "})()");
+                    }
+                    if (mLoginPage.getUrl().contains("fancam")) {
+                        mLoginPage.loadUrl("javascript:document.getElementsByName('viewport')[0].setAttribute('content', 'initial-scale=1.0,maximum-scale=10.0');");
+                    }
+                } catch (NullPointerException e){
+                    Log.d(TAG, "Something broke in onPageFinished! " + e.toString());
                 }
 
             }
@@ -573,9 +624,24 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onLoadResource(WebView view, String url){
                 super.onLoadResource(view, url);
-                if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && currentPage != null && !currentPage.equals("homescreen")){
+                /*if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && currentPage != null && !currentPage.equals("homescreen") && !atHome){
                     Log.d("Unwanted resource, url:", url);
                     mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
+                }*/
+                if (mLoginPage.getUrl().toLowerCase().contains("#homescreen") && loggedIn && !autoEdgeRan) {
+                    autoEdgeRan = true;
+                    if (!edgeRetrieved()){
+                        EdgeSignupActivity.showPage = false;
+                        uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                            WebSettings webSettings = mLoginPage.getSettings();
+                            webSettings.setJavaScriptEnabled(false);
+                            mLoginPage.stopLoading();
+                            //mLoginPage.loadUrl("about:blank");
+                        }
+                        Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
+                        startActivity(intent);
+                    }
                 }
             }
 
@@ -638,9 +704,11 @@ public class MainActivity extends AppCompatActivity
             unameValue = settings.getString(PREF_UNAME, DefaultUnameValue);
             passwordValue = settings.getString(PREF_PASSWORD, DefaultPasswordValue);
             pRememValue = settings.getBoolean(PREF_PREMEM, DefaultPRememValue);
+            //Log.d(TAG, "Remember Password? " + pRememValue);
         }
         edgeNotificationValue = settings.getBoolean(PREF_NOTIFYEDGE, DefaultEdgeNotificationValue);
         autoLoginValue = settings.getBoolean(PREF_AUTOLOGIN, DefaultAutologinValue);
+        Log.d(TAG, "AutoLoginValue " + autoLoginValue);
         weeklyNotificationValue = settings.getBoolean(PREF_NOTIFYWEEKLY, DefaultWeeklyNotificationValue);
         mEdgeDay[2] = settings.getString(PREF_EDGE1, DefaultEdgeDay1Value);
         mEdgeDay[3] = settings.getString(PREF_EDGE2, DefaultEdgeDay2Value);
@@ -648,7 +716,7 @@ public class MainActivity extends AppCompatActivity
         mEdgeDay[5] = settings.getString(PREF_EDGE4, DefaultEdgeDay4Value);
         mEdgeDay[6] = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
         mEdgeDay5Cur = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
-        FirstLoadValue = settings.getBoolean(PREF_FIRSTLOAD, DefaultFirstLoadVaue);
+        FirstLoadValue = settings.getBoolean(PREF_FIRSTLOAD, DefaultFirstLoadValue);
         minValue = settings.getInt(PREF_MIN, DefaultMinValue);
         LoginActivity.invalid = settings.getBoolean("invalid", false);
         fullName = settings.getString("fullName", " ");
@@ -656,7 +724,7 @@ public class MainActivity extends AppCompatActivity
         Log.d("LoadImagesOnWiFiOnly", imageLoadOnWiFiValue + "");
         Log.d("edgeNotificationValue", edgeNotificationValue + "");
         if (weeklyNotificationValue) {
-            Log.d("SettingWeeklyNotif", "SettingWeeklyNotif");
+            Log.d(TAG, "SettingWeeklyNotif");
             setWeeklyNotifications();
         }
         notifyMinutes = minValue;
@@ -664,36 +732,20 @@ public class MainActivity extends AppCompatActivity
             Log.d("loadPrefs", "interpreting edge data...");
             //Calendar.Friday equals 6, thursday equals 5, use this in the future with the edgeday arrays
             int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-            if (dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY){
+            if (dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY && !mEdgeDay[dayOfWeek].toLowerCase().contains("undefined")){
                 if (mEdgeDay[dayOfWeek].toLowerCase().contains(mDay[dayOfWeek].toLowerCase())) {
                     setEdgeMessage(mEdgeDay[dayOfWeek]);
                     setEdgeNotifications(parseEdgeTitle(mEdgeDay[dayOfWeek]), parseEdgeText(mEdgeDay[dayOfWeek]), parseEdgeSession(mEdgeDay[dayOfWeek]));
                 }
-            } else if (dayOfWeek == Calendar.FRIDAY && mEdgeDay5Cur.toLowerCase().contains(mDay[dayOfWeek])){
+            } else if (dayOfWeek == Calendar.FRIDAY && mEdgeDay5Cur.toLowerCase().contains(mDay[dayOfWeek]) && !mEdgeDay[dayOfWeek].toLowerCase().contains("undefined")){
                 setEdgeMessage(mEdgeDay5Cur);
                 setEdgeNotifications(parseEdgeTitle(mEdgeDay5Cur), parseEdgeText(mEdgeDay5Cur), parseEdgeSession(mEdgeDay5Cur));
             }
         }
-        if (FirstLoadValue && unameValue == null){
-            SharedPreferences oldSettings = getSharedPreferences("preferences",
-                    Context.MODE_PRIVATE);
-            unameValue = oldSettings.getString(PREF_UNAME, DefaultUnameValue);
-            passwordValue = oldSettings.getString(PREF_PASSWORD, DefaultPasswordValue);
-            pRememValue = oldSettings.getBoolean(PREF_PREMEM, DefaultPRememValue);
-            edgeNotificationValue = oldSettings.getBoolean(PREF_NOTIFYEDGE, DefaultEdgeNotificationValue);
-            autoLoginValue = oldSettings.getBoolean(PREF_AUTOLOGIN, DefaultAutologinValue);
-            minValue = oldSettings.getInt(PREF_MIN, DefaultMinValue);
+        if (FirstLoadValue && calledForeign){
             FirstLoadValue = false;
             SharedPreferences.Editor editor = settings.edit();
-            if (pRememValue) {
-                editor.putString(PREF_UNAME, unameValue);
-                editor.putString(PREF_PASSWORD, passwordValue);
-            }
-            editor.putBoolean(PREF_NOTIFYEDGE, edgeNotificationValue);
-            editor.putBoolean(PREF_PREMEM, pRememValue);
-            editor.putBoolean(PREF_AUTOLOGIN, autoLoginValue);
             editor.putBoolean(PREF_FIRSTLOAD, FirstLoadValue);
-            editor.putInt(PREF_MIN, minValue);
             editor.apply();
         }
     }

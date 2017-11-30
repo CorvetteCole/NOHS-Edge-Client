@@ -52,7 +52,8 @@ public class LoginActivity extends AppCompatActivity {
             TextView mInvalid = findViewById(R.id.invalidLogin);
             mInvalid.setVisibility(View.VISIBLE);
         }
-        if (MainActivity.autoLoginValue) {
+        //Automatic login code
+        if (MainActivity.autoLoginValue && !MainActivity.FirstLoadValue && !invalid && pRememValue) {
             InputMethodManager inputManager = (InputMethodManager)
                     getSystemService(Context.INPUT_METHOD_SERVICE);
             if (getCurrentFocus() != null) {

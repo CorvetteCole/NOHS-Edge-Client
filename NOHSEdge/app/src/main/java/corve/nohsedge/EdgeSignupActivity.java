@@ -1,7 +1,6 @@
 package corve.nohsedge;
 
 import android.content.SharedPreferences;
-import android.net.http.SslError;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -11,8 +10,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.ConsoleMessage;
-import android.webkit.GeolocationPermissions;
-import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -40,7 +37,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
     private String[] edgeDay = new String[7];
     private String[] edgeDayFriday = new String[2];
     private String edgeDay5Cur;
-    private boolean alreadyRan = false;
+    private boolean alreadyRan = false, classSelected = false, edgeLoaded = false;
     private int classesRetrieved = 0;
 
     @Override
@@ -81,9 +78,13 @@ public class EdgeSignupActivity extends AppCompatActivity {
     }
     @Override
     public void onBackPressed() {
-        if (mEdgePage.canGoBack()) {
+        if (classSelected && mEdgePage.canGoBack()){
             mEdgePage.goBack();
-        }  else {
+            mLoadingText.setText("Loading Edge Classes...");
+            classSelected = false;
+        } else if (mLoadingCircle.getVisibility() == View.VISIBLE){
+            super.onBackPressed();
+        } else {
             showPage = false;
             getEdgeClasses();
         }
@@ -99,11 +100,11 @@ public class EdgeSignupActivity extends AppCompatActivity {
     private void openEdgepage() {
         edgeDayFriday[0] = "notSet";
         edgeDayFriday[1] = "notSet";
+        Log.d(TAG, "Clearing edgeDay Array");
+        for (int i = 0; i < edgeDay.length; i++){
+            edgeDay[i] = "";
+        }
         mEdgePage.clearHistory();
-        mEdgePage.clearCache(true);
-        //clearCookies(this);
-        WebView obj = mEdgePage;
-        obj.clearCache(true);
         mLoadingText.setVisibility(View.VISIBLE);
         mLoadingCircle.setVisibility(View.VISIBLE);
         if(showPage) {
@@ -129,7 +130,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
 
             }*/
 
-            public boolean onConsoleMessage(@NonNull ConsoleMessage cm) {
+            public boolean onConsoleMessage(ConsoleMessage cm) {
                 Log.d(TAG, cm.message() + " -- From line "
                         + cm.lineNumber() + " of "
                         + cm.sourceId());
@@ -145,11 +146,11 @@ public class EdgeSignupActivity extends AppCompatActivity {
                     }
                     getEdgeClasses();
                 }
+                if (cm.message().contains("object Object") && edgeLoaded){
+                    classSelected = true;
+                    Log.d(TAG, " classSelected?" + classSelected);
+                }
                 return true;
-            }
-
-            public void onGeolocationPermissionsShowPrompt(String origin, @NonNull GeolocationPermissions.Callback callback) {
-                callback.invoke(origin, true, false);
             }
         });
         mEdgePage.setWebViewClient(new WebViewClient() {
@@ -230,9 +231,13 @@ public class EdgeSignupActivity extends AppCompatActivity {
             }
         }
         Log.d("classesRetrieved", classesRetrieved + "");
-        if (consoleMessage.toLowerCase().contains("undefined") && classesRetrieved > 0 && !showPage){
-            savePreferences();
-            finish();
+        if (consoleMessage.toLowerCase().contains("undefined") && classesRetrieved > 0){
+            edgeLoaded = true;
+            mLoadingText.setText("Loading Edge Class...");
+            if (!showPage) {
+                savePreferences();
+                finish();
+            }
         }
     }
     static boolean isAfterEdgeClasses(){
