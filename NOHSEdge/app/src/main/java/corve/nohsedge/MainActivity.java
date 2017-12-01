@@ -730,6 +730,7 @@ public class MainActivity extends AppCompatActivity
         notifyMinutes = minValue;
         if (calledForeign) {
             Log.d("loadPrefs", "interpreting edge data...");
+            Log.d(TAG, mEdgeDay5Cur);
             //Calendar.Friday equals 6, thursday equals 5, use this in the future with the edgeday arrays
             int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
             if (dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY && !mEdgeDay[dayOfWeek].toLowerCase().contains("undefined")){
@@ -737,7 +738,8 @@ public class MainActivity extends AppCompatActivity
                     setEdgeMessage(mEdgeDay[dayOfWeek]);
                     setEdgeNotifications(parseEdgeTitle(mEdgeDay[dayOfWeek]), parseEdgeText(mEdgeDay[dayOfWeek]), parseEdgeSession(mEdgeDay[dayOfWeek]));
                 }
-            } else if (dayOfWeek == Calendar.FRIDAY && mEdgeDay5Cur.toLowerCase().contains(mDay[dayOfWeek]) && !mEdgeDay[dayOfWeek].toLowerCase().contains("undefined")){
+            } else if (dayOfWeek == Calendar.FRIDAY && mEdgeDay5Cur.contains(mDay[dayOfWeek]) && !mEdgeDay5Cur.toLowerCase().contains("undefined")){
+                Log.d(TAG, "setting edge message for friday");
                 setEdgeMessage(mEdgeDay5Cur);
                 setEdgeNotifications(parseEdgeTitle(mEdgeDay5Cur), parseEdgeText(mEdgeDay5Cur), parseEdgeSession(mEdgeDay5Cur));
             }
