@@ -26,6 +26,7 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -364,8 +365,10 @@ public class MainActivity extends AppCompatActivity
                 mLoginPage.stopLoading();
                 //mLoginPage.loadUrl("about:blank");
             }
-            Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
-            startActivity(intent);
+            EdgeSignupActivity fragment = new EdgeSignupActivity();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragmentFrame, fragment);
+            transaction.commit();
 
         } else if (id == R.id.nav_gear){
             drawerClose = false;
@@ -641,6 +644,7 @@ public class MainActivity extends AppCompatActivity
                             mLoginPage.stopLoading();
                             //mLoginPage.loadUrl("about:blank");
                         }
+                        //getSupportActionBar().hide();
                         Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
                         startActivity(intent);
                     }

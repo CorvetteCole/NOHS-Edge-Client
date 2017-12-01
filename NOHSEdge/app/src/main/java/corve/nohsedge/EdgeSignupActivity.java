@@ -5,11 +5,14 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -27,7 +30,7 @@ import static corve.nohsedge.MainActivity.PREF_EDGE5;
 import static corve.nohsedge.MainActivity.PREF_EDGE5Cur;
 import static corve.nohsedge.MainActivity.uuid;
 
-public class EdgeSignupActivity extends AppCompatActivity {
+public class EdgeSignupActivity extends Fragment implements MainActivity.OnBackPressedListener {
 
     private WebView mEdgePage;
     private final String TAG = "EdgeSignupActivity";
@@ -42,73 +45,61 @@ public class EdgeSignupActivity extends AppCompatActivity {
     private boolean classesRetrieved = false;
     private long timeElapsed, previousTime = 0, time;
     private int doneLoading = 0;
+    Button mSkipButton;
+    ConstraintLayout mSkipLayout;
 
     @Override
-    protected void onPause(){
+    public void onPause(){
         super.onPause();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             mEdgePage.loadUrl("about:blank");
         }
     }
 
+    /*@Override
+    public void doBack() {
+        if (classSelected && mEdgePage.canGoBack()){
+            mEdgePage.goBack();
+            mLoadingText.setText("Loading Edge Classes...");
+            classSelected = false;
+        } else if (mLoadingCircle.getVisibility() == View.VISIBLE && !classSelected){
+            getActivity().getSupportFragmentManager().popBackStack();
+        } else {
+            showPage = false;
+            exit = true;
+            getEdgeClasses();
+        }
+    }*/
+
+
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edge_signup);
-        mEdgePage = findViewById(R.id.edgePage);
-        mLoadingText = findViewById(R.id.LoadingTextEdge);
-        mLoadingCircle = findViewById(R.id.LoadingCircleEdge);
-        Button mSkipButton = findViewById(R.id.skipButton);
-        ConstraintLayout mSkipLayout = findViewById(R.id.skipLayout);
+        View RootView = inflater.inflate(R.layout.activity_edge_signup, container, false);
+        mEdgePage = RootView.findViewById(R.id.edgePage);
+        mLoadingText = RootView.findViewById(R.id.LoadingTextEdge);
+        mLoadingCircle = RootView.findViewById(R.id.LoadingCircleEdge);
+        mSkipButton = RootView.findViewById(R.id.skipButton);
+        mSkipLayout = RootView.findViewById(R.id.skipLayout);
 
         MainActivity.calledForeign = true;
         if (showPage){
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             mSkipLayout.setVisibility(View.INVISIBLE);
         } else {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-            getSupportActionBar().hide();
+
             mSkipLayout.setVisibility(View.VISIBLE);
         }
         mSkipButton.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        savePreferences();
-                        finish();
+                        exit = true;
+                        showPage = false;
+                        getEdgeClasses();
                     }
                 });
         openEdgepage();
-    }
-    @Override
-    public void onBackPressed() {
-        if (classSelected && mEdgePage.canGoBack()){
-            mEdgePage.goBack();
-            mLoadingText.setText("Loading Edge Classes...");
-            classSelected = false;
-        } else if (mLoadingCircle.getVisibility() == View.VISIBLE && !classSelected){
-            super.onBackPressed();
-        } else {
-            showPage = false;
-            exit = true;
-            getEdgeClasses();
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (classSelected && mEdgePage.canGoBack()){
-            mEdgePage.goBack();
-            mLoadingText.setText("Loading Edge Classes...");
-            classSelected = false;
-        } else if (mLoadingCircle.getVisibility() == View.VISIBLE && !classSelected){
-            super.onBackPressed();
-        } else {
-            showPage = false;
-            exit = true;
-            getEdgeClasses();
-        }
-        return(true);
+        return RootView;
     }
 
     private void openEdgepage() {
@@ -252,10 +243,10 @@ public class EdgeSignupActivity extends AppCompatActivity {
                 mLoadingText.setText("Loading Edge Class...");
                 if (!showPage) {
                     savePreferences();
-                    finish();
+                    getActivity().getSupportFragmentManager().popBackStack();
                 }
             } else if (exit){
-                finish();
+                getActivity().getSupportFragmentManager().popBackStack();
             }
         }
     }
@@ -312,7 +303,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
 
     private void savePreferences() {
         Log.d(TAG, "Saving edge classes");
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
         SharedPreferences.Editor editor = settings.edit();
         // Edit and commit
         editor.putString(PREF_EDGE5Cur, edgeDay5Cur);
@@ -321,6 +312,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
         editor.putString(PREF_EDGE3, edgeDay[4]);
         editor.putString(PREF_EDGE4, edgeDay[5]);
         editor.putString(PREF_EDGE5, edgeDay[6]);
+        mEdgePage.loadUrl("about:blank");
         editor.commit();
     }
 }
