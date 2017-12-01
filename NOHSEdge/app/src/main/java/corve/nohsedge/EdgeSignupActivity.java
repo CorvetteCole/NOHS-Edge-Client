@@ -1,6 +1,7 @@
 package corve.nohsedge;
 
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -38,14 +39,15 @@ public class EdgeSignupActivity extends AppCompatActivity {
     private String[] edgeDayFriday = new String[2];
     private String edgeDay5Cur = "";
     private boolean classSelected = false, edgeLoaded = false, exit = false;
-    private int classesRetrieved = 0;
+    private boolean classesRetrieved = false;
     private long timeElapsed, previousTime = 0, time;
 
     @Override
     protected void onPause(){
         super.onPause();
-        mEdgePage.loadUrl("about:blank");
-        finish();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            mEdgePage.loadUrl("about:blank");
+        }
     }
 
 
@@ -94,9 +96,10 @@ public class EdgeSignupActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        exit = true;
+        showPage = false;
         getEdgeClasses();
-        savePreferences();
-        return(super.onOptionsItemSelected(item));
+        return(true);
     }
 
     private void openEdgepage() {
@@ -136,11 +139,6 @@ public class EdgeSignupActivity extends AppCompatActivity {
                     String consoleMessage = cm.message();
                     InterpretEdgeData(consoleMessage);
                 }
-                if (cm.message().toLowerCase().contains("post_queue")) {
-                     if (!showPage) {
-                        getEdgeClasses();
-                    }
-                }
                 if (cm.message().contains("object Object") && edgeLoaded){
                     classSelected = true;
                     Log.d(TAG, " classSelected?" + classSelected);
@@ -159,12 +157,18 @@ public class EdgeSignupActivity extends AppCompatActivity {
                 }
                 timeElapsed = time - previousTime;
                 previousTime = time;
-                if (url.toLowerCase().contains("edgetime") && timeElapsed >= 3000) {
-                    Log.d(TAG, "Done loading.");
+                if (timeElapsed >= 100) {
+                    Log.d(TAG, "Done loading");
                     if (showPage) {
+                        //mEdgePage.loadUrl("javascript:(function(){" +
+                        //        "var element = document.getElementsByClassName('ui-header ui-bar-inherit ui-header-fixed slidedown')['" + 0 + "'];" +
+                        //        "element.parentNode.removeChild(element);" +
+                        //        "})()");
                         mEdgePage.setVisibility(View.VISIBLE);
                         mLoadingCircle.setVisibility(View.INVISIBLE);
                         mLoadingText.setVisibility(View.INVISIBLE);
+                    } else if (!classesRetrieved){
+                        getEdgeClasses();
                     }
                     edgeLoaded = true;
                 }
@@ -189,23 +193,23 @@ public class EdgeSignupActivity extends AppCompatActivity {
     private void InterpretEdgeData(@NonNull String consoleMessage) {
         if (consoleMessage.toLowerCase().contains("Mon".toLowerCase())) {
             edgeDay[2] = consoleMessage;
-            classesRetrieved++;
+            classesRetrieved = true;
             Log.d("Monday Edge Class", edgeDay[2]);
         }
         if (consoleMessage.toLowerCase().contains("Tue".toLowerCase())) {
             edgeDay[3] = consoleMessage;
-            classesRetrieved++;
+            classesRetrieved = true;
             Log.d("Tuesday Edge Class", edgeDay[3]);
         }
         if (consoleMessage.toLowerCase().contains("Wed".toLowerCase())) {
             edgeDay[4] = consoleMessage;
-            classesRetrieved++;
+            classesRetrieved = true;
             Log.d("Wednesday Edge Class", edgeDay[4]);
 
         }
         if (consoleMessage.toLowerCase().contains("Thu".toLowerCase())) {
             edgeDay[5] = consoleMessage;   //Thursday
-            classesRetrieved++;
+            classesRetrieved = true;
             Log.d("Thursday Edge Class", edgeDay[5]);
         }
         if (consoleMessage.toLowerCase().contains("Fri".toLowerCase())) {
@@ -217,24 +221,24 @@ public class EdgeSignupActivity extends AppCompatActivity {
             if (!edgeDayFriday[0].equals(consoleMessage) && !isSameWeek(edgeDayFriday[0], consoleMessage)){
                 Log.d(TAG, "Friday Array 1 set");
                 edgeDayFriday[1] = consoleMessage;
-                classesRetrieved++;
+                classesRetrieved = true;
                 edgeDay[6] = edgeDayFriday[1];
                 edgeDay5Cur = edgeDayFriday[0];
                 Log.d("Current Friday Edge", edgeDay5Cur);
                 Log.d("Next Friday Edge", edgeDay[6]);
             } else if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) != Calendar.FRIDAY){
                 edgeDay5Cur = edgeDayFriday[0];
-                classesRetrieved++;
+                classesRetrieved = true;
             } else if (isAfterEdgeClasses() && Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY){
                 edgeDay[6] = edgeDayFriday[0];
                 Log.d(TAG, "is after edge classes, only next is set");
-                classesRetrieved++;
+                classesRetrieved = true;
             }
         }
         Log.d("classesRetrieved", classesRetrieved + "");
         if (consoleMessage.toLowerCase().contains("undefined")){
 
-            if (classesRetrieved > 0) {
+            if (classesRetrieved) {
                 mLoadingText.setText("Loading Edge Class...");
                 if (!showPage) {
                     savePreferences();

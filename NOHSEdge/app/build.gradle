@@ -5,10 +5,10 @@ android {
     buildToolsVersion '27.0.1'
     defaultConfig {
         applicationId "corve.nohsedge"
-        minSdkVersion 23
+        minSdkVersion 21
         targetSdkVersion 27
-        versionCode 60
-        versionName "2.4.0.4"
+        versionCode 61
+        versionName "2.4.1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
