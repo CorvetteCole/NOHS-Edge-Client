@@ -41,6 +41,7 @@ public class EdgeSignupActivity extends AppCompatActivity {
     private boolean classSelected = false, edgeLoaded = false, exit = false;
     private boolean classesRetrieved = false;
     private long timeElapsed, previousTime = 0, time;
+    private int doneLoading = 0;
 
     @Override
     protected void onPause(){
@@ -151,13 +152,14 @@ public class EdgeSignupActivity extends AppCompatActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                time = System.currentTimeMillis();
+                doneLoading++;
+                /*time = System.currentTimeMillis();
                 if (previousTime == 0){
                     previousTime = time;
                 }
                 timeElapsed = time - previousTime;
-                previousTime = time;
-                if (timeElapsed >= 100) {
+                previousTime = time;*/
+                if (doneLoading == 3) {
                     Log.d(TAG, "Done loading");
                     if (showPage) {
                         //mEdgePage.loadUrl("javascript:(function(){" +
@@ -311,6 +313,6 @@ public class EdgeSignupActivity extends AppCompatActivity {
         editor.putString(PREF_EDGE3, edgeDay[4]);
         editor.putString(PREF_EDGE4, edgeDay[5]);
         editor.putString(PREF_EDGE5, edgeDay[6]);
-        editor.apply();
+        editor.commit();
     }
 }
