@@ -97,9 +97,17 @@ public class EdgeSignupActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        exit = true;
-        showPage = false;
-        getEdgeClasses();
+        if (classSelected && mEdgePage.canGoBack()){
+            mEdgePage.goBack();
+            mLoadingText.setText("Loading Edge Classes...");
+            classSelected = false;
+        } else if (mLoadingCircle.getVisibility() == View.VISIBLE && !classSelected){
+            super.onBackPressed();
+        } else {
+            showPage = false;
+            exit = true;
+            getEdgeClasses();
+        }
         return(true);
     }
 

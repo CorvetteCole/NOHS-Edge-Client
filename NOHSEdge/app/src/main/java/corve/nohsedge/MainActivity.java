@@ -577,7 +577,7 @@ public class MainActivity extends AppCompatActivity
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 try {
-                    if (mLoginPage.getUrl().toLowerCase().contains("login")) {
+                    if (url.toLowerCase().contains("login")) {
                         mLoginPage.loadUrl("javascript:(function(){" +
                                 "document.getElementById('login-username').value = '" + unameValue + "';" +
                                 "document.getElementById('login-password').value = '" + passwordValue + "';" +
@@ -587,7 +587,7 @@ public class MainActivity extends AppCompatActivity
                                 "l.dispatchEvent(e);" +
                                 "})()");
                     }
-                    if (mLoginPage.getUrl().toLowerCase().contains("register")) {
+                    if (url.toLowerCase().contains("register")) {
                         mLoginPage.loadUrl("javascript:(function(){" +
                                 "document.getElementById('register-username').value = '" + unameValue + "';" +
                                 "document.getElementById('register-password').value = '" + passwordValue + "';" +
@@ -598,21 +598,23 @@ public class MainActivity extends AppCompatActivity
                                 "l.dispatchEvent(e);" +
                                 "})()");
                     }
-                    if (mLoginPage.getUrl().toLowerCase().contains("homescreen") && id != R.id.nav_homescreen && currentPage != null && !currentPage.equals("homescreen") && !atHome) {
+                    if (url.contains("homescreen") && id != R.id.nav_homescreen && currentPage != null && !currentPage.equals("homescreen") && !atHome) {
                         mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
                     }
-                    if (mLoginPage.getUrl().contains("fancam") || mLoginPage.getUrl().contains("leaderboard") || mLoginPage.getUrl().contains("notifications")) {
+                    if (url.contains("fancam") || url.contains("leaderboard") || url.contains("notifications") || url.contains("events")) {
                         int ClassElement = 0;
-                        mLoginPage.loadUrl("javascript:(function(){" +
-                                "var element = document.getElementsByClassName('nav-bar-color ui-header ui-bar-inherit')['" + ClassElement + "'];" +
-                                "element.parentNode.removeChild(element);" +
-                                "})()");
+                        if (!url.contains("events")) {
+                            mLoginPage.loadUrl("javascript:(function(){" +
+                                    "var element = document.getElementsByClassName('nav-bar-color ui-header ui-bar-inherit')['" + ClassElement + "'];" +
+                                    "element.parentNode.removeChild(element);" +
+                                    "})()");
+                        }
                         mLoginPage.loadUrl("javascript:(function(){" +
                                 "var element = document.getElementsByClassName('ad-footer ui-footer ui-bar-inherit ui-footer-fixed slideup')['" + ClassElement + "'];" +
                                 "element.parentNode.removeChild(element);" +
                                 "})()");
                     }
-                    if (mLoginPage.getUrl().contains("fancam")) {
+                    if (url.contains("fancam")) {
                         mLoginPage.loadUrl("javascript:document.getElementsByName('viewport')[0].setAttribute('content', 'initial-scale=1.0,maximum-scale=10.0');");
                     }
                 } catch (NullPointerException e){
