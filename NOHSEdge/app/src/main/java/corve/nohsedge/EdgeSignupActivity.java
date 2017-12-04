@@ -341,7 +341,7 @@ public class EdgeSignupActivity extends Fragment {
                                 updateLoading();
                             }
                         });
-                        Thread.sleep(65);
+                        Thread.sleep(85);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
