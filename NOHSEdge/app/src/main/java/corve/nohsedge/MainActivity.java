@@ -47,6 +47,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -60,6 +61,9 @@ import java.util.Calendar;
 import de.cketti.mailto.EmailIntentBuilder;
 
 import static android.view.View.VISIBLE;
+import static corve.nohsedge.EdgeSignupActivity.classSelected;
+import static corve.nohsedge.EdgeSignupActivity.mEdgePage;
+import static corve.nohsedge.EdgeSignupActivity.showPage;
 
 
 public class MainActivity extends AppCompatActivity
@@ -143,6 +147,10 @@ public class MainActivity extends AppCompatActivity
     private boolean loggedIn = false;
     private boolean autoEdgeRan = false;
     private boolean atHome = false;
+    private boolean inEdge = false;
+    private android.support.v4.app.Fragment EdgeSignupActivityFragment = new EdgeSignupActivity();
+    private FrameLayout fragmentFrame;
+    private ConstraintLayout contentMain;
 
 
     @Override
@@ -196,6 +204,7 @@ public class MainActivity extends AppCompatActivity
             AlertDialog alert11 = builder1.create();
             alert11.show();
         }
+
         cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (!calledForeign) {
             Intent intent = new Intent(this, LoginActivity.class);
@@ -213,6 +222,8 @@ public class MainActivity extends AppCompatActivity
             mEdgeTitleConst = findViewById(R.id.edgeTitleTextView);
             mEdgeTextConst = findViewById(R.id.edgeTextTextView);
             mEdgeTimeConst = findViewById(R.id.edgeTimeTextView);
+            fragmentFrame = findViewById(R.id.fragmentFrame);
+            contentMain = findViewById(R.id.contentMain);
             if (login == 1) {
                 mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
                 openLoginpage();
@@ -295,19 +306,38 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        }
-        try {
-            if (mLoginPage.canGoBack()) {
-                mLoginPage.goBack();
-            } else {
+        if (inEdge) {
+            if (classSelected && mEdgePage.canGoBack()) {
+                mEdgePage.goBack();
+                mLoadingText.setText("Loading Edge Classes...");
+                classSelected = false;
+            } else if (!showPage) {
+                mEdgePage.getSettings().setJavaScriptEnabled(false);
+                mEdgePage.stopLoading();
+                mEdgePage.getSettings().setJavaScriptEnabled(true);
+                fragmentFrame.setVisibility(View.INVISIBLE);
+                contentMain.setVisibility(VISIBLE);
+                loadPreferences();
+
+                //FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                //EdgeSignupActivityFragment fragment = new EdgeSignupActivityFragment();
+                //transaction.remove(EdgeSignupActivityFragment).commit();
+                inEdge = false;
+            }
+        } else {
+            DrawerLayout drawer = findViewById(R.id.drawer_layout);
+            if (drawer.isDrawerOpen(GravityCompat.START)) {
+                drawer.closeDrawer(GravityCompat.START);
+            }
+            try {
+                if (mLoginPage.canGoBack()) {
+                    mLoginPage.goBack();
+                } else {
+                    super.onBackPressed();
+                }
+            } catch (NullPointerException e) {
                 super.onBackPressed();
             }
-        }
-        catch (NullPointerException e){
-            super.onBackPressed();
         }
     }
 
@@ -327,7 +357,19 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh && !atHome) {
-            mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
+            if (inEdge) {
+                uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
+                mEdgePage.loadUrl("http://api.superfanu.com/6.0.0/gen/link_track.php?platform=Web:%20chrome&uuid=" + uuid + "&nid=305&lkey=nohsstampede-edgetime-module");
+                EdgeSignupActivity.doneLoading = 0;
+                EdgeSignupActivity.edgeLoaded = false;
+                EdgeSignupActivity.classSelected = false;
+                EdgeSignupActivity.mEdgeLoadingCircle.setVisibility(VISIBLE);
+                EdgeSignupActivity.mEdgeLoadingText.setText("Getting Edge Classes...");
+                EdgeSignupActivity.mEdgeLoadingText.setVisibility(VISIBLE);
+                EdgeSignupActivity.mEdgePage.setVisibility(View.INVISIBLE);
+            } else {
+                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
+            }
             return true;
         }
 
@@ -338,6 +380,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+
         id = item.getItemId();
         Resources r = getResources();
         boolean drawerClose = true;
@@ -349,7 +392,11 @@ public class MainActivity extends AppCompatActivity
         } else {
             webSettings.setLoadsImagesAutomatically(true);
         }
-
+        if (id != R.id.nav_signup && inEdge && id != R.id.nav_schedule && id != R.id.nav_gear && id != R.id.nav_settings && id != R.id.nav_feedback){
+            fragmentFrame.setVisibility(View.INVISIBLE);
+            contentMain.setVisibility(VISIBLE);
+            inEdge = false;
+        }
         if (id == R.id.nav_schedule) {
             drawerClose = false;
             uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
@@ -357,17 +404,20 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
 
         } else if (id == R.id.nav_signup) {
+            getSupportActionBar().setTitle("Edge Sign up");
+            contentMain.setVisibility(View.INVISIBLE);
+            fragmentFrame.setVisibility(View.VISIBLE);
             EdgeSignupActivity.showPage = true;
-            drawerClose = false;
+            //drawerClose = false;
+            inEdge = true;
             uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
                 webSettings.setJavaScriptEnabled(false);
                 mLoginPage.stopLoading();
                 //mLoginPage.loadUrl("about:blank");
             }
-            EdgeSignupActivity fragment = new EdgeSignupActivity();
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragmentFrame, fragment);
+            transaction.replace(R.id.fragmentFrame, EdgeSignupActivityFragment);
             transaction.commit();
 
         } else if (id == R.id.nav_gear){
@@ -636,6 +686,7 @@ public class MainActivity extends AppCompatActivity
                 if (mLoginPage.getUrl().toLowerCase().contains("#homescreen") && loggedIn && !autoEdgeRan) {
                     autoEdgeRan = true;
                     if (!edgeRetrieved()){
+                        inEdge = true;
                         EdgeSignupActivity.showPage = false;
                         uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
                         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
@@ -644,9 +695,11 @@ public class MainActivity extends AppCompatActivity
                             mLoginPage.stopLoading();
                             //mLoginPage.loadUrl("about:blank");
                         }
-                        //getSupportActionBar().hide();
-                        Intent intent = new Intent(getBaseContext(), EdgeSignupActivity.class);
-                        startActivity(intent);
+                        getSupportActionBar().hide();
+                        EdgeSignupActivity fragment = new EdgeSignupActivity();
+                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                        transaction.replace(R.id.fragmentFrame, fragment);
+                        transaction.commit();
                     }
                 }
             }

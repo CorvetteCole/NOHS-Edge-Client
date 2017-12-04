@@ -6,11 +6,9 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.ConsoleMessage;
@@ -30,23 +28,25 @@ import static corve.nohsedge.MainActivity.PREF_EDGE5;
 import static corve.nohsedge.MainActivity.PREF_EDGE5Cur;
 import static corve.nohsedge.MainActivity.uuid;
 
-public class EdgeSignupActivity extends Fragment implements MainActivity.OnBackPressedListener {
+public class EdgeSignupActivity extends Fragment {
 
-    private WebView mEdgePage;
+    static WebView mEdgePage;
     private final String TAG = "EdgeSignupActivity";
-    private TextView mLoadingText;
-    private ProgressBar mLoadingCircle;
+    static TextView mEdgeLoadingText;
+    static ProgressBar mEdgeLoadingCircle;
     static boolean showPage = false;
     @NonNull
     private String[] edgeDay = new String[7];
     private String[] edgeDayFriday = new String[2];
     private String edgeDay5Cur = "";
-    private boolean classSelected = false, edgeLoaded = false, exit = false;
+    static boolean classSelected = false, edgeLoaded = false, exit = false;
     private boolean classesRetrieved = false;
     private long timeElapsed, previousTime = 0, time;
-    private int doneLoading = 0;
+    static int doneLoading = 0;
     Button mSkipButton;
     ConstraintLayout mSkipLayout;
+    private int loadingProgress = 0;
+
 
     @Override
     public void onPause(){
@@ -60,9 +60,9 @@ public class EdgeSignupActivity extends Fragment implements MainActivity.OnBackP
     public void doBack() {
         if (classSelected && mEdgePage.canGoBack()){
             mEdgePage.goBack();
-            mLoadingText.setText("Loading Edge Classes...");
+            mEdgeLoadingText.setText("Loading Edge Classes...");
             classSelected = false;
-        } else if (mLoadingCircle.getVisibility() == View.VISIBLE && !classSelected){
+        } else if (mEdgeLoadingCircle.getVisibility() == View.VISIBLE && !classSelected){
             getActivity().getSupportFragmentManager().popBackStack();
         } else {
             showPage = false;
@@ -78,8 +78,8 @@ public class EdgeSignupActivity extends Fragment implements MainActivity.OnBackP
         super.onCreate(savedInstanceState);
         View RootView = inflater.inflate(R.layout.activity_edge_signup, container, false);
         mEdgePage = RootView.findViewById(R.id.edgePage);
-        mLoadingText = RootView.findViewById(R.id.LoadingTextEdge);
-        mLoadingCircle = RootView.findViewById(R.id.LoadingCircleEdge);
+        mEdgeLoadingText = RootView.findViewById(R.id.LoadingTextEdge);
+        mEdgeLoadingCircle = RootView.findViewById(R.id.LoadingCircleEdge);
         mSkipButton = RootView.findViewById(R.id.skipButton);
         mSkipLayout = RootView.findViewById(R.id.skipLayout);
 
@@ -110,8 +110,8 @@ public class EdgeSignupActivity extends Fragment implements MainActivity.OnBackP
             edgeDay[i] = "";
         }
         mEdgePage.clearHistory();
-        mLoadingText.setVisibility(View.VISIBLE);
-        mLoadingCircle.setVisibility(View.VISIBLE);
+        mEdgeLoadingText.setVisibility(View.VISIBLE);
+        mEdgeLoadingCircle.setVisibility(View.VISIBLE);
         mEdgePage.loadUrl("http://api.superfanu.com/6.0.0/gen/link_track.php?platform=Web:%20chrome&uuid=" + uuid + "&nid=305&lkey=nohsstampede-edgetime-module");
         WebSettings webSettings = mEdgePage.getSettings();
         webSettings.setDomStorageEnabled(true);
@@ -120,18 +120,27 @@ public class EdgeSignupActivity extends Fragment implements MainActivity.OnBackP
         webSettings.setLoadsImagesAutomatically(false);
 
         mEdgePage.setWebChromeClient(new WebChromeClient() {
-            /*public void onProgressChanged(WebView view, int progress) {
-                mLoadingText.setText(progress + "%");
-                if (progress == 100) {
-                    mLoadingText.setVisibility(View.INVISIBLE);
-                } else {
-                    mLoadingText.setVisibility(View.VISIBLE);
-                    mLoadingCircle.setVisibility(View.VISIBLE);
+            public void onProgressChanged(WebView view, int progress) {
+                /*time = System.currentTimeMillis();
+                if (previousTime == 0){
+                    previousTime = time;
                 }
-
-            }*/
+                timeElapsed = time - previousTime;
+                if (timeElapsed == 100) {
+                    previousTime = time;
+                    loadingProgress++;
+                    mEdgeLoadingText.setText("Getting Edge Classes... " + loadingProgress + "%");
+                }*/
+                /*if (progress < loadingProgress) {
+                    loadingProgress = (int)progress;
+                } else {
+                    loadingProgress = (progress - (100 - (int)((double)100/doneLoading)));
+                }*/
+                updateLoading();
+            }
 
             public boolean onConsoleMessage(ConsoleMessage cm) {
+
                 Log.d(TAG, cm.message() + " -- From line "
                         + cm.lineNumber() + " of "
                         + cm.sourceId());
@@ -147,17 +156,16 @@ public class EdgeSignupActivity extends Fragment implements MainActivity.OnBackP
             }
         });
         mEdgePage.setWebViewClient(new WebViewClient() {
-
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 doneLoading++;
-                /*time = System.currentTimeMillis();
-                if (previousTime == 0){
-                    previousTime = time;
+                loadingProgress = (int)(100 *((double)doneLoading/3));
+                updateLoading();
+                if (doneLoading == 2) {
+                    runThread();
+
                 }
-                timeElapsed = time - previousTime;
-                previousTime = time;*/
                 if (doneLoading == 3) {
                     Log.d(TAG, "Done loading");
                     if (showPage) {
@@ -166,8 +174,8 @@ public class EdgeSignupActivity extends Fragment implements MainActivity.OnBackP
                         //        "element.parentNode.removeChild(element);" +
                         //        "})()");
                         mEdgePage.setVisibility(View.VISIBLE);
-                        mLoadingCircle.setVisibility(View.INVISIBLE);
-                        mLoadingText.setVisibility(View.INVISIBLE);
+                        mEdgeLoadingCircle.setVisibility(View.INVISIBLE);
+                        mEdgeLoadingText.setVisibility(View.INVISIBLE);
                     } else if (!classesRetrieved){
                         getEdgeClasses();
                     }
@@ -183,9 +191,9 @@ public class EdgeSignupActivity extends Fragment implements MainActivity.OnBackP
                 Log.d("!EdgeURL", webUrl);
                 if (webUrl.toLowerCase().contains("edgetime".toLowerCase())) {
                     if (showPage) {
-                        mLoadingCircle.setVisibility(View.VISIBLE);
+                        mEdgeLoadingCircle.setVisibility(View.VISIBLE);
                         mEdgePage.setVisibility(View.INVISIBLE);
-                        mLoadingText.setVisibility(View.VISIBLE);
+                        mEdgeLoadingText.setVisibility(View.VISIBLE);
                     }
                 }
             }*/
@@ -240,13 +248,13 @@ public class EdgeSignupActivity extends Fragment implements MainActivity.OnBackP
         if (consoleMessage.toLowerCase().contains("undefined")){
 
             if (classesRetrieved) {
-                mLoadingText.setText("Loading Edge Class...");
+                mEdgeLoadingText.setText("Loading Edge Class...");
                 if (!showPage) {
                     savePreferences();
-                    getActivity().getSupportFragmentManager().popBackStack();
+                    getActivity().onBackPressed();
                 }
             } else if (exit){
-                getActivity().getSupportFragmentManager().popBackStack();
+                getActivity().onBackPressed();
             }
         }
     }
@@ -267,7 +275,7 @@ public class EdgeSignupActivity extends Fragment implements MainActivity.OnBackP
         return after;
     }
 
-    private void getEdgeClasses() {
+    static void getEdgeClasses() {
         int ClassElement = 0;
         while (ClassElement != 7) {
             mEdgePage.loadUrl("javascript:(function(){" +
@@ -314,5 +322,31 @@ public class EdgeSignupActivity extends Fragment implements MainActivity.OnBackP
         editor.putString(PREF_EDGE5, edgeDay[6]);
         mEdgePage.loadUrl("about:blank");
         editor.commit();
+    }
+
+    private void updateLoading(){
+        mEdgeLoadingText.setText("Getting Edge Classes... " + loadingProgress + "%");
+        loadingProgress++;
+    }
+
+    private void runThread() {
+
+        new Thread() {
+            public void run() {
+                while (loadingProgress < 100) {
+                    try {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                updateLoading();
+                            }
+                        });
+                        Thread.sleep(65);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.start();
     }
 }
