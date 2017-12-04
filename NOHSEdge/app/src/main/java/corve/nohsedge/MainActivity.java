@@ -367,6 +367,7 @@ public class MainActivity extends AppCompatActivity
                 EdgeSignupActivity.mEdgeLoadingText.setText("Getting Edge Classes...");
                 EdgeSignupActivity.mEdgeLoadingText.setVisibility(VISIBLE);
                 EdgeSignupActivity.mEdgePage.setVisibility(View.INVISIBLE);
+                EdgeSignupActivity.loadingProgress = 0;
             } else {
                 mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
             }

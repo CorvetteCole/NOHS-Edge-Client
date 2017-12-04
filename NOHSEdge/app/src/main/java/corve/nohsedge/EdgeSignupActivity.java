@@ -45,7 +45,7 @@ public class EdgeSignupActivity extends Fragment {
     static int doneLoading = 0;
     Button mSkipButton;
     ConstraintLayout mSkipLayout;
-    private int loadingProgress = 0;
+    static int loadingProgress = 0;
 
 
     @Override
