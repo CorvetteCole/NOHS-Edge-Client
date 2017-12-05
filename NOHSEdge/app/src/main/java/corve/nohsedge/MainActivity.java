@@ -62,6 +62,8 @@ import de.cketti.mailto.EmailIntentBuilder;
 
 import static android.view.View.VISIBLE;
 import static corve.nohsedge.EdgeSignupActivity.classSelected;
+import static corve.nohsedge.EdgeSignupActivity.exit;
+import static corve.nohsedge.EdgeSignupActivity.loadingProgress;
 import static corve.nohsedge.EdgeSignupActivity.mEdgePage;
 import static corve.nohsedge.EdgeSignupActivity.showPage;
 
@@ -311,18 +313,35 @@ public class MainActivity extends AppCompatActivity
                 mEdgePage.goBack();
                 mLoadingText.setText("Loading Edge Classes...");
                 classSelected = false;
-            } else if (!showPage) {
+            } else if (!showPage && !exit) {
                 mEdgePage.getSettings().setJavaScriptEnabled(false);
                 mEdgePage.stopLoading();
                 mEdgePage.getSettings().setJavaScriptEnabled(true);
                 fragmentFrame.setVisibility(View.INVISIBLE);
                 contentMain.setVisibility(VISIBLE);
                 loadPreferences();
-
-                //FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                //EdgeSignupActivityFragment fragment = new EdgeSignupActivityFragment();
-                //transaction.remove(EdgeSignupActivityFragment).commit();
                 inEdge = false;
+                getSupportActionBar().show();
+                loadingProgress = 0;
+                EdgeSignupActivity.edgeLoaded = false;
+                EdgeSignupActivity.doneLoading = 0;
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.remove(EdgeSignupActivityFragment);
+                transaction.commit();
+            } else if (exit) {
+                mEdgePage.getSettings().setJavaScriptEnabled(false);
+                mEdgePage.stopLoading();
+                mEdgePage.getSettings().setJavaScriptEnabled(true);
+                fragmentFrame.setVisibility(View.INVISIBLE);
+                contentMain.setVisibility(VISIBLE);
+                inEdge = false;
+                getSupportActionBar().show();
+                loadingProgress = 0;
+                EdgeSignupActivity.edgeLoaded = false;
+                EdgeSignupActivity.doneLoading = 0;
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.remove(EdgeSignupActivityFragment);
+                transaction.commit();
             }
         } else {
             DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -393,6 +412,11 @@ public class MainActivity extends AppCompatActivity
         } else {
             webSettings.setLoadsImagesAutomatically(true);
         }
+        if (inEdge) {
+            EdgeSignupActivity.save = true;
+            EdgeSignupActivity.getEdgeClasses();
+        }
+
         if (id != R.id.nav_signup && inEdge && id != R.id.nav_schedule && id != R.id.nav_gear && id != R.id.nav_settings && id != R.id.nav_feedback){
             fragmentFrame.setVisibility(View.INVISIBLE);
             contentMain.setVisibility(VISIBLE);
@@ -697,10 +721,11 @@ public class MainActivity extends AppCompatActivity
                             //mLoginPage.loadUrl("about:blank");
                         }
                         getSupportActionBar().hide();
-                        EdgeSignupActivity fragment = new EdgeSignupActivity();
                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                        transaction.replace(R.id.fragmentFrame, fragment);
+                        transaction.replace(R.id.fragmentFrame, EdgeSignupActivityFragment);
                         transaction.commit();
+                        contentMain.setVisibility(View.INVISIBLE);
+                        fragmentFrame.setVisibility(View.VISIBLE);
                     }
                 }
             }

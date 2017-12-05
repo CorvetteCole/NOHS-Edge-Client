@@ -34,6 +34,7 @@ public class EdgeSignupActivity extends Fragment {
     private final String TAG = "EdgeSignupActivity";
     static TextView mEdgeLoadingText;
     static ProgressBar mEdgeLoadingCircle;
+    static boolean save = false;
     static boolean showPage = false;
     @NonNull
     private String[] edgeDay = new String[7];
@@ -46,6 +47,7 @@ public class EdgeSignupActivity extends Fragment {
     Button mSkipButton;
     ConstraintLayout mSkipLayout;
     static int loadingProgress = 0;
+    private boolean backPressed = false;
 
 
     @Override
@@ -94,7 +96,6 @@ public class EdgeSignupActivity extends Fragment {
                 new View.OnClickListener() {
                     public void onClick(View view) {
                         exit = true;
-                        showPage = false;
                         getEdgeClasses();
                     }
                 });
@@ -249,12 +250,17 @@ public class EdgeSignupActivity extends Fragment {
 
             if (classesRetrieved) {
                 mEdgeLoadingText.setText("Loading Edge Class...");
-                if (!showPage) {
+                if (save){
+                    savePreferences();
+                }
+                if (!showPage && !backPressed) {
                     savePreferences();
                     getActivity().onBackPressed();
+                    backPressed = true;
                 }
-            } else if (exit){
+            } else if (exit && !backPressed){
                 getActivity().onBackPressed();
+                backPressed = true;
             }
         }
     }
@@ -320,7 +326,7 @@ public class EdgeSignupActivity extends Fragment {
         editor.putString(PREF_EDGE3, edgeDay[4]);
         editor.putString(PREF_EDGE4, edgeDay[5]);
         editor.putString(PREF_EDGE5, edgeDay[6]);
-        mEdgePage.loadUrl("about:blank");
+        //mEdgePage.loadUrl("about:blank");
         editor.commit();
     }
 
