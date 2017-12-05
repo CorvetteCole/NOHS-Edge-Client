@@ -339,7 +339,7 @@ public class EdgeSignupActivity extends Fragment {
 
         new Thread() {
             public void run() {
-                while (loadingProgress < 100) {
+                while (loadingProgress < 100 && getActivity() != null) {
                     try {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
