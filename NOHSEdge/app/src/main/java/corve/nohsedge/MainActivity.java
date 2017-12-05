@@ -334,6 +334,7 @@ public class MainActivity extends AppCompatActivity
                 mEdgePage.getSettings().setJavaScriptEnabled(true);
                 fragmentFrame.setVisibility(View.INVISIBLE);
                 contentMain.setVisibility(VISIBLE);
+                loadPreferences();
                 inEdge = false;
                 getSupportActionBar().show();
                 loadingProgress = 0;
@@ -980,7 +981,7 @@ public class MainActivity extends AppCompatActivity
         imageurl = imageurl.substring(0, imageurl.indexOf("\","));
         imageurl = imageurl.replace("/","");
         Log.d("imageurl", imageurl);
-        imageurl = "http://objects-us-west-1.dream.io/sfu-profiles/default.jpg";
+        //imageurl = "http://objects-us-west-1.dream.io/sfu-profiles/default.jpg";
         /*new DownloadImageTask(nav_image)
                 .execute(imageurl);*/
     }
@@ -1024,6 +1025,7 @@ public class MainActivity extends AppCompatActivity
         mEdgeTime.setText(parseEdgeTime(consoleMessage));
         mWelcome.setText("Hello, " + fullName);
     }
+
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
 
