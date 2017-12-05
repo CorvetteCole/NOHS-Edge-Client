@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity
     private boolean loggedIn = false;
     private boolean autoEdgeRan = false;
     private boolean atHome = false;
-    private boolean inEdge = false;
+    private boolean inEdge = false, refresh = false;
     private android.support.v4.app.Fragment EdgeSignupActivityFragment = new EdgeSignupActivity();
     private FrameLayout fragmentFrame;
     private ConstraintLayout contentMain;
@@ -164,6 +164,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onPause() {
         super.onPause();
+        if (inEdge) {
+            EdgeSignupActivity.save = true;
+            EdgeSignupActivity.getEdgeClasses();
+        }
         savePreferences();
     }
     @Override
@@ -389,7 +393,12 @@ public class MainActivity extends AppCompatActivity
                 EdgeSignupActivity.mEdgePage.setVisibility(View.INVISIBLE);
                 EdgeSignupActivity.loadingProgress = 0;
             } else {
-                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
+                refresh = true;
+                loggedIn = false;
+                mLoginPage.loadUrl("about:blank");
+                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen");
+                //mLoginPage.loadUrl(mLoginPage.getUrl());
+                //mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
             }
             return true;
         }
@@ -403,7 +412,6 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
 
         id = item.getItemId();
-        Resources r = getResources();
         boolean drawerClose = true;
         atHome = false;
         mLoginPage.getSettings().setBuiltInZoomControls(false);
@@ -634,14 +642,20 @@ public class MainActivity extends AppCompatActivity
                 }
                 if ((cm.message().contains("\"ok\"")) && (cm.message().toLowerCase().contains(unameValue.toLowerCase())) && !loggedIn) {
                     loggedIn = true;
-                    setupDrawer();
-                    setHeaderDetails(cm.message());
-                    setWelcomeVisible(true);
-                    mLoadingCircle.setVisibility(View.INVISIBLE);
-                    SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-                    SharedPreferences.Editor editor = settings.edit();
-                    editor.putBoolean("invalid", false);
-                    editor.apply();
+                    if (!refresh) {
+                        setupDrawer();
+                        setHeaderDetails(cm.message());
+                        setWelcomeVisible(true);
+                        mLoadingCircle.setVisibility(View.INVISIBLE);
+                        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.putBoolean("invalid", false);
+                        editor.apply();
+                    } else {
+                        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
+                        //mLoadingCircle.setVisibility(View.INVISIBLE);
+                        refresh = false;
+                    }
                 }
                 return true;
             }
@@ -677,9 +691,9 @@ public class MainActivity extends AppCompatActivity
                                 "l.dispatchEvent(e);" +
                                 "})()");
                     }
-                    if (url.contains("homescreen") && id != R.id.nav_homescreen && currentPage != null && !currentPage.equals("homescreen") && !atHome) {
-                        mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
-                    }
+                    //if (url.contains("homescreen") && id != R.id.nav_homescreen && currentPage != null && !currentPage.equals("homescreen") && !atHome) {
+                    //    mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
+                    //}
                     if (url.contains("fancam") || url.contains("leaderboard") || url.contains("notifications") || url.contains("events")) {
                         int ClassElement = 0;
                         if (!url.contains("events")) {

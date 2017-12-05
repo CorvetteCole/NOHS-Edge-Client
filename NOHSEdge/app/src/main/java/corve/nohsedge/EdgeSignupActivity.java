@@ -165,7 +165,6 @@ public class EdgeSignupActivity extends Fragment {
                 updateLoading();
                 if (doneLoading == 2) {
                     runThread();
-
                 }
                 if (doneLoading == 3) {
                     Log.d(TAG, "Done loading");
@@ -181,6 +180,9 @@ public class EdgeSignupActivity extends Fragment {
                         getEdgeClasses();
                     }
                     edgeLoaded = true;
+                }
+                if (doneLoading == 4){
+                    doneLoading = 0;
                 }
 
             }
@@ -352,6 +354,8 @@ public class EdgeSignupActivity extends Fragment {
                         e.printStackTrace();
                     }
                 }
+                loadingProgress = 0;
+
             }
         }.start();
     }
