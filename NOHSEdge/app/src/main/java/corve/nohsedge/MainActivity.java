@@ -819,7 +819,7 @@ public class MainActivity extends AppCompatActivity
             Log.d(TAG, mEdgeDay5Cur);
             //Calendar.Friday equals 6, thursday equals 5, use this in the future with the edgeday arrays
             int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-            if (dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY && !mEdgeDay[dayOfWeek].toLowerCase().contains("undefined")){
+            if (dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY && !mEdgeDay[dayOfWeek].toLowerCase().contains("undefined") && mEdgeDay[dayOfWeek] != null && !mEdgeDay[dayOfWeek].isEmpty()){
                 if (mEdgeDay[dayOfWeek].toLowerCase().contains(mDay[dayOfWeek].toLowerCase())) {
                     setEdgeMessage(mEdgeDay[dayOfWeek]);
                     setEdgeNotifications(parseEdgeTitle(mEdgeDay[dayOfWeek]), parseEdgeText(mEdgeDay[dayOfWeek]), parseEdgeSession(mEdgeDay[dayOfWeek]));
@@ -1019,7 +1019,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void setEdgeMessage(@NonNull String consoleMessage){
+    private void setEdgeMessage(String consoleMessage){
         mEdgeTitle.setText(parseEdgeTitle(consoleMessage));
         mEdgeText.setText(parseEdgeText(consoleMessage));
         mEdgeTime.setText(parseEdgeTime(consoleMessage));
