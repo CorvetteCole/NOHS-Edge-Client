@@ -2,6 +2,7 @@ package corve.nohsedge;
 
 
 import android.app.AlarmManager;
+import android.app.Fragment;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -151,8 +152,10 @@ public class MainActivity extends AppCompatActivity
     private boolean atHome = false;
     private boolean inEdge = false, refresh = false;
     private android.support.v4.app.Fragment EdgeSignupActivityFragment = new EdgeSignupActivity();
+    private android.support.v4.app.Fragment EdgeViewActivityFragment = new EdgeViewActivity();
     private FrameLayout fragmentFrame;
     private ConstraintLayout contentMain;
+    private boolean inEdgeView = false, inEdgeShortcut = false;
 
 
     @Override
@@ -167,6 +170,8 @@ public class MainActivity extends AppCompatActivity
         if (inEdge) {
             EdgeSignupActivity.save = true;
             EdgeSignupActivity.getEdgeClasses();
+        } else if (inEdgeShortcut){
+            finish();
         }
         savePreferences();
     }
@@ -183,6 +188,64 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if ("corve.nohsedge.view.schedule".equals(getIntent().getAction())){
+            Log.d(TAG, getIntent().getAction() + "");
+            inEdgeView = true;
+            inEdgeShortcut = true;
+        }
+        if (calledForeign || inEdgeView) {
+            //setupDrawer();
+            mLoginPage = findViewById(R.id.loginWebview);
+            mLoadingCircle = findViewById(R.id.progressBar);
+            mLoadingText = findViewById(R.id.LoadingText);
+            mWelcome = findViewById(R.id.helloTextView);
+            mEdgeTitle = findViewById(R.id.edgeClassTitle);
+            mEdgeText = findViewById(R.id.edgeClassText);
+            mEdgeTime = findViewById(R.id.edgeClassTime);
+            mEdgeTitleConst = findViewById(R.id.edgeTitleTextView);
+            mEdgeTextConst = findViewById(R.id.edgeTextTextView);
+            mEdgeTimeConst = findViewById(R.id.edgeTimeTextView);
+            fragmentFrame = findViewById(R.id.fragmentFrame);
+            contentMain = findViewById(R.id.contentMain);
+            if (inEdgeView) {
+                Toolbar toolbar = findViewById(R.id.toolbar);
+                setSupportActionBar(toolbar);
+                getSupportActionBar().setTitle("Edge Schedule");
+                contentMain.setVisibility(View.INVISIBLE);
+                fragmentFrame.setVisibility(View.VISIBLE);
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragmentFrame, EdgeViewActivityFragment);
+                transaction.commit();
+            } else {
+                if (login == 1) {
+                    mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
+                    openLoginpage();
+                }
+                if (register == 1) {
+                    mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#register");
+                    openLoginpage();
+                }
+
+                activateEdgeHelper();
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                    ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+                    ShortcutInfo wNOHSShortcut = new ShortcutInfo.Builder(context, "shortcut_nohs")
+                            .setShortLabel("NOHS Website")
+                            .setLongLabel("Open NOHS Website")
+                            .setIcon(Icon.createWithResource(context, R.mipmap.ic_nohs_shortcut))
+                            .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.oldham.kyschools.us/nohs/")))
+                            .build();
+                    ShortcutInfo wCampusShortcut = new ShortcutInfo.Builder(context, "shortcut_campus")
+                            .setShortLabel("Campus Portal")
+                            .setLongLabel("Open Campus Portal")
+                            .setIcon(Icon.createWithResource(context, R.mipmap.ic_infinitecampus_shortcut))
+                            .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://kyede10.infinitecampus.org/campus/portal/oldham.jsp")))
+                            .build();
+                    shortcutManager.setDynamicShortcuts(Arrays.asList(wNOHSShortcut, wCampusShortcut));
+                }
+            }
+        }
         PackageManager pm = context.getPackageManager();
         if (!isPackageInstalled("com.android.chrome", pm)){
             AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
@@ -212,52 +275,11 @@ public class MainActivity extends AppCompatActivity
         }
 
         cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (!calledForeign) {
+        if (!calledForeign && !inEdgeView) {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
-        if (calledForeign) {
-            //setupDrawer();
-            mLoginPage = findViewById(R.id.loginWebview);
-            mLoadingCircle = findViewById(R.id.progressBar);
-            mLoadingText = findViewById(R.id.LoadingText);
-            mWelcome = findViewById(R.id.helloTextView);
-            mEdgeTitle = findViewById(R.id.edgeClassTitle);
-            mEdgeText = findViewById(R.id.edgeClassText);
-            mEdgeTime = findViewById(R.id.edgeClassTime);
-            mEdgeTitleConst = findViewById(R.id.edgeTitleTextView);
-            mEdgeTextConst = findViewById(R.id.edgeTextTextView);
-            mEdgeTimeConst = findViewById(R.id.edgeTimeTextView);
-            fragmentFrame = findViewById(R.id.fragmentFrame);
-            contentMain = findViewById(R.id.contentMain);
-            if (login == 1) {
-                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
-                openLoginpage();
-            }
-            if (register == 1) {
-                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#register");
-                openLoginpage();
-            }
 
-            activateEdgeHelper();
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-                ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
-                ShortcutInfo wNOHSShortcut = new ShortcutInfo.Builder(context, "shortcut_nohs")
-                        .setShortLabel("NOHS Website")
-                        .setLongLabel("Open NOHS Website")
-                        .setIcon(Icon.createWithResource(context, R.mipmap.ic_nohs_shortcut))
-                        .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.oldham.kyschools.us/nohs/")))
-                        .build();
-                ShortcutInfo wCampusShortcut = new ShortcutInfo.Builder(context, "shortcut_campus")
-                        .setShortLabel("Campus Portal")
-                        .setLongLabel("Open Campus Portal")
-                        .setIcon(Icon.createWithResource(context, R.mipmap.ic_infinitecampus_shortcut))
-                        .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://kyede10.infinitecampus.org/campus/portal/oldham.jsp")))
-                        .build();
-                shortcutManager.setDynamicShortcuts(Arrays.asList(wNOHSShortcut, wCampusShortcut));
-            }
-        }
     }
     private void setupDrawer(){
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -392,6 +414,7 @@ public class MainActivity extends AppCompatActivity
                 EdgeSignupActivity.mEdgeLoadingText.setVisibility(VISIBLE);
                 EdgeSignupActivity.mEdgePage.setVisibility(View.INVISIBLE);
                 EdgeSignupActivity.loadingProgress = 0;
+            } else if (inEdgeView){
             } else {
                 refresh = true;
                 loggedIn = false;
@@ -410,7 +433,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-
         id = item.getItemId();
         boolean drawerClose = true;
         atHome = false;
@@ -425,19 +447,33 @@ public class MainActivity extends AppCompatActivity
             EdgeSignupActivity.save = true;
             EdgeSignupActivity.getEdgeClasses();
         }
-
-        if (id != R.id.nav_signup && inEdge && id != R.id.nav_schedule && id != R.id.nav_gear && id != R.id.nav_settings && id != R.id.nav_feedback){
+        if (inEdgeView){
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.remove(EdgeViewActivityFragment);
+            transaction.commit();
+        }
+        if (id != R.id.nav_schedule && id != R.id.nav_signup && (inEdge || inEdgeView) && id != R.id.nav_schedule && id != R.id.nav_gear && id != R.id.nav_settings && id != R.id.nav_feedback){
             fragmentFrame.setVisibility(View.INVISIBLE);
             contentMain.setVisibility(VISIBLE);
             inEdge = false;
+            inEdgeView = false;
         }
         if (id == R.id.nav_schedule) {
-            drawerClose = false;
-            uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
+            getSupportActionBar().setTitle("Edge Schedule");
+            contentMain.setVisibility(View.INVISIBLE);
+            fragmentFrame.setVisibility(View.VISIBLE);
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragmentFrame, EdgeViewActivityFragment);
+            transaction.commit();
+            inEdgeView = true;
+
+            /*uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
             Intent intent = new Intent(getBaseContext(), EdgeViewActivity.class);
-            startActivity(intent);
+            startActivity(intent);*/
 
         } else if (id == R.id.nav_signup) {
+            EdgeSignupActivity.loadingProgress = 0;
+            EdgeSignupActivity.doneLoading = 0;
             getSupportActionBar().setTitle("Edge Sign up");
             contentMain.setVisibility(View.INVISIBLE);
             fragmentFrame.setVisibility(View.VISIBLE);

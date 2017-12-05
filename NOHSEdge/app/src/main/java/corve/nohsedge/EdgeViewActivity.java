@@ -1,5 +1,6 @@
 package corve.nohsedge;
 
+import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,8 +10,12 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 
 import java.util.Calendar;
@@ -28,7 +33,7 @@ import static corve.nohsedge.MainActivity.PREF_EDGE4;
 import static corve.nohsedge.MainActivity.PREF_EDGE5;
 import static corve.nohsedge.MainActivity.PREF_EDGE5Cur;
 
-public class EdgeViewActivity extends AppCompatActivity {
+public class EdgeViewActivity extends android.support.v4.app.Fragment {
     @NonNull
     private String[] EdgeDay = new String[5];
     private ListView mList;
@@ -42,24 +47,26 @@ public class EdgeViewActivity extends AppCompatActivity {
     public static String[] EdgeDate = new String[5];
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setContentView(R.layout.activity_edge_view);
-        mList = findViewById(R.id.listview);
+        View RootView = inflater.inflate(R.layout.activity_edge_view, container, false);
+        //setContentView(R.layout.activity_edge_view);
+        mList = RootView.findViewById(R.id.listview);
         loadPreferences();
+        setHasOptionsMenu(true);
+        return RootView;
     }
 
-    @Override
+    /*@Override
     protected void onPause() {
         super.onPause();
         finish();
-    }
+    }*/
+
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.clear_all, menu);
-        return true;
+        inflater.inflate(R.menu.clear_all, menu);
     }
 
     @Override
@@ -71,7 +78,7 @@ public class EdgeViewActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_clear) {
-            AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+            AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
             builder1.setMessage("Clear saved Edge schedule? (This will not make you leave any of your classes)");
             builder1.setCancelable(true);
 
@@ -79,7 +86,7 @@ public class EdgeViewActivity extends AppCompatActivity {
                     "Continue",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
                             SharedPreferences.Editor editor = settings.edit();
                             editor.putString(PREF_EDGE1, "");
                             editor.putString(PREF_EDGE2, "");
@@ -110,7 +117,7 @@ public class EdgeViewActivity extends AppCompatActivity {
     }
 
     public void loadPreferences() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
         // Get value
         EdgeDay[0] = settings.getString(PREF_EDGE1, DefaultEdgeDay1Value);
@@ -228,7 +235,7 @@ public class EdgeViewActivity extends AppCompatActivity {
             i++;
         }
 
-        mList.setAdapter(new EdgeBaseAdapter(this, EdgeTitle, EdgeText, EdgeTime, EdgeDate));
+        mList.setAdapter(new EdgeBaseAdapter(getActivity(), EdgeTitle, EdgeText, EdgeTime, EdgeDate));
 
         }
 

@@ -48,6 +48,7 @@ public class EdgeSignupActivity extends Fragment {
     ConstraintLayout mSkipLayout;
     static int loadingProgress = 0;
     private boolean backPressed = false;
+    private SharedPreferences settings;
 
 
     @Override
@@ -78,6 +79,7 @@ public class EdgeSignupActivity extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        settings = PreferenceManager.getDefaultSharedPreferences(getContext());
         View RootView = inflater.inflate(R.layout.activity_edge_signup, container, false);
         mEdgePage = RootView.findViewById(R.id.edgePage);
         mEdgeLoadingText = RootView.findViewById(R.id.LoadingTextEdge);
@@ -319,7 +321,7 @@ public class EdgeSignupActivity extends Fragment {
 
     private void savePreferences() {
         Log.d(TAG, "Saving edge classes");
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
+        //SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
         SharedPreferences.Editor editor = settings.edit();
         // Edit and commit
         editor.putString(PREF_EDGE5Cur, edgeDay5Cur);
