@@ -402,7 +402,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_refresh && !atHome) {
+        if (id == R.id.action_refresh) {
             if (inEdge) {
                 uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
                 mEdgePage.loadUrl("http://api.superfanu.com/6.0.0/gen/link_track.php?platform=Web:%20chrome&uuid=" + uuid + "&nid=305&lkey=nohsstampede-edgetime-module");
@@ -414,8 +414,30 @@ public class MainActivity extends AppCompatActivity
                 EdgeSignupActivity.mEdgeLoadingText.setVisibility(VISIBLE);
                 EdgeSignupActivity.mEdgePage.setVisibility(View.INVISIBLE);
                 EdgeSignupActivity.loadingProgress = 0;
-            } else if (inEdgeView){
-            } else {
+            } else if (atHome){
+                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                mEdgeDay[2] = settings.getString(PREF_EDGE1, DefaultEdgeDay1Value);
+                mEdgeDay[3] = settings.getString(PREF_EDGE2, DefaultEdgeDay2Value);
+                mEdgeDay[4] = settings.getString(PREF_EDGE3, DefaultEdgeDay3Value);
+                mEdgeDay[5] = settings.getString(PREF_EDGE4, DefaultEdgeDay4Value);
+                mEdgeDay[6] = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
+                mEdgeDay5Cur = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
+                Log.d(TAG, "Reloading homescreen");
+                //Log.d(TAG, mEdgeDay5Cur);
+                //Calendar.Friday equals 6, thursday equals 5, use this in the future with the edgeday arrays
+                int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+                if (dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY && !mEdgeDay[dayOfWeek].toLowerCase().contains("undefined") && mEdgeDay[dayOfWeek] != null && !mEdgeDay[dayOfWeek].isEmpty()){
+                    Log.d(TAG, "Edge Class for today: " + mEdgeDay[dayOfWeek]);
+                    if (mEdgeDay[dayOfWeek].toLowerCase().contains(mDay[dayOfWeek].toLowerCase())) {
+                        setEdgeMessage(mEdgeDay[dayOfWeek]);
+                        setEdgeNotifications(parseEdgeTitle(mEdgeDay[dayOfWeek]), parseEdgeText(mEdgeDay[dayOfWeek]), parseEdgeSession(mEdgeDay[dayOfWeek]));
+                        }
+                } else if (dayOfWeek == Calendar.FRIDAY && mEdgeDay5Cur.contains(mDay[dayOfWeek]) && !mEdgeDay5Cur.toLowerCase().contains("undefined")){
+                    Log.d(TAG, "setting edge message for friday");
+                    setEdgeMessage(mEdgeDay5Cur);
+                    setEdgeNotifications(parseEdgeTitle(mEdgeDay5Cur), parseEdgeText(mEdgeDay5Cur), parseEdgeSession(mEdgeDay5Cur));
+                }
+            } else if (!inEdgeView) {
                 refresh = true;
                 loggedIn = false;
                 mLoginPage.loadUrl("about:blank");
@@ -443,16 +465,18 @@ public class MainActivity extends AppCompatActivity
         } else {
             webSettings.setLoadsImagesAutomatically(true);
         }
-        if (inEdge) {
+        if (inEdge && id != R.id.nav_signup) {
             EdgeSignupActivity.save = true;
             EdgeSignupActivity.getEdgeClasses();
+            loadPreferences();
         }
-        if (inEdgeView){
+        if (inEdgeView && id != R.id.nav_schedule && id != R.id.nav_gear && id != R.id.nav_settings && id != R.id.nav_feedback){
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.remove(EdgeViewActivityFragment);
             transaction.commit();
+            loadPreferences();
         }
-        if (id != R.id.nav_schedule && id != R.id.nav_signup && (inEdge || inEdgeView) && id != R.id.nav_schedule && id != R.id.nav_gear && id != R.id.nav_settings && id != R.id.nav_feedback){
+        if (id != R.id.nav_schedule && id != R.id.nav_signup && (inEdge || inEdgeView) && id != R.id.nav_gear && id != R.id.nav_settings && id != R.id.nav_feedback){
             fragmentFrame.setVisibility(View.INVISIBLE);
             contentMain.setVisibility(VISIBLE);
             inEdge = false;
@@ -814,17 +838,17 @@ public class MainActivity extends AppCompatActivity
             editor.putString(PREF_PASSWORD, passwordValue);
         }
         editor.putBoolean(PREF_PREMEM, pRememValue);
-        editor.putString(PREF_EDGE1, mEdgeDay[2]);
+        /*editor.putString(PREF_EDGE1, mEdgeDay[2]);
         editor.putString(PREF_EDGE2, mEdgeDay[3]);
         editor.putString(PREF_EDGE3, mEdgeDay[4]);
         editor.putString(PREF_EDGE4, mEdgeDay[5]);
         editor.putString(PREF_EDGE5, mEdgeDay[6]);
-        editor.putString(PREF_EDGE5Cur, mEdgeDay5Cur);
+        editor.putString(PREF_EDGE5Cur, mEdgeDay5Cur);*/
         editor.putString("fullName", fullName);
         editor.apply();
     }
 
-    public void loadPreferences() {
+    private void loadPreferences() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O && mLoginPage != null) {
             WebSettings webSettings = mLoginPage.getSettings();
             webSettings.setJavaScriptEnabled(true);

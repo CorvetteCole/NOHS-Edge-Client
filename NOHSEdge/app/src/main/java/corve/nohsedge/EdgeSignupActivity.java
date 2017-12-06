@@ -320,18 +320,23 @@ public class EdgeSignupActivity extends Fragment {
     }
 
     private void savePreferences() {
-        Log.d(TAG, "Saving edge classes");
-        //SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        SharedPreferences.Editor editor = settings.edit();
-        // Edit and commit
-        editor.putString(PREF_EDGE5Cur, edgeDay5Cur);
-        editor.putString(PREF_EDGE1, edgeDay[2]);
-        editor.putString(PREF_EDGE2, edgeDay[3]);
-        editor.putString(PREF_EDGE3, edgeDay[4]);
-        editor.putString(PREF_EDGE4, edgeDay[5]);
-        editor.putString(PREF_EDGE5, edgeDay[6]);
-        //mEdgePage.loadUrl("about:blank");
-        editor.commit();
+        if (edgeLoaded) {
+            Log.d(TAG, "Saving edge classes");
+            //SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            SharedPreferences.Editor editor = settings.edit();
+            // Edit and commit
+            editor.putString(PREF_EDGE5Cur, edgeDay5Cur);
+            editor.putString(PREF_EDGE1, edgeDay[2]);
+            editor.putString(PREF_EDGE2, edgeDay[3]);
+            editor.putString(PREF_EDGE3, edgeDay[4]);
+            editor.putString(PREF_EDGE4, edgeDay[5]);
+            editor.putString(PREF_EDGE5, edgeDay[6]);
+            //mEdgePage.loadUrl("about:blank");
+            editor.commit();
+        } else {
+            Log.d(TAG, "Not loaded, saving skipped");
+        }
+
     }
 
     private void updateLoading(){
@@ -343,7 +348,7 @@ public class EdgeSignupActivity extends Fragment {
 
         new Thread() {
             public void run() {
-                while (loadingProgress < 100 && getActivity() != null) {
+                while (loadingProgress < 96 && getActivity() != null) {
                     try {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override

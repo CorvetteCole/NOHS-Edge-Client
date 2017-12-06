@@ -44,7 +44,7 @@ public class EdgeReceiver extends BroadcastReceiver {
         String Title=(mSharedPreference.getString("TITLE", "Title"));
         String Text=(mSharedPreference.getString("TEXT", "Text"));
         int reqCode = 0;
-        Intent intent = new Intent(context, EdgeViewActivity.class);
+        Intent intent = new Intent(context, MainActivity.class);
         PendingIntent pi = PendingIntent.getActivity(context, reqCode, intent, 0);
 
 
