@@ -1,6 +1,7 @@
 package corve.nohsedge;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,7 +36,7 @@ import static corve.nohsedge.MainActivity.PREF_EDGE5Cur;
 
 public class EdgeViewActivity extends android.support.v4.app.Fragment {
     @NonNull
-    private String[] EdgeDay = new String[5];
+    private static String[] EdgeDay = new String[5];
     private ListView mList;
     @NonNull
     public static String[] EdgeTitle = new String[5];
@@ -52,7 +53,7 @@ public class EdgeViewActivity extends android.support.v4.app.Fragment {
         View RootView = inflater.inflate(R.layout.activity_edge_view, container, false);
         //setContentView(R.layout.activity_edge_view);
         mList = RootView.findViewById(R.id.listview);
-        loadPreferences();
+        loadPreferences(getActivity());
         setHasOptionsMenu(true);
         return RootView;
     }
@@ -96,7 +97,7 @@ public class EdgeViewActivity extends android.support.v4.app.Fragment {
                             editor.putString(PREF_EDGE5Cur, "");
                             editor.commit();
                             dialog.cancel();
-                            loadPreferences();
+                            loadPreferences(getActivity());
                         }
                     });
 
@@ -112,12 +113,11 @@ public class EdgeViewActivity extends android.support.v4.app.Fragment {
             alert11.show();
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
-    public void loadPreferences() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
+    public void loadPreferences(Context context) {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
 
         // Get value
         EdgeDay[0] = settings.getString(PREF_EDGE1, DefaultEdgeDay1Value);
@@ -144,10 +144,10 @@ public class EdgeViewActivity extends android.support.v4.app.Fragment {
             }
             i++;
         }
-        setList();
+        setList(context);
     }
 
-    private boolean isAfterEdgeClass(@NonNull String EdgeSession){
+    private static boolean isAfterEdgeClass(@NonNull String EdgeSession){
         boolean after = false;
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
@@ -171,7 +171,7 @@ public class EdgeViewActivity extends android.support.v4.app.Fragment {
     }
 
     @NonNull
-    public String parseEdgeDate (int i){
+    public static String parseEdgeDate(int i){
         String date = "N/A";
         switch(i){
             case 0:
@@ -193,7 +193,7 @@ public class EdgeViewActivity extends android.support.v4.app.Fragment {
         return date;
     }
     @NonNull
-    public String parseEdgeTitle(@NonNull String EdgeString) {
+    public static String parseEdgeTitle(@NonNull String EdgeString) {
         if (EdgeString.toLowerCase().contains("h3")) {
             EdgeString = EdgeString.substring(EdgeString.indexOf(">") + 1);
             EdgeString = EdgeString.substring(0, EdgeString.indexOf("</h3>"));
@@ -205,7 +205,7 @@ public class EdgeViewActivity extends android.support.v4.app.Fragment {
     }
 
     @NonNull
-    public String parseEdgeTime(@NonNull String EdgeString) {
+    public static String parseEdgeTime(@NonNull String EdgeString) {
         String session = "";
         if (EdgeString.toLowerCase().contains("12:43")) {
             session = "12:43";
@@ -217,7 +217,7 @@ public class EdgeViewActivity extends android.support.v4.app.Fragment {
     }
 
     @NonNull
-    public String parseEdgeText(@NonNull String EdgeString) {
+    public static String parseEdgeText(@NonNull String EdgeString) {
         if (EdgeString.toLowerCase().contains("g>")) {
             EdgeString = EdgeString.substring(EdgeString.indexOf("g>") + 2);
             EdgeString = EdgeString.substring(0, EdgeString.indexOf("</"));
@@ -227,7 +227,7 @@ public class EdgeViewActivity extends android.support.v4.app.Fragment {
         return EdgeString;
     }
 
-    public void setList() {
+    public void setList(Context context) {
         int i = 0;
         while (i <= 4) {
             Log.d("EdgeTitle" + i, EdgeTitle[i]);
@@ -235,7 +235,7 @@ public class EdgeViewActivity extends android.support.v4.app.Fragment {
             i++;
         }
 
-        mList.setAdapter(new EdgeBaseAdapter(getActivity(), EdgeTitle, EdgeText, EdgeTime, EdgeDate));
+        mList.setAdapter(new EdgeBaseAdapter(context, EdgeTitle, EdgeText, EdgeTime, EdgeDate));
 
         }
 

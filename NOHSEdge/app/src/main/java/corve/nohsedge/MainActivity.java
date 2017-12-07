@@ -65,7 +65,6 @@ import static android.view.View.VISIBLE;
 import static corve.nohsedge.EdgeSignupActivity.classSelected;
 import static corve.nohsedge.EdgeSignupActivity.exit;
 import static corve.nohsedge.EdgeSignupActivity.loadingProgress;
-import static corve.nohsedge.EdgeSignupActivity.mEdgePage;
 import static corve.nohsedge.EdgeSignupActivity.showPage;
 
 
@@ -155,7 +154,7 @@ public class MainActivity extends AppCompatActivity
     private android.support.v4.app.Fragment EdgeViewActivityFragment = new EdgeViewActivity();
     private FrameLayout fragmentFrame;
     private ConstraintLayout contentMain;
-    private boolean inEdgeView = false, inEdgeShortcut = false;
+    static boolean inEdgeView = false, inEdgeShortcut = false;
 
 
     @Override
@@ -167,10 +166,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onPause() {
         super.onPause();
-        if (inEdge) {
+        /*if (inEdge) {
             EdgeSignupActivity.save = true;
-            EdgeSignupActivity.getEdgeClasses();
-        } else if (inEdgeShortcut){
+            EdgeSignupActivity.getEdgeClasses(mEdgePage);
+        } else */if (inEdgeShortcut){
             finish();
         }
         savePreferences();
@@ -207,6 +206,7 @@ public class MainActivity extends AppCompatActivity
             mEdgeTimeConst = findViewById(R.id.edgeTimeTextView);
             fragmentFrame = findViewById(R.id.fragmentFrame);
             contentMain = findViewById(R.id.contentMain);
+
             if (inEdgeView) {
                 Toolbar toolbar = findViewById(R.id.toolbar);
                 setSupportActionBar(toolbar);
@@ -335,14 +335,12 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         if (inEdge) {
-            if (classSelected && mEdgePage.canGoBack()) {
+            /*if (classSelected && mEdgePage.canGoBack()) {
+
                 mEdgePage.goBack();
                 mLoadingText.setText("Loading Edge Classes...");
                 classSelected = false;
-            } else if (!showPage && !exit) {
-                mEdgePage.getSettings().setJavaScriptEnabled(false);
-                mEdgePage.stopLoading();
-                mEdgePage.getSettings().setJavaScriptEnabled(true);
+            } else */if (!showPage && !exit && !classSelected) {
                 fragmentFrame.setVisibility(View.INVISIBLE);
                 contentMain.setVisibility(VISIBLE);
                 loadPreferences();
@@ -355,9 +353,6 @@ public class MainActivity extends AppCompatActivity
                 transaction.remove(EdgeSignupActivityFragment);
                 transaction.commit();
             } else if (exit) {
-                mEdgePage.getSettings().setJavaScriptEnabled(false);
-                mEdgePage.stopLoading();
-                mEdgePage.getSettings().setJavaScriptEnabled(true);
                 fragmentFrame.setVisibility(View.INVISIBLE);
                 contentMain.setVisibility(VISIBLE);
                 loadPreferences();
@@ -403,18 +398,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh) {
-            if (inEdge) {
-                uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
-                mEdgePage.loadUrl("http://api.superfanu.com/6.0.0/gen/link_track.php?platform=Web:%20chrome&uuid=" + uuid + "&nid=305&lkey=nohsstampede-edgetime-module");
-                EdgeSignupActivity.doneLoading = 0;
-                EdgeSignupActivity.edgeLoaded = false;
-                EdgeSignupActivity.classSelected = false;
-                EdgeSignupActivity.mEdgeLoadingCircle.setVisibility(VISIBLE);
-                EdgeSignupActivity.mEdgeLoadingText.setText("Getting Edge Classes...");
-                EdgeSignupActivity.mEdgeLoadingText.setVisibility(VISIBLE);
-                EdgeSignupActivity.mEdgePage.setVisibility(View.INVISIBLE);
-                EdgeSignupActivity.loadingProgress = 0;
-            } else if (atHome){
+            if (atHome){
                 SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
                 mEdgeDay[2] = settings.getString(PREF_EDGE1, DefaultEdgeDay1Value);
                 mEdgeDay[3] = settings.getString(PREF_EDGE2, DefaultEdgeDay2Value);
@@ -437,7 +421,7 @@ public class MainActivity extends AppCompatActivity
                     setEdgeMessage(mEdgeDay5Cur);
                     setEdgeNotifications(parseEdgeTitle(mEdgeDay5Cur), parseEdgeText(mEdgeDay5Cur), parseEdgeSession(mEdgeDay5Cur));
                 }
-            } else if (!inEdgeView) {
+            } else if (!inEdge && !inEdgeView) {
                 refresh = true;
                 loggedIn = false;
                 mLoginPage.loadUrl("about:blank");
@@ -467,7 +451,9 @@ public class MainActivity extends AppCompatActivity
         }
         if (inEdge && id != R.id.nav_signup) {
             EdgeSignupActivity.save = true;
-            EdgeSignupActivity.getEdgeClasses();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.remove(EdgeSignupActivityFragment);
+            transaction.commit();
             loadPreferences();
         }
         if (inEdgeView && id != R.id.nav_schedule && id != R.id.nav_gear && id != R.id.nav_settings && id != R.id.nav_feedback){
