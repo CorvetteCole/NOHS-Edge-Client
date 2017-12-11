@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,7 +62,6 @@ public class EdgeSignupActivity extends Fragment {
     public void onPause(){
         super.onPause();
         Log.d(TAG, "Fragment paused... saving edge classes");
-        getEdgeClasses(mEdgePage);
         savePreferences();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             mEdgePage.loadUrl("about:blank");
@@ -82,22 +83,27 @@ public class EdgeSignupActivity extends Fragment {
         }
     }*/
 
-    //atm doesn't actually work
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.action_bar_buttons, menu);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh) {
-            mEdgePage.loadUrl("http://api.superfanu.com/6.0.0/gen/link_track.php?platform=Web:%20chrome&uuid=" + uuid + "&nid=305&lkey=nohsstampede-edgetime-module");
-            EdgeSignupActivity.doneLoading = 0;
-            EdgeSignupActivity.edgeLoaded = false;
-            EdgeSignupActivity.classSelected = false;
+            doneLoading = 0;
+            edgeLoaded = false;
+            classSelected = false;
             mEdgeLoadingCircle.setVisibility(VISIBLE);
             mEdgeLoadingText.setText("Getting Edge Classes...");
             mEdgeLoadingText.setVisibility(VISIBLE);
             mEdgePage.setVisibility(View.INVISIBLE);
             EdgeSignupActivity.loadingProgress = 0;
+            openEdgepage();
         }
         return true;
     }
@@ -137,6 +143,7 @@ public class EdgeSignupActivity extends Fragment {
         edgeDayFriday[0] = "notSet";
         edgeDayFriday[1] = "notSet";
         Log.d(TAG, "Clearing edgeDay Array");
+        classesRetrieved = false;
         for (int i = 0; i < edgeDay.length; i++){
             edgeDay[i] = "";
         }
@@ -164,11 +171,12 @@ public class EdgeSignupActivity extends Fragment {
                         case KeyEvent.KEYCODE_BACK:
                             if (!classSelected){
                                 getActivity().onBackPressed();
-                            } else if(webView.canGoBack() && classSelected)
+                            } else if (webView.canGoBack() && classSelected)
                             {
                                 webView.goBack();
                                 mEdgeLoadingText.setText("Loading Edge Classes...");
                                 classSelected = false;
+                                getEdgeClasses(mEdgePage);
                             }
                             break;
                     }
@@ -234,9 +242,9 @@ public class EdgeSignupActivity extends Fragment {
                         mEdgePage.setVisibility(VISIBLE);
                         mEdgeLoadingCircle.setVisibility(View.INVISIBLE);
                         mEdgeLoadingText.setVisibility(View.INVISIBLE);
-                    } else if (!classesRetrieved){
+                    } /*else if (!classesRetrieved){
                         getEdgeClasses(mEdgePage);
-                    }
+                    }*/
                     edgeLoaded = true;
                     getEdgeClasses(mEdgePage);
 
@@ -314,7 +322,9 @@ public class EdgeSignupActivity extends Fragment {
                 mEdgeLoadingText.setText("Loading Edge Class...");
                 if (save){
                     savePreferences();
+                    mEdgePage.getSettings().setJavaScriptEnabled(false);
                     mEdgePage.stopLoading();
+                    mEdgePage.getSettings().setJavaScriptEnabled(true);
                 }
                 if (!showPage && !backPressed) {
                     savePreferences();
@@ -322,7 +332,7 @@ public class EdgeSignupActivity extends Fragment {
                     getActivity().onBackPressed();
                     backPressed = true;
                 }
-            } else if (exit && !backPressed){
+            } else if (exit && !backPressed) {
                 savePreferences();
                 //mEdgePage.loadUrl("about:blank");
                 getActivity().onBackPressed();
@@ -382,7 +392,7 @@ public class EdgeSignupActivity extends Fragment {
     }
 
     private void savePreferences() {
-        if (edgeLoaded) {
+        if (classesRetrieved) {
             Log.d(TAG, "Saving edge classes");
             //SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
             SharedPreferences.Editor editor = settings.edit();

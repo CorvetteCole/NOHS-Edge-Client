@@ -449,7 +449,8 @@ public class MainActivity extends AppCompatActivity
         } else {
             webSettings.setLoadsImagesAutomatically(true);
         }
-        if (inEdge && id != R.id.nav_signup) {
+
+        /*if (inEdge && id != R.id.nav_signup) {
             EdgeSignupActivity.save = true;
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.remove(EdgeSignupActivityFragment);
@@ -461,8 +462,19 @@ public class MainActivity extends AppCompatActivity
             transaction.remove(EdgeViewActivityFragment);
             transaction.commit();
             loadPreferences();
-        }
-        if (id != R.id.nav_schedule && id != R.id.nav_signup && (inEdge || inEdgeView) && id != R.id.nav_gear && id != R.id.nav_settings && id != R.id.nav_feedback){
+        }*/
+        if ((inEdge || inEdgeView) && id != R.id.nav_gear && id != R.id.nav_settings && id != R.id.nav_feedback){
+            if (inEdge && id != R.id.nav_signup){
+                EdgeSignupActivity.save = true;
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.remove(EdgeSignupActivityFragment);
+                transaction.commit();
+            } else if (id != R.id.nav_schedule) {
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.remove(EdgeViewActivityFragment);
+                transaction.commit();
+            }
+            loadPreferences();
             fragmentFrame.setVisibility(View.INVISIBLE);
             contentMain.setVisibility(VISIBLE);
             inEdge = false;
@@ -470,6 +482,9 @@ public class MainActivity extends AppCompatActivity
         }
         if (id == R.id.nav_schedule) {
             getSupportActionBar().setTitle("Edge Schedule");
+            mLoginPage.getSettings().setJavaScriptEnabled(false);
+            mLoginPage.stopLoading();
+            mLoginPage.getSettings().setJavaScriptEnabled(true);
             contentMain.setVisibility(View.INVISIBLE);
             fragmentFrame.setVisibility(View.VISIBLE);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -482,23 +497,25 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);*/
 
         } else if (id == R.id.nav_signup) {
+            EdgeSignupActivity.save = false;
             EdgeSignupActivity.loadingProgress = 0;
             EdgeSignupActivity.doneLoading = 0;
             getSupportActionBar().setTitle("Edge Sign up");
-            contentMain.setVisibility(View.INVISIBLE);
-            fragmentFrame.setVisibility(View.VISIBLE);
             EdgeSignupActivity.showPage = true;
             //drawerClose = false;
             inEdge = true;
             uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                webSettings.setJavaScriptEnabled(false);
+                mLoginPage.getSettings().setJavaScriptEnabled(false);
                 mLoginPage.stopLoading();
+                mLoginPage.getSettings().setJavaScriptEnabled(true);
                 //mLoginPage.loadUrl("about:blank");
             }
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragmentFrame, EdgeSignupActivityFragment);
             transaction.commit();
+            contentMain.setVisibility(View.INVISIBLE);
+            fragmentFrame.setVisibility(View.VISIBLE);
 
         } else if (id == R.id.nav_gear){
             drawerClose = false;
