@@ -2,7 +2,6 @@ package corve.nohsedge;
 
 
 import android.app.AlarmManager;
-import android.app.Fragment;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,7 +10,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Icon;
@@ -36,7 +34,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -52,6 +49,15 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.apache.commons.io.FileUtils;
 
@@ -69,7 +75,7 @@ import static corve.nohsedge.EdgeSignupActivity.showPage;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener{
 
     static final String PREFS_NAME = "preferences";
     static final String PREF_UNAME = "Username";
@@ -155,6 +161,8 @@ public class MainActivity extends AppCompatActivity
     private FrameLayout fragmentFrame;
     private ConstraintLayout contentMain;
     static boolean inEdgeView = false, inEdgeShortcut = false;
+    private FirebaseAuth mAuth;
+    private DatabaseReference mDatabase;
 
 
     @Override
@@ -279,6 +287,11 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
+        //Firebase stuff
+        mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+
 
     }
     private void setupDrawer(){
@@ -330,6 +343,13 @@ public class MainActivity extends AppCompatActivity
             Log.d(TAG, "getCookie failed!" + e);
             return null;
         }
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        //FirebaseUser currentUser = mAuth.getCurrentUser();
+        //do something to sync edge classes maybe
     }
 
     @Override
@@ -697,11 +717,15 @@ public class MainActivity extends AppCompatActivity
                 }
                 if ((cm.message().contains("\"ok\"")) && (cm.message().toLowerCase().contains(unameValue.toLowerCase())) && !loggedIn) {
                     loggedIn = true;
+
                     if (!refresh) {
                         setupDrawer();
                         setHeaderDetails(cm.message());
                         setWelcomeVisible(true);
                         mLoadingCircle.setVisibility(View.INVISIBLE);
+                        //Firebase doesn't support purely username based login. So I append my domain name at the end to solve this
+                        Log.d(TAG, "username: " + unameValue + "  password: " + passwordValue);
+                        initiateFirebaseLogin(unameValue + "@coleg.tk", passwordValue);
                         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
                         SharedPreferences.Editor editor = settings.edit();
                         editor.putBoolean("invalid", false);
@@ -1119,6 +1143,50 @@ public class MainActivity extends AppCompatActivity
         protected void onPostExecute(Bitmap result) {
             bmImage.setImageBitmap(result);
         }
+    }
+
+    private void initiateFirebaseLogin(final String email, final String password){
+        mAuth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(TAG, "signInWithEmail:success");
+                        Toast.makeText(MainActivity.this, "Firebase login worked!",
+                                Toast.LENGTH_SHORT).show();
+                        FirebaseUser user = mAuth.getCurrentUser();
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w(TAG, "signInWithEmail:failure", task.getException());
+                        Toast.makeText(MainActivity.this, "Firebase login failed",
+                                Toast.LENGTH_SHORT).show();
+                        createFirebaseUser(email, password);
+
+                    }
+                }
+            });
+    }
+
+    private void createFirebaseUser(String email, String password){
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "createUserWithEmail:success");
+                            Toast.makeText(MainActivity.this, "Firebase sign up worked!",
+                                    Toast.LENGTH_SHORT).show();
+                            FirebaseUser user = mAuth.getCurrentUser();
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                            Toast.makeText(MainActivity.this, "Firebase sign up failed",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 }
 
