@@ -450,19 +450,10 @@ public class MainActivity extends AppCompatActivity
             webSettings.setLoadsImagesAutomatically(true);
         }
 
-        /*if (inEdge && id != R.id.nav_signup) {
-            EdgeSignupActivity.save = true;
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.remove(EdgeSignupActivityFragment);
-            transaction.commit();
-            loadPreferences();
+        if (id != R.id.nav_homescreen && id != R.id.nav_schedule && id != R.id.nav_signup && id != R.id.nav_gear && id != R.id.nav_settings && id != R.id.nav_feedback && mLoginPage.getVisibility() == View.INVISIBLE){
+            mLoginPage.setVisibility(VISIBLE);
+
         }
-        if (inEdgeView && id != R.id.nav_schedule && id != R.id.nav_gear && id != R.id.nav_settings && id != R.id.nav_feedback){
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.remove(EdgeViewActivityFragment);
-            transaction.commit();
-            loadPreferences();
-        }*/
         if ((inEdge || inEdgeView) && id != R.id.nav_gear && id != R.id.nav_settings && id != R.id.nav_feedback){
             if (inEdge && id != R.id.nav_signup){
                 EdgeSignupActivity.save = true;
@@ -500,6 +491,7 @@ public class MainActivity extends AppCompatActivity
             EdgeSignupActivity.save = false;
             EdgeSignupActivity.loadingProgress = 0;
             EdgeSignupActivity.doneLoading = 0;
+            EdgeSignupActivity.classesRetrieved = false;
             getSupportActionBar().setTitle("Edge Sign up");
             EdgeSignupActivity.showPage = true;
             //drawerClose = false;
@@ -542,7 +534,7 @@ public class MainActivity extends AppCompatActivity
             if (!mLoginPage.getUrl().contains(currentPage)) {
                 mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
             }
-            mLoginPage.setVisibility(VISIBLE);
+            //mLoginPage.setVisibility(VISIBLE);
             setWelcomeVisible(false);
 
         } else if (id == R.id.nav_settings) {
@@ -553,7 +545,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_homescreen){
             getSupportActionBar().setTitle("Home");
             atHome = true;
-            mLoginPage.setVisibility(View.INVISIBLE);
+            //mLoginPage.setVisibility(View.INVISIBLE);
             setWelcomeVisible(true);
 
         } else if (id == R.id.nav_notifications){
@@ -562,12 +554,12 @@ public class MainActivity extends AppCompatActivity
             if (!mLoginPage.getUrl().contains(currentPage)) {
                 mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
             }
-            mLoginPage.setVisibility(VISIBLE);
+            //mLoginPage.setVisibility(VISIBLE);
             setWelcomeVisible(false);
 
         } else if (id == R.id.nav_events){
             getSupportActionBar().setTitle("Events");
-            mLoginPage.setVisibility(VISIBLE);
+            //mLoginPage.setVisibility(VISIBLE);
             currentPage = "events";
             if (!mLoginPage.getUrl().contains(currentPage)) {
                 mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
@@ -576,7 +568,7 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_leaderboard){
             getSupportActionBar().setTitle("Leaderboard");
-            mLoginPage.setVisibility(VISIBLE);
+            //mLoginPage.setVisibility(VISIBLE);
             currentPage = "leaderboard";
             if (!mLoginPage.getUrl().contains(currentPage)) {
                 mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
@@ -587,7 +579,7 @@ public class MainActivity extends AppCompatActivity
             getSupportActionBar().setTitle("Fancam");
             mLoginPage.getSettings().setBuiltInZoomControls(true);
             mLoginPage.getSettings().setDisplayZoomControls(false);
-            mLoginPage.setVisibility(VISIBLE);
+            //mLoginPage.setVisibility(VISIBLE);
             currentPage = "fancam";
             if (!mLoginPage.getUrl().contains(currentPage)) {
                 mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);

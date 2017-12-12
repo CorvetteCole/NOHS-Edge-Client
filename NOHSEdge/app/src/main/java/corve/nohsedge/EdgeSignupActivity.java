@@ -48,7 +48,7 @@ public class EdgeSignupActivity extends Fragment {
     private String[] edgeDayFriday = new String[2];
     private String edgeDay5Cur = "";
     static boolean classSelected = false, edgeLoaded = false, exit = false;
-    private boolean classesRetrieved = false;
+    static boolean classesRetrieved = false;
     private long timeElapsed, previousTime = 0, time;
     static int doneLoading = 0;
     Button mSkipButton;
