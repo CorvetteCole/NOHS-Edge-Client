@@ -1153,14 +1153,14 @@ public class MainActivity extends AppCompatActivity
                     if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d(TAG, "signInWithEmail:success");
-                        Toast.makeText(MainActivity.this, "Firebase login worked!",
-                                Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MainActivity.this, "Firebase login worked!",
+                        //        Toast.LENGTH_SHORT).show();
                         FirebaseUser user = mAuth.getCurrentUser();
                     } else {
                         // If sign in fails, display a message to the user.
-                        Log.w(TAG, "signInWithEmail:failure", task.getException());
-                        Toast.makeText(MainActivity.this, "Firebase login failed",
-                                Toast.LENGTH_SHORT).show();
+                        Log.v(TAG, "signInWithEmail:failure", task.getException());
+                        //Toast.makeText(MainActivity.this, "Firebase login failed",
+                        //        Toast.LENGTH_SHORT).show();
                         createFirebaseUser(email, password);
 
                     }
@@ -1176,12 +1176,12 @@ public class MainActivity extends AppCompatActivity
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
-                            Toast.makeText(MainActivity.this, "Firebase sign up worked!",
-                                    Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(MainActivity.this, "Firebase sign up worked!",
+                            //        Toast.LENGTH_SHORT).show();
                             FirebaseUser user = mAuth.getCurrentUser();
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                            Log.v(TAG, "createUserWithEmail:failure", task.getException());
                             Toast.makeText(MainActivity.this, "Firebase sign up failed",
                                     Toast.LENGTH_SHORT).show();
                         }
