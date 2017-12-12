@@ -565,7 +565,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_homescreen){
             getSupportActionBar().setTitle("Home");
             atHome = true;
-            //mLoginPage.setVisibility(View.INVISIBLE);
+            mLoginPage.setVisibility(View.INVISIBLE);
             setWelcomeVisible(true);
 
         } else if (id == R.id.nav_notifications){
