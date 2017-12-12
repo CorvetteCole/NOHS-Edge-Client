@@ -162,7 +162,6 @@ public class MainActivity extends AppCompatActivity
     private ConstraintLayout contentMain;
     static boolean inEdgeView = false, inEdgeShortcut = false;
     private FirebaseAuth mAuth;
-    private DatabaseReference mDatabase;
 
 
     @Override
@@ -178,9 +177,13 @@ public class MainActivity extends AppCompatActivity
             EdgeSignupActivity.save = true;
             EdgeSignupActivity.getEdgeClasses(mEdgePage);
         } else */if (inEdgeShortcut){
+            Log.d(TAG, "I've got crippling depression");
             finish();
+            inEdgeView = false;
+        } else {
+            saveEdgeToFirebase(mEdgeDay, mEdgeDay5Cur);
+            savePreferences();
         }
-        savePreferences();
     }
     @Override
     public void onStop() {
@@ -289,7 +292,7 @@ public class MainActivity extends AppCompatActivity
         }
         //Firebase stuff
         mAuth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
 
 
@@ -360,7 +363,7 @@ public class MainActivity extends AppCompatActivity
                 mEdgePage.goBack();
                 mLoadingText.setText("Loading Edge Classes...");
                 classSelected = false;
-            } else */if (!showPage && !exit && !classSelected) {
+            } else if (!showPage && !exit && !classSelected) {*/
                 fragmentFrame.setVisibility(View.INVISIBLE);
                 contentMain.setVisibility(VISIBLE);
                 loadPreferences();
@@ -372,7 +375,9 @@ public class MainActivity extends AppCompatActivity
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                 transaction.remove(EdgeSignupActivityFragment);
                 transaction.commit();
-            } else if (exit) {
+                saveEdgeToFirebase(mEdgeDay, mEdgeDay5Cur);
+
+            /*} else if (exit) {
                 fragmentFrame.setVisibility(View.INVISIBLE);
                 contentMain.setVisibility(VISIBLE);
                 loadPreferences();
@@ -384,7 +389,7 @@ public class MainActivity extends AppCompatActivity
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                 transaction.remove(EdgeSignupActivityFragment);
                 transaction.commit();
-            }
+            }*/
         } else {
             DrawerLayout drawer = findViewById(R.id.drawer_layout);
             if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -1029,9 +1034,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     public static String parseEdgeTitle(String EdgeString) {
-        EdgeString = EdgeString.substring(EdgeString.indexOf(">") + 1);
-        EdgeString = EdgeString.substring(0, EdgeString.indexOf("</h3>"));
-        return EdgeString;
+        try {
+            EdgeString = EdgeString.substring(EdgeString.indexOf(">") + 1);
+            EdgeString = EdgeString.substring(0, EdgeString.indexOf("</h3>"));
+            return EdgeString;
+        } catch (Exception e) {
+            return "unscheduled";
+        }
     }
 
     public static int parseEdgeSession(@NonNull String EdgeString) {
@@ -1046,9 +1055,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     public static String parseEdgeText(String EdgeString) {
-        EdgeString = EdgeString.substring(EdgeString.indexOf("g>") + 2);
-        EdgeString = EdgeString.substring(0, EdgeString.indexOf("</"));
-        return EdgeString;
+        try {
+            EdgeString = EdgeString.substring(EdgeString.indexOf("g>") + 2);
+            EdgeString = EdgeString.substring(0, EdgeString.indexOf("</"));
+            return EdgeString;
+        } catch (Exception e){
+            return "unscheduled";
+        }
     }
 
     private void setHeaderDetails(@NonNull String message){
@@ -1080,15 +1093,19 @@ public class MainActivity extends AppCompatActivity
     }
 
     @NonNull
-    public String parseEdgeTime(@NonNull String EdgeString) {
-        String time = "";
-        if (EdgeString.toLowerCase().contains("12:43")) {
-            time = "12:43";
+    public static String parseEdgeTime(String EdgeString) {
+        String time = "unscheduled";
+        try {
+            if (EdgeString.toLowerCase().contains("12:43")) {
+                time = "12:43";
+            }
+            if (EdgeString.toLowerCase().contains("1:09")) {
+                time = "1:09";
+            }
+            return time;
+        } catch (Exception e) {
+            return time;
         }
-        if (EdgeString.toLowerCase().contains("1:09")) {
-            time = "1:09";
-        }
-        return time;
     }
 
     private void setWelcomeVisible(Boolean visible){
@@ -1156,6 +1173,7 @@ public class MainActivity extends AppCompatActivity
                         //Toast.makeText(MainActivity.this, "Firebase login worked!",
                         //        Toast.LENGTH_SHORT).show();
                         FirebaseUser user = mAuth.getCurrentUser();
+                        saveEdgeToFirebase(mEdgeDay, mEdgeDay5Cur);
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.v(TAG, "signInWithEmail:failure", task.getException());
@@ -1166,6 +1184,23 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
             });
+    }
+
+    static void saveEdgeToFirebase(String[] edge, String friEdge){
+        int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        if (dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY){
+            mDatabase.child("users").child(unameValue).child("Edge").child("Title").setValue(parseEdgeTitle(edge[dayOfWeek]));
+            mDatabase.child("users").child(unameValue).child("Edge").child("Time").setValue(parseEdgeTime(edge[dayOfWeek]));
+            mDatabase.child("users").child(unameValue).child("Edge").child("Teacher").setValue(parseEdgeText(edge[dayOfWeek]));
+        } else if (dayOfWeek == Calendar.FRIDAY){
+            mDatabase.child("users").child(unameValue).child("Edge").child("Title").setValue(parseEdgeTitle(friEdge));
+            mDatabase.child("users").child(unameValue).child("Edge").child("Time").setValue(parseEdgeTime(friEdge));
+            mDatabase.child("users").child(unameValue).child("Edge").child("Teacher").setValue(parseEdgeText(friEdge));
+        }
+        mDatabase.child("users").child(unameValue).child("Edge").child("Day").setValue(mDay[dayOfWeek]);
+        //mDatabase.child("users").child(unameValue).child("Name").setValue(fullName);
     }
 
     private void createFirebaseUser(String email, String password){
