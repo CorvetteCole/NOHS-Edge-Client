@@ -29,6 +29,7 @@ import static corve.nohsedge.MainActivity.PREF_EDGE5;
 import static corve.nohsedge.MainActivity.PREF_EDGE5Cur;
 import static corve.nohsedge.MainActivity.PREF_MIN;
 import static corve.nohsedge.MainActivity.PREF_NOTIFYEDGE;
+import static corve.nohsedge.MainActivity.saveEdgeToFirebase;
 
 /**
  * Created by Cole on 9/18/2017.
@@ -64,6 +65,7 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
         String edgeDay5Cur = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
         notifyMinutes = settings.getInt(PREF_MIN, DefaultMinValue);
         NotificationEnabled = settings.getBoolean(PREF_NOTIFYEDGE, true);
+        saveEdgeToFirebase(mEdgeDay, edgeDay5Cur);
         int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         if (dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY){
             if (mEdgeDay[dayOfWeek].toLowerCase().contains(mDay[dayOfWeek].toLowerCase())) {
