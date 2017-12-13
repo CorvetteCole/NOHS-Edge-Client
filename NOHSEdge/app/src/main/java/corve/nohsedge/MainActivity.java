@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity
 
     static Boolean FirstLoadValue = true;
     private final Boolean DefaultFirstLoadValue = true;
-    private final String DefaultUnameValue = "";
+    static final String DefaultUnameValue = "";
     private final String DefaultPasswordValue = "";
     private final boolean DefaultPRememValue = true;
     private final boolean DefaultEdgeNotificationValue = true;
@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity
             finish();
             inEdgeView = false;
         } else {
-            saveEdgeToFirebase(mEdgeDay, mEdgeDay5Cur);
+            saveEdgeToFirebase(mEdgeDay, mEdgeDay5Cur, unameValue.toLowerCase());
             savePreferences();
         }
     }
@@ -375,7 +375,7 @@ public class MainActivity extends AppCompatActivity
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                 transaction.remove(EdgeSignupActivityFragment);
                 transaction.commit();
-                saveEdgeToFirebase(mEdgeDay, mEdgeDay5Cur);
+                saveEdgeToFirebase(mEdgeDay, mEdgeDay5Cur, unameValue.toLowerCase());
 
             /*} else if (exit) {
                 fragmentFrame.setVisibility(View.INVISIBLE);
@@ -1173,7 +1173,7 @@ public class MainActivity extends AppCompatActivity
                         //Toast.makeText(MainActivity.this, "Firebase login worked!",
                         //        Toast.LENGTH_SHORT).show();
                         FirebaseUser user = mAuth.getCurrentUser();
-                        saveEdgeToFirebase(mEdgeDay, mEdgeDay5Cur);
+                        saveEdgeToFirebase(mEdgeDay, mEdgeDay5Cur, unameValue.toLowerCase());
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.v(TAG, "signInWithEmail:failure", task.getException());
@@ -1186,21 +1186,21 @@ public class MainActivity extends AppCompatActivity
             });
     }
 
-    static void saveEdgeToFirebase(String[] edge, String friEdge){
+    static void saveEdgeToFirebase(String[] edge, String friEdge, String userName){
         int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
 
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         if (dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY){
-            mDatabase.child("users").child(unameValue).child("Edge").child("Title").setValue(parseEdgeTitle(edge[dayOfWeek]));
-            mDatabase.child("users").child(unameValue).child("Edge").child("Time").setValue(parseEdgeTime(edge[dayOfWeek]));
-            mDatabase.child("users").child(unameValue).child("Edge").child("Teacher").setValue(parseEdgeText(edge[dayOfWeek]));
+            mDatabase.child("users").child(userName).child("Edge").child("Title").setValue(parseEdgeTitle(edge[dayOfWeek]));
+            mDatabase.child("users").child(userName).child("Edge").child("Time").setValue(parseEdgeTime(edge[dayOfWeek]));
+            mDatabase.child("users").child(userName).child("Edge").child("Teacher").setValue(parseEdgeText(edge[dayOfWeek]));
         } else if (dayOfWeek == Calendar.FRIDAY){
-            mDatabase.child("users").child(unameValue).child("Edge").child("Title").setValue(parseEdgeTitle(friEdge));
-            mDatabase.child("users").child(unameValue).child("Edge").child("Time").setValue(parseEdgeTime(friEdge));
-            mDatabase.child("users").child(unameValue).child("Edge").child("Teacher").setValue(parseEdgeText(friEdge));
+            mDatabase.child("users").child(userName).child("Edge").child("Title").setValue(parseEdgeTitle(friEdge));
+            mDatabase.child("users").child(userName).child("Edge").child("Time").setValue(parseEdgeTime(friEdge));
+            mDatabase.child("users").child(userName).child("Edge").child("Teacher").setValue(parseEdgeText(friEdge));
         }
         mDatabase.child("users").child(unameValue).child("Edge").child("Day").setValue(mDay[dayOfWeek]);
-        //mDatabase.child("users").child(unameValue).child("Name").setValue(fullName);
+        //mDatabase.child("users").child(userName).child("Name").setValue(fullName);
     }
 
     private void createFirebaseUser(String email, String password){
