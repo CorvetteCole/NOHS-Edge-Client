@@ -1199,7 +1199,11 @@ public class MainActivity extends AppCompatActivity
             mDatabase.child("users").child(userName).child("Edge").child("Time").setValue(parseEdgeTime(friEdge));
             mDatabase.child("users").child(userName).child("Edge").child("Teacher").setValue(parseEdgeText(friEdge));
         }
-        mDatabase.child("users").child(unameValue).child("Edge").child("Day").setValue(mDay[dayOfWeek]);
+        if (unameValue.contains(".")){
+            mDatabase.child("users").child(unameValue.replaceAll("\\.", "-")).child("Edge").child("Day").setValue(mDay[dayOfWeek]);
+        } else {
+            mDatabase.child("users").child(unameValue).child("Edge").child("Day").setValue(mDay[dayOfWeek]);
+        }
         //mDatabase.child("users").child(userName).child("Name").setValue(fullName);
     }
 
