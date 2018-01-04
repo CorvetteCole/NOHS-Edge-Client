@@ -1199,12 +1199,19 @@ public class MainActivity extends AppCompatActivity
             mDatabase.child("users").child(userName).child("Edge").child("Time").setValue(parseEdgeTime(friEdge));
             mDatabase.child("users").child(userName).child("Edge").child("Teacher").setValue(parseEdgeText(friEdge));
         }
-        if (unameValue.contains(".")){
-            mDatabase.child("users").child(unameValue.replaceAll("\\.", "-")).child("Edge").child("Day").setValue(mDay[dayOfWeek]);
-        } else {
-            mDatabase.child("users").child(unameValue).child("Edge").child("Day").setValue(mDay[dayOfWeek]);
-        }
-        //mDatabase.child("users").child(userName).child("Name").setValue(fullName);
+       try {
+           if (userName.contains(".")) {
+               //Log.d(TAG, unameValue.replaceAll("\\.", "-"));
+               mDatabase.child("users").child(userName.replaceAll("\\.", "-")).child("Edge").child("Day").setValue(mDay[dayOfWeek]);
+           } else {
+               mDatabase.child("users").child(userName).child("Edge").child("Day").setValue(mDay[dayOfWeek]);
+           }
+           //mDatabase.child("users").child(userName).child("Name").setValue(fullName);
+       } catch (Exception e){
+            Log.e(TAG, "FireBase code threw an exception!");
+            Log.e(TAG, e.toString());
+            Log.e(TAG, "Original Username: " + userName + " Modified Username: " + userName.replaceAll("\\.", "-"));
+       }
     }
 
     private void createFirebaseUser(String email, String password){
