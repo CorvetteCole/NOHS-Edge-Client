@@ -357,7 +357,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        if (inEdge) {
+        if (inEdge && !showPage) {
             /*if (classSelected && mEdgePage.canGoBack()) {
 
                 mEdgePage.goBack();
@@ -396,11 +396,11 @@ public class MainActivity extends AppCompatActivity
                 drawer.closeDrawer(GravityCompat.START);
             }
             try {
-                if (mLoginPage.canGoBack()) {
+                if (mLoginPage.canGoBack() && !inEdge &&  !inEdgeView) {
                     mLoginPage.goBack();
-                } else {
+                } /*else {
                     super.onBackPressed();
-                }
+                }*/
             } catch (NullPointerException e) {
                 super.onBackPressed();
             }
