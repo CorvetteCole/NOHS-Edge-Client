@@ -45,8 +45,13 @@
             <item
                 android:id="@+id/nav_signup"
                 android:checkable="true"
-                android:icon="@drawable/ic_update"
+                android:icon="@drawable/ic_signin"
                 android:title="Edge Sign up"/>
+            <item
+                android:id="@+id/nav_signin"
+                android:checkable="false"
+                android:icon="@drawable/ic_input"
+                android:title="Edge Check in"/>
 
         <item android:title="Options">
             <menu>

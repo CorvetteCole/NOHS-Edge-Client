@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -41,10 +42,12 @@ public class EdgeReceiver extends BroadcastReceiver {
     public void showNotification(@NonNull Context context) {
 
         final SharedPreferences mSharedPreference= PreferenceManager.getDefaultSharedPreferences(context);
-        String Title=(mSharedPreference.getString("TITLE", "Title"));
-        String Text=(mSharedPreference.getString("TEXT", "Text"));
+        String Title = mSharedPreference.getString("TITLE", "Title") + " with " + mSharedPreference.getString("TEXT", "Text");
+        //String Text = mSharedPreference.getString("TEXT", "Text");
+        String Text = "Click here to sign in";
         int reqCode = 0;
-        Intent intent = new Intent(context, MainActivity.class);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse("https://docs.google.com/forms/d/e/1FAIpQLSdHTjMmxYnt6luiBD5u6lYhqNeEctKYUlHZ1mv8NsPrWtRmOQ/viewform"));
         PendingIntent pi = PendingIntent.getActivity(context, reqCode, intent, 0);
 
 
@@ -59,7 +62,7 @@ public class EdgeReceiver extends BroadcastReceiver {
             notificationChannel.enableLights(true);
             notificationChannel.setLightColor(colorAccent);
             notificationChannel.enableVibration(true);
-            notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+            notificationChannel.setVibrationPattern(new long[]{400, 400});
             notificationManager.createNotificationChannel(notificationChannel);
             Notification notification = new Notification.Builder(context)
                     .setContentTitle(Title)
@@ -69,6 +72,8 @@ public class EdgeReceiver extends BroadcastReceiver {
                     .setChannelId(channelId)
                     .setContentIntent(pi)
                     .setAutoCancel(true)
+                    .setWhen(System.currentTimeMillis())
+                    .setShowWhen(true)
                     .build();
             NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotificationManager.notify(reqCode, notification);
@@ -83,7 +88,9 @@ public class EdgeReceiver extends BroadcastReceiver {
                     .setContentIntent(pi)
                     .setColor(ContextCompat.getColor(context, R.color.colorAccent))
                     .setDefaults(Notification.DEFAULT_SOUND)
-                    .setAutoCancel(true);
+                    .setAutoCancel(true)
+                    .setWhen(System.currentTimeMillis())
+                    .setShowWhen(true);
             NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotificationManager.notify(reqCode, mBuilder.build());
         }

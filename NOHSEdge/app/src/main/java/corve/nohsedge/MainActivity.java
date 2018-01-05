@@ -241,6 +241,12 @@ public class MainActivity extends AppCompatActivity
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
                     ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+                    ShortcutInfo wEdgeCheckInShortcut = new ShortcutInfo.Builder(context, "shortcut_checkIn")
+                            .setShortLabel("Edge Check in")
+                            .setLongLabel("Open Edge Check in")
+                            .setIcon(Icon.createWithResource(context, R.mipmap.ic_checkin))
+                            .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://docs.google.com/forms/d/e/1FAIpQLSdHTjMmxYnt6luiBD5u6lYhqNeEctKYUlHZ1mv8NsPrWtRmOQ/viewform")))
+                            .build();
                     ShortcutInfo wNOHSShortcut = new ShortcutInfo.Builder(context, "shortcut_nohs")
                             .setShortLabel("NOHS Website")
                             .setLongLabel("Open NOHS Website")
@@ -253,7 +259,7 @@ public class MainActivity extends AppCompatActivity
                             .setIcon(Icon.createWithResource(context, R.mipmap.ic_infinitecampus_shortcut))
                             .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://kyede10.infinitecampus.org/campus/portal/oldham.jsp")))
                             .build();
-                    shortcutManager.setDynamicShortcuts(Arrays.asList(wNOHSShortcut, wCampusShortcut));
+                    shortcutManager.setDynamicShortcuts(Arrays.asList(wEdgeCheckInShortcut, wCampusShortcut, wNOHSShortcut));
                 }
             }
         }
@@ -390,6 +396,8 @@ public class MainActivity extends AppCompatActivity
                 transaction.remove(EdgeSignupActivityFragment);
                 transaction.commit();
             }*/
+        } else if (inEdgeView && inEdgeShortcut){
+            super.onBackPressed();
         } else {
             DrawerLayout drawer = findViewById(R.id.drawer_layout);
             if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -475,7 +483,7 @@ public class MainActivity extends AppCompatActivity
             webSettings.setLoadsImagesAutomatically(true);
         }
 
-        if (id != R.id.nav_homescreen && id != R.id.nav_schedule && id != R.id.nav_signup && id != R.id.nav_gear && id != R.id.nav_settings && id != R.id.nav_feedback && mLoginPage.getVisibility() == View.INVISIBLE){
+        if (id != R.id.nav_homescreen && id != R.id.nav_schedule && id != R.id.nav_signup && id != R.id.nav_gear && id != R.id.nav_settings && id != R.id.nav_feedback && id != R.id.nav_signin && mLoginPage.getVisibility() == View.INVISIBLE){
             mLoginPage.setVisibility(VISIBLE);
 
         }
@@ -545,6 +553,16 @@ public class MainActivity extends AppCompatActivity
             CustomTabsIntent customTabsIntent = intentBuilder.build();
             customTabsIntent.launchUrl(this, uri);
 
+        } else if (id == R.id.nav_signin) {
+            drawerClose = false;
+            Uri uri = Uri.parse("https://docs.google.com/forms/d/e/1FAIpQLSdHTjMmxYnt6luiBD5u6lYhqNeEctKYUlHZ1mv8NsPrWtRmOQ/viewform");
+            CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
+            intentBuilder.setStartAnimations(this, R.anim.slide_in_right, R.anim.slide_out_left);
+            intentBuilder.setExitAnimations(this, R.anim.slide_in_left, R.anim.slide_out_right);
+            intentBuilder.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary));
+            intentBuilder.setSecondaryToolbarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+            CustomTabsIntent customTabsIntent = intentBuilder.build();
+            customTabsIntent.launchUrl(this, uri);
         } else if (id == R.id.nav_feedback){
             Intent emailIntent = EmailIntentBuilder.from(this)
                     .to("corvettecole@gmail.com")
@@ -667,10 +685,7 @@ public class MainActivity extends AppCompatActivity
                 return true;
             }
         }
-        if (mEdgeDay5Cur != null && mEdgeDay5Cur.contains("Fri")){
-            return true;
-        }
-        return false;
+        return mEdgeDay5Cur != null && mEdgeDay5Cur.contains("Fri");
     }
 
 

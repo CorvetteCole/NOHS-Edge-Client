@@ -217,7 +217,6 @@ public class EdgeSignupActivity extends Fragment {
                 }
                 if (cm.message().contains("object Object") && edgeLoaded){
                     classSelected = true;
-                    Log.d(TAG, " classSelected?" + classSelected);
                 }
                 return true;
             }
