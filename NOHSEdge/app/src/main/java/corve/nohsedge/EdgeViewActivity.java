@@ -33,6 +33,7 @@ import static corve.nohsedge.MainActivity.PREF_EDGE3;
 import static corve.nohsedge.MainActivity.PREF_EDGE4;
 import static corve.nohsedge.MainActivity.PREF_EDGE5;
 import static corve.nohsedge.MainActivity.PREF_EDGE5Cur;
+import static corve.nohsedge.MainActivity.mEdgeTimeString;
 
 public class EdgeViewActivity extends android.support.v4.app.Fragment {
     @NonNull
@@ -126,7 +127,7 @@ public class EdgeViewActivity extends android.support.v4.app.Fragment {
         EdgeDay[3] = settings.getString(PREF_EDGE4, DefaultEdgeDay4Value);
         EdgeDay[4] = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
         String EdgeDay5Next = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
-        if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY && isAfterEdgeClass(parseEdgeTime(EdgeDay[4]))) {
+        if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY && isAfterEdgeClass()) {
             EdgeDay[4] = EdgeDay5Next;
         }
         int i = 0;
@@ -135,7 +136,7 @@ public class EdgeViewActivity extends android.support.v4.app.Fragment {
             if (EdgeDay[i] != null) {
                 EdgeTitle[i] = parseEdgeTitle(EdgeDay[i]);
                 EdgeText[i] = parseEdgeText(EdgeDay[i]);
-                EdgeTime[i] = parseEdgeTime(EdgeDay[i]);
+                EdgeTime[i] = mEdgeTimeString;
             }
             else {
                 EdgeTitle[i] = "Not Scheduled";
@@ -147,18 +148,12 @@ public class EdgeViewActivity extends android.support.v4.app.Fragment {
         setList(context);
     }
 
-    private static boolean isAfterEdgeClass(@NonNull String EdgeSession){
+    private static boolean isAfterEdgeClass(){
         boolean after = false;
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        if (EdgeSession.equals("12:43")) {
-            calendar.set(Calendar.HOUR, 0);
-            calendar.set(Calendar.MINUTE, 43);
-        }
-        if (EdgeSession.equals("1:09")) {
-            calendar.set(Calendar.HOUR, 1);
-            calendar.set(Calendar.MINUTE, 9);
-        }
+        calendar.set(Calendar.HOUR, 1);
+        calendar.set(Calendar.MINUTE, 9);
         calendar.set(Calendar.SECOND, 1);
         calendar.set(Calendar.AM_PM, Calendar.PM);
         Log.d("edgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
@@ -204,17 +199,6 @@ public class EdgeViewActivity extends android.support.v4.app.Fragment {
         return EdgeString;
     }
 
-    @NonNull
-    public static String parseEdgeTime(@NonNull String EdgeString) {
-        String session = "";
-        if (EdgeString.toLowerCase().contains("12:43")) {
-            session = "12:43";
-        }
-        if (EdgeString.toLowerCase().contains("1:09")) {
-            session = "1:09";
-        }
-        return session;
-    }
 
     @NonNull
     public static String parseEdgeText(@NonNull String EdgeString) {

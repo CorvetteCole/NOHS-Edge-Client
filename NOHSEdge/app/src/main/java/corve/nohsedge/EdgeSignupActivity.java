@@ -68,21 +68,6 @@ public class EdgeSignupActivity extends Fragment {
         }
     }
 
-    /*@Override
-    public void doBack() {
-        if (classSelected && mEdgePage.canGoBack()){
-            mEdgePage.goBack();
-            mEdgeLoadingText.setText("Loading Edge Classes...");
-            classSelected = false;
-        } else if (mEdgeLoadingCircle.getVisibility() == View.VISIBLE && !classSelected){
-            getActivity().getSupportFragmentManager().popBackStack();
-        } else {
-            showPage = false;
-            exit = true;
-            getEdgeClasses();
-        }
-    }*/
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.

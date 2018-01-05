@@ -162,6 +162,7 @@ public class MainActivity extends AppCompatActivity
     private ConstraintLayout contentMain;
     static boolean inEdgeView = false, inEdgeShortcut = false;
     private FirebaseAuth mAuth;
+    static final String mEdgeTimeString = "1:09";
 
 
     @Override
@@ -447,12 +448,12 @@ public class MainActivity extends AppCompatActivity
                     Log.d(TAG, "Edge Class for today: " + mEdgeDay[dayOfWeek]);
                     if (mEdgeDay[dayOfWeek].toLowerCase().contains(mDay[dayOfWeek].toLowerCase())) {
                         setEdgeMessage(mEdgeDay[dayOfWeek]);
-                        setEdgeNotifications(parseEdgeTitle(mEdgeDay[dayOfWeek]), parseEdgeText(mEdgeDay[dayOfWeek]), parseEdgeSession(mEdgeDay[dayOfWeek]));
+                        setEdgeNotifications(parseEdgeTitle(mEdgeDay[dayOfWeek]), parseEdgeText(mEdgeDay[dayOfWeek]));
                         }
                 } else if (dayOfWeek == Calendar.FRIDAY && mEdgeDay5Cur.contains(mDay[dayOfWeek]) && !mEdgeDay5Cur.toLowerCase().contains("undefined")){
                     Log.d(TAG, "setting edge message for friday");
                     setEdgeMessage(mEdgeDay5Cur);
-                    setEdgeNotifications(parseEdgeTitle(mEdgeDay5Cur), parseEdgeText(mEdgeDay5Cur), parseEdgeSession(mEdgeDay5Cur));
+                    setEdgeNotifications(parseEdgeTitle(mEdgeDay5Cur), parseEdgeText(mEdgeDay5Cur));
                 }
             } else if (!inEdge && !inEdgeView) {
                 refresh = true;
@@ -935,12 +936,12 @@ public class MainActivity extends AppCompatActivity
             if (dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY && !mEdgeDay[dayOfWeek].toLowerCase().contains("undefined") && mEdgeDay[dayOfWeek] != null && !mEdgeDay[dayOfWeek].isEmpty()){
                 if (mEdgeDay[dayOfWeek].toLowerCase().contains(mDay[dayOfWeek].toLowerCase())) {
                     setEdgeMessage(mEdgeDay[dayOfWeek]);
-                    setEdgeNotifications(parseEdgeTitle(mEdgeDay[dayOfWeek]), parseEdgeText(mEdgeDay[dayOfWeek]), parseEdgeSession(mEdgeDay[dayOfWeek]));
+                    setEdgeNotifications(parseEdgeTitle(mEdgeDay[dayOfWeek]), parseEdgeText(mEdgeDay[dayOfWeek]));
                 }
             } else if (dayOfWeek == Calendar.FRIDAY && mEdgeDay5Cur.contains(mDay[dayOfWeek]) && !mEdgeDay5Cur.toLowerCase().contains("undefined")){
                 Log.d(TAG, "setting edge message for friday");
                 setEdgeMessage(mEdgeDay5Cur);
-                setEdgeNotifications(parseEdgeTitle(mEdgeDay5Cur), parseEdgeText(mEdgeDay5Cur), parseEdgeSession(mEdgeDay5Cur));
+                setEdgeNotifications(parseEdgeTitle(mEdgeDay5Cur), parseEdgeText(mEdgeDay5Cur));
             }
         }
         if (FirstLoadValue && calledForeign){
@@ -1003,30 +1004,14 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void setEdgeNotifications(String EdgeTitle, String EdgeText, int EdgeSession) {
+    private void setEdgeNotifications(String EdgeTitle, String EdgeText) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        int edgeMin1 = 43 - notifyMinutes;
-        int edgeMin2;
-        int edgeHour2;
-        if (notifyMinutes > 9) {
-            int x = notifyMinutes - 9;
-            edgeMin2 = 60 - x;
-            edgeHour2 = 0;
-        } else {
-            edgeMin2 = 9 - notifyMinutes;
-            edgeHour2 = 1;
-        }
-        if (EdgeSession == 1) {
-            calendar.set(Calendar.HOUR, 0);
-            calendar.set(Calendar.MINUTE, edgeMin1);
-        }
-        if (EdgeSession == 2) {
-            calendar.set(Calendar.HOUR, edgeHour2);
-            calendar.set(Calendar.MINUTE, edgeMin2);
-        }
+        calendar.set(Calendar.HOUR, 1);
+        calendar.set(Calendar.MINUTE, 9);
         calendar.set(Calendar.SECOND, 1);
         calendar.set(Calendar.AM_PM, Calendar.PM);
+        calendar.setTimeInMillis(calendar.getTimeInMillis() - (notifyMinutes * 60000));
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = prefs.edit();
@@ -1056,17 +1041,6 @@ public class MainActivity extends AppCompatActivity
         } catch (Exception e) {
             return "unscheduled";
         }
-    }
-
-    public static int parseEdgeSession(@NonNull String EdgeString) {
-        int session = 0;
-        if (EdgeString.toLowerCase().contains("12:43")) {
-            session = 1;
-        }
-        if (EdgeString.toLowerCase().contains("1:09")) {
-            session = 2;
-        }
-        return session;
     }
 
     public static String parseEdgeText(String EdgeString) {
@@ -1107,21 +1081,6 @@ public class MainActivity extends AppCompatActivity
                 .execute(imageurl);*/
     }
 
-    @NonNull
-    public static String parseEdgeTime(String EdgeString) {
-        String time = "unscheduled";
-        try {
-            if (EdgeString.toLowerCase().contains("12:43")) {
-                time = "12:43";
-            }
-            if (EdgeString.toLowerCase().contains("1:09")) {
-                time = "1:09";
-            }
-            return time;
-        } catch (Exception e) {
-            return time;
-        }
-    }
 
     private void setWelcomeVisible(Boolean visible){
         if (!visible) {
@@ -1147,7 +1106,7 @@ public class MainActivity extends AppCompatActivity
     private void setEdgeMessage(String consoleMessage){
         mEdgeTitle.setText(parseEdgeTitle(consoleMessage));
         mEdgeText.setText(parseEdgeText(consoleMessage));
-        mEdgeTime.setText(parseEdgeTime(consoleMessage));
+        mEdgeTime.setText(mEdgeTimeString);
         mWelcome.setText("Hello, " + fullName);
     }
 
@@ -1207,11 +1166,11 @@ public class MainActivity extends AppCompatActivity
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         if (dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY){
             mDatabase.child("users").child(userName).child("Edge").child("Title").setValue(parseEdgeTitle(edge[dayOfWeek]));
-            mDatabase.child("users").child(userName).child("Edge").child("Time").setValue(parseEdgeTime(edge[dayOfWeek]));
+            mDatabase.child("users").child(userName).child("Edge").child("Time").setValue(mEdgeTimeString);
             mDatabase.child("users").child(userName).child("Edge").child("Teacher").setValue(parseEdgeText(edge[dayOfWeek]));
         } else if (dayOfWeek == Calendar.FRIDAY){
             mDatabase.child("users").child(userName).child("Edge").child("Title").setValue(parseEdgeTitle(friEdge));
-            mDatabase.child("users").child(userName).child("Edge").child("Time").setValue(parseEdgeTime(friEdge));
+            mDatabase.child("users").child(userName).child("Edge").child("Time").setValue(mEdgeTimeString);
             mDatabase.child("users").child(userName).child("Edge").child("Teacher").setValue(parseEdgeText(friEdge));
         }
        try {
