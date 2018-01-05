@@ -487,7 +487,7 @@ public class MainActivity extends AppCompatActivity
             mLoginPage.setVisibility(VISIBLE);
 
         }
-        if ((inEdge || inEdgeView) && id != R.id.nav_gear && id != R.id.nav_settings && id != R.id.nav_feedback){
+        if ((inEdge || inEdgeView) && id != R.id.nav_gear && id != R.id.nav_signin && id != R.id.nav_settings && id != R.id.nav_feedback){
             if (inEdge && id != R.id.nav_signup){
                 EdgeSignupActivity.save = true;
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
