@@ -1162,6 +1162,9 @@ public class MainActivity extends AppCompatActivity
 
     static void saveEdgeToFirebase(String[] edge, String friEdge, String userName){
         int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        if (userName.contains(".")) {
+            userName = userName.replaceAll("\\.", "-");
+        }
 
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         if (dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY){
@@ -1173,19 +1176,8 @@ public class MainActivity extends AppCompatActivity
             mDatabase.child("users").child(userName).child("Edge").child("Time").setValue(mEdgeTimeString);
             mDatabase.child("users").child(userName).child("Edge").child("Teacher").setValue(parseEdgeText(friEdge));
         }
-       try {
-           if (userName.contains(".")) {
-               //Log.d(TAG, unameValue.replaceAll("\\.", "-"));
-               mDatabase.child("users").child(userName.replaceAll("\\.", "-")).child("Edge").child("Day").setValue(mDay[dayOfWeek]);
-           } else {
-               mDatabase.child("users").child(userName).child("Edge").child("Day").setValue(mDay[dayOfWeek]);
-           }
-           //mDatabase.child("users").child(userName).child("Name").setValue(fullName);
-       } catch (Exception e){
-            Log.e(TAG, "FireBase code threw an exception!");
-            Log.e(TAG, e.toString());
-            Log.e(TAG, "Original Username: " + userName + " Modified Username: " + userName.replaceAll("\\.", "-"));
-       }
+        mDatabase.child("users").child(userName).child("Edge").child("Day").setValue(mDay[dayOfWeek]);
+        //mDatabase.child("users").child(userName).child("Name").setValue(fullName);
     }
 
     private void createFirebaseUser(String email, String password){
