@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/NOHSEdge.iml" filepath="$PROJECT_DIR$/NOHSEdge.iml" />
+      <module fileurl="file://$PROJECT_DIR$/WearApp/WearApp.iml" filepath="$PROJECT_DIR$/WearApp/WearApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
