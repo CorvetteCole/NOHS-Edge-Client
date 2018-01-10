@@ -62,6 +62,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import org.apache.commons.io.FileUtils;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 
@@ -1110,6 +1111,39 @@ public class MainActivity extends AppCompatActivity
         mWelcome.setText("Hello, " + fullName);
     }
 
+    private static String parseEdgeDay(int i){
+        String date = "N/A";
+        switch(i){
+            case 2:
+                date = "Monday";
+                break;
+            case 3:
+                date = "Tuesday";
+                break;
+            case 4:
+                date = "Wednesday";
+                break;
+            case 5:
+                date = "Thursday";
+                break;
+            case 6:
+                date = "Friday";
+                break;
+        }
+        return date;
+    }
+
+    private static int parseEdgeDate(String edgeDay){
+        String date = edgeDay.substring(edgeDay.indexOf("\"datetime\">") + 16);
+        date = date.substring(date.indexOf("/") + 1);
+        if (edgeDay.contains("12:")) {
+            date = date.substring(0, (date.indexOf("pm") - 6));
+        } else {
+            date = date.substring(0, (date.indexOf("pm") - 5));
+        }
+        return Integer.parseInt(date);
+    }
+
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
 
@@ -1167,16 +1201,13 @@ public class MainActivity extends AppCompatActivity
         }
 
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-        if (dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY){
-            mDatabase.child("users").child(userName).child("Edge").child("Title").setValue(parseEdgeTitle(edge[dayOfWeek]));
-            mDatabase.child("users").child(userName).child("Edge").child("Time").setValue(mEdgeTimeString);
-            mDatabase.child("users").child(userName).child("Edge").child("Teacher").setValue(parseEdgeText(edge[dayOfWeek]));
-        } else if (dayOfWeek == Calendar.FRIDAY){
-            mDatabase.child("users").child(userName).child("Edge").child("Title").setValue(parseEdgeTitle(friEdge));
-            mDatabase.child("users").child(userName).child("Edge").child("Time").setValue(mEdgeTimeString);
-            mDatabase.child("users").child(userName).child("Edge").child("Teacher").setValue(parseEdgeText(friEdge));
+        ArrayList<EdgeClass> classes = new ArrayList<>();
+        for (int i = 2; i < 6; i++){
+            classes.add(new EdgeClass(parseEdgeTitle(mEdgeDay[i]), parseEdgeText(mEdgeDay[i]), parseEdgeDate(mEdgeDay[i]), parseEdgeDay(i), mEdgeTimeString));
         }
-        mDatabase.child("users").child(userName).child("Edge").child("Day").setValue(mDay[dayOfWeek]);
+        classes.add(new EdgeClass(parseEdgeTitle(mEdgeDay5Cur), parseEdgeText(mEdgeDay5Cur), parseEdgeDate(mEdgeDay5Cur), parseEdgeDay(6), mEdgeTimeString));
+        mDatabase.child("users").child(userName).child("Edge").setValue(classes);
+
         //mDatabase.child("users").child(userName).child("Name").setValue(fullName);
     }
 
