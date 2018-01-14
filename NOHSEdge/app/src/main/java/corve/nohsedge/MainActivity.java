@@ -183,7 +183,9 @@ public class MainActivity extends AppCompatActivity
             finish();
             inEdgeView = false;
         } else {
-            saveEdgeToFirebase(mEdgeDay, mEdgeDay5Cur, unameValue.toLowerCase());
+            if (unameValue != null) {
+                saveEdgeToFirebase(mEdgeDay, mEdgeDay5Cur, unameValue.toLowerCase());
+            }
             savePreferences();
         }
     }
@@ -350,7 +352,7 @@ public class MainActivity extends AppCompatActivity
                 }
             }
             return CookieValue;
-        } catch (StringIndexOutOfBoundsException e){
+        } catch (Exception e){
             Log.d(TAG, "getCookie failed!" + e);
             return null;
         }
