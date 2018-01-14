@@ -52,7 +52,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.wearable.DataClient;
+import com.google.android.gms.wearable.DataItem;
+import com.google.android.gms.wearable.DataMap;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.PutDataRequest;
+import com.google.android.gms.wearable.Wearable;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -105,6 +112,7 @@ public class MainActivity extends AppCompatActivity
     private final boolean DefaultWeeklyNotificationValue = true;
     private final boolean DefaultAutologinValue = true;
 
+    static boolean wearInUse = false;
     static String unameValue;
     static String passwordValue;
     static boolean pRememValue;
@@ -488,6 +496,9 @@ public class MainActivity extends AppCompatActivity
         if (id != R.id.nav_homescreen && id != R.id.nav_schedule && id != R.id.nav_signup && id != R.id.nav_gear && id != R.id.nav_settings && id != R.id.nav_feedback && id != R.id.nav_signin && mLoginPage.getVisibility() == View.INVISIBLE){
             mLoginPage.setVisibility(VISIBLE);
 
+        }
+        if (inEdge && id != R.id.nav_signup){
+         saveEdgeToFirebase(mEdgeDay, mEdgeDay5Cur, unameValue.toLowerCase());
         }
         if ((inEdge || inEdgeView) && id != R.id.nav_gear && id != R.id.nav_signin && id != R.id.nav_settings && id != R.id.nav_feedback){
             if (inEdge && id != R.id.nav_signup){
@@ -1134,14 +1145,19 @@ public class MainActivity extends AppCompatActivity
     }
 
     private static int parseEdgeDate(String edgeDay){
-        String date = edgeDay.substring(edgeDay.indexOf("\"datetime\">") + 16);
-        date = date.substring(date.indexOf("/") + 1);
-        if (edgeDay.contains("12:")) {
-            date = date.substring(0, (date.indexOf("pm") - 6));
-        } else {
-            date = date.substring(0, (date.indexOf("pm") - 5));
+        try {
+            String date = edgeDay.substring(edgeDay.indexOf("\"datetime\">") + 16);
+            date = date.substring(date.indexOf("/") + 1);
+            if (edgeDay.contains("12:")) {
+                date = date.substring(0, (date.indexOf("pm") - 6));
+            } else {
+                date = date.substring(0, (date.indexOf("pm") - 5));
+            }
+            return Integer.parseInt(date);
+        } catch (StringIndexOutOfBoundsException e){
+            Log.d(TAG, "String out of bounds when parsing date, returning 0");
+            return 0;
         }
-        return Integer.parseInt(date);
     }
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
@@ -1194,21 +1210,56 @@ public class MainActivity extends AppCompatActivity
             });
     }
 
-    static void saveEdgeToFirebase(String[] edge, String friEdge, String userName){
+    private void saveEdgeToFirebase(String[] edge, String friEdge, String userName){
+        Log.d(TAG, "Firebase sync initiated");
         int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         if (userName.contains(".")) {
             userName = userName.replaceAll("\\.", "-");
         }
-
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         ArrayList<EdgeClass> classes = new ArrayList<>();
         for (int i = 2; i < 6; i++){
-            classes.add(new EdgeClass(parseEdgeTitle(mEdgeDay[i]), parseEdgeText(mEdgeDay[i]), parseEdgeDate(mEdgeDay[i]), parseEdgeDay(i), mEdgeTimeString));
+            classes.add(new EdgeClass(parseEdgeTitle(edge[i]), parseEdgeText(edge[i]), parseEdgeDate(edge[i]), parseEdgeDay(i), mEdgeTimeString));
         }
-        classes.add(new EdgeClass(parseEdgeTitle(mEdgeDay5Cur), parseEdgeText(mEdgeDay5Cur), parseEdgeDate(mEdgeDay5Cur), parseEdgeDay(6), mEdgeTimeString));
+        classes.add(new EdgeClass(parseEdgeTitle(friEdge), parseEdgeText(friEdge), parseEdgeDate(friEdge), parseEdgeDay(6), mEdgeTimeString));
         mDatabase.child("users").child(userName).child("Edge").setValue(classes);
+        try {
+            getPackageManager().getPackageInfo("com.google.android.wearable.app", PackageManager.GET_META_DATA);
+            wearInUse = true;
+            syncToWear(classes);
+        } catch (PackageManager.NameNotFoundException e) {
+            wearInUse = false;
+            Log.d(TAG, "Android wear not in use, not syncing data");
+        }
+    }
 
-        //mDatabase.child("users").child(userName).child("Name").setValue(fullName);
+    private void syncToWear(ArrayList<EdgeClass> classes){
+        DataClient mDataClient = Wearable.getDataClient(this);
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/edge");
+        ArrayList<DataMap> dataMaps = new ArrayList<>();
+        for (EdgeClass edgeClass : classes) {
+            DataMap dataMap = new DataMap();
+            dataMap.putString("title", edgeClass.getTitle());
+            dataMap.putString("teacher", edgeClass.getTeacher());
+            dataMap.putInt("date", edgeClass.getDate());
+            dataMap.putString("day", edgeClass.getDay());
+            dataMap.putString("time", edgeClass.getTime());
+            dataMaps.add(dataMap);
+        }
+        DataMap timeMap = new DataMap();
+        timeMap.putLong("timestamp", System.currentTimeMillis());
+        dataMaps.add(timeMap);
+        putDataMapReq.getDataMap().putDataMapArrayList("corve.nohsedge.edge", dataMaps);
+        PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
+        putDataReq.setUrgent();
+        Log.d(TAG, "Syncing classes to wearable");
+        Task<DataItem> putDataTask = mDataClient.putDataItem(putDataReq);
+        putDataTask.addOnSuccessListener(new OnSuccessListener<DataItem>() {
+            @Override
+            public void onSuccess(DataItem dataItem) {
+                Log.d(TAG, "Data synced with wearable " + dataItem);
+            }
+        });
     }
 
     private void createFirebaseUser(String email, String password){

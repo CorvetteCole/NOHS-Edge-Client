@@ -21,6 +21,7 @@ class EdgeClass {
         mTime = time;
     }
 
+
     String getTitle(){
         return mTitle;
     }
