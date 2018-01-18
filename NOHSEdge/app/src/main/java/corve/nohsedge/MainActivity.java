@@ -1118,10 +1118,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setEdgeMessage(String consoleMessage){
-        mEdgeTitle.setText(parseEdgeTitle(consoleMessage));
-        mEdgeText.setText(parseEdgeText(consoleMessage));
-        mEdgeTime.setText(mEdgeTimeString);
-        mWelcome.setText("Hello, " + fullName);
+        try {
+            mEdgeTitle.setText(parseEdgeTitle(consoleMessage));
+            mEdgeText.setText(parseEdgeText(consoleMessage));
+            mEdgeTime.setText(mEdgeTimeString);
+            mWelcome.setText("Hello, " + fullName);
+        } catch (NullPointerException e){
+            Log.e(TAG, "Activity widget contexts not initiated!");
+        }
     }
 
     private static String parseEdgeDay(int i){

@@ -20,6 +20,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 
 public class MainActivity extends WearableActivity implements DataClient.OnDataChangedListener {
@@ -49,7 +50,7 @@ public class MainActivity extends WearableActivity implements DataClient.OnDataC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edge_view);
+        setContentView(R.layout.activity_main);
         //mList = findViewById(R.id.listview);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         Gson gson = new Gson();
@@ -59,8 +60,7 @@ public class MainActivity extends WearableActivity implements DataClient.OnDataC
         if (classes == null){
             classes = new ArrayList<>();
         }
-
-        //updateList();
+        updateText();
         // Enables Always-on
         setAmbientEnabled();
     }
@@ -97,12 +97,36 @@ public class MainActivity extends WearableActivity implements DataClient.OnDataC
                 classes.add(edgeClass);
             }
         }
-        //updateList();
+        updateText();
     }
 
     private void updateText() {
         TextView edgeTitle = findViewById(R.id.edgeTitle);
         TextView edgeTeacher = findViewById(R.id.edgeTeacher);
+        for (EdgeClass edgeClass : classes){
+            int dayOfWeek = 0;
+            switch (edgeClass.getDay()){
+                case "Monday":
+                    dayOfWeek = 2;
+                    break;
+                case "Tuesday":
+                    dayOfWeek = 3;
+                    break;
+                case "Wednesday":
+                    dayOfWeek = 4;
+                    break;
+                case "Thursday":
+                    dayOfWeek = 5;
+                    break;
+                case "Friday":
+                    dayOfWeek = 6;
+                    break;
+            }
+            if (dayOfWeek == Calendar.getInstance().get(Calendar.DAY_OF_WEEK)){
+                edgeTitle.setText(edgeClass.getTitle());
+                edgeTeacher.setText(edgeClass.getTeacher());
+            }
+        }
 
     }
 

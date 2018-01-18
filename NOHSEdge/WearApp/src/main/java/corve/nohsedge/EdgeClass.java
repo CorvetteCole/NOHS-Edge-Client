@@ -12,9 +12,8 @@ class EdgeClass {
     private int mDate;
     private String mTime;
     private String mDay;
-    private int mDayOfWeek;
 
-    EdgeClass(String title, String teacher, int date, String day, int dayOfWeek, String time){
+    EdgeClass(String title, String teacher, int date, String day, String time){
         mTitle = title;
         mTeacher = teacher;
         mDate = date;
