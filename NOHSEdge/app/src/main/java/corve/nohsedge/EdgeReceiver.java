@@ -42,7 +42,11 @@ public class EdgeReceiver extends BroadcastReceiver {
     public void showNotification(@NonNull Context context) {
 
         final SharedPreferences mSharedPreference= PreferenceManager.getDefaultSharedPreferences(context);
-        String Title = mSharedPreference.getString("TITLE", "Title") + " with " + mSharedPreference.getString("TEXT", "Text");
+        String Title = mSharedPreference.getString("TITLE", "Title");
+        if (Title.substring(Title.length() - 1, Title.length()).equals(" ")){
+            Title = Title.substring(0, Title.length() - 1);
+        }
+        Title = Title + " with " + mSharedPreference.getString("TEXT", "Text");
         //String Text = mSharedPreference.getString("TEXT", "Text");
         String Text = "Click here to sign in";
         int reqCode = 0;
