@@ -405,6 +405,7 @@ public class EdgeSignupActivity extends Fragment {
         new Thread() {
             public void run() {
                 while (loadingProgress < 96 && getActivity() != null) {
+                    Log.d(TAG, "Loading " + loadingProgress + "%");
                     try {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
@@ -417,6 +418,7 @@ public class EdgeSignupActivity extends Fragment {
                         e.printStackTrace();
                     }
                 }
+                Log.d(TAG, "Loaded " + loadingProgress + "%");
                 loadingProgress = 0;
 
             }

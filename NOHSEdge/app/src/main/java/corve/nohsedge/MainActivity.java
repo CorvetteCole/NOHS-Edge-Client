@@ -147,7 +147,6 @@ public class MainActivity extends AppCompatActivity
     static boolean calledForeign;
     private TextView mWelcome;
     static String currentPage = "homescreen";
-    private int id;
     @Nullable
     static String uuid;
     private TextView mEdgeTitle;
@@ -471,7 +470,8 @@ public class MainActivity extends AppCompatActivity
                 refresh = true;
                 loggedIn = false;
                 mLoginPage.loadUrl("about:blank");
-                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen");
+                mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#login");
+                Log.d(TAG, "Loading homescreen");
                 //mLoginPage.loadUrl(mLoginPage.getUrl());
                 //mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
             }
@@ -485,7 +485,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        id = item.getItemId();
+        int id = item.getItemId();
         boolean drawerClose = true;
         atHome = false;
         mLoginPage.getSettings().setBuiltInZoomControls(false);
@@ -760,7 +760,7 @@ public class MainActivity extends AppCompatActivity
                         setWelcomeVisible(true);
                         mLoadingCircle.setVisibility(View.INVISIBLE);
                         //Firebase doesn't support purely username based login. So I append my domain name at the end to solve this
-                        Log.d(TAG, "username: " + unameValue + "  password: " + passwordValue);
+                        //Log.d(TAG, "username: " + unameValue + "  password: " + passwordValue);
                         initiateFirebaseLogin(unameValue + "@coleg.tk", passwordValue);
                         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
                         SharedPreferences.Editor editor = settings.edit();
@@ -769,6 +769,7 @@ public class MainActivity extends AppCompatActivity
                     } else {
                         mLoginPage.loadUrl("http://sites.superfanu.com/nohsstampede/6.0.0/#" + currentPage);
                         //mLoadingCircle.setVisibility(View.INVISIBLE);
+                        mLoadingText.setVisibility(VISIBLE);
                         refresh = false;
                     }
                 }
@@ -934,7 +935,9 @@ public class MainActivity extends AppCompatActivity
         FirstLoadValue = settings.getBoolean(PREF_FIRSTLOAD, DefaultFirstLoadValue);
         minValue = settings.getInt(PREF_MIN, DefaultMinValue);
         LoginActivity.invalid = settings.getBoolean("invalid", false);
-        fullName = settings.getString("fullName", " ");
+        if (fullName == null || fullName.equals("") || fullName.equals(" ")) {
+            fullName = settings.getString("fullName", " ");
+        }
         imageLoadOnWiFiValue = settings.getBoolean("ImageLoad", false);
         Log.d("LoadImagesOnWiFiOnly", imageLoadOnWiFiValue + "");
         Log.d("edgeNotificationValue", edgeNotificationValue + "");
