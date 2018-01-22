@@ -3,13 +3,13 @@ apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.1'
+    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "corve.nohsedge"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 81
-        versionName "2.4.8.2"
+        versionCode 82
+        versionName "2.4.8.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
