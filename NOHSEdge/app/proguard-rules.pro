@@ -26,3 +26,9 @@
 -assumenosideeffects class android.util.Log {
     public static *** d(...);
 }
+-keepattributes *Annotation*
+-keepattributes SourceFile,LineNumberTable
+-keepattributes Signature
+-keepclassmembers class corve.nohsedge.** {
+  *;
+}

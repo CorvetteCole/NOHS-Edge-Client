@@ -210,14 +210,19 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
     }
 
     private static int parseEdgeDate(String edgeDay){
-        String date = edgeDay.substring(edgeDay.indexOf("\"datetime\">") + 16);
-        date = date.substring(date.indexOf("/") + 1);
-        if (edgeDay.contains("12:")) {
-            date = date.substring(0, (date.indexOf("pm") - 6));
-        } else {
-            date = date.substring(0, (date.indexOf("pm") - 5));
+        try {
+            String date = edgeDay.substring(edgeDay.indexOf("\"datetime\">") + 16);
+            date = date.substring(date.indexOf("/") + 1);
+            if (edgeDay.contains("12:")) {
+                date = date.substring(0, (date.indexOf("pm") - 6));
+            } else {
+                date = date.substring(0, (date.indexOf("pm") - 5));
+            }
+            return Integer.parseInt(date);
+        } catch (Exception e){
+            Log.e(TAG, "Error in parseEdgeDate: " + e);
+            return 0;
         }
-        return Integer.parseInt(date);
     }
 
 
