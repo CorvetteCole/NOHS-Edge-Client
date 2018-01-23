@@ -183,13 +183,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onPause() {
         super.onPause();
-        /*if (inEdge) {
-            EdgeSignupActivity.save = true;
-            EdgeSignupActivity.getEdgeClasses(mEdgePage);
-        } else */if (inEdgeShortcut){
-            Log.d(TAG, "I've got crippling depression");
+        if (inEdgeShortcut){
             finish();
             inEdgeView = false;
+            inEdgeShortcut = false;
         } else {
             if (unameValue != null) {
                 saveEdgeToFirebase(mEdgeDay, mEdgeDay5Cur, unameValue.toLowerCase());
