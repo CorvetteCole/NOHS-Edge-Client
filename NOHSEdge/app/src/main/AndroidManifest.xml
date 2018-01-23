@@ -37,6 +37,7 @@
                 android:resource="@xml/shortcuts" />
         </activity>
 
+
         <receiver
             android:name=".EdgeReceiver"
             android:permission="android.permission.BIND_JOB_SERVICE" />
@@ -54,18 +55,7 @@
         </receiver>
 
         <activity
-            android:name=".EdgeViewActivity"
-            android:label="@string/title_activity_edge_view"
-            android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".LoginActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".EdgeSignupActivity"
-            android:label="Edge Sign up"
-            android:launchMode="singleTop"
-            android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".PreferencesActivity"

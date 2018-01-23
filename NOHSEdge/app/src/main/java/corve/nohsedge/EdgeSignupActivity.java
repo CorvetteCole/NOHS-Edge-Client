@@ -1,5 +1,11 @@
 package corve.nohsedge;
 
+import android.app.SearchManager;
+import android.content.res.Resources;
+import android.support.v7.widget.Toolbar;
+import android.widget.SearchView;
+import android.widget.SearchView.OnQueryTextListener;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -25,7 +31,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import java.util.Calendar;
 
-import static android.content.Context.SEARCH_SERVICE;
 import static android.view.View.VISIBLE;
 import static corve.nohsedge.MainActivity.PREF_EDGE1;
 import static corve.nohsedge.MainActivity.PREF_EDGE2;
@@ -49,7 +54,6 @@ public class EdgeSignupActivity extends Fragment {
     private String edgeDay5Cur = "";
     static boolean classSelected = false, edgeLoaded = false, exit = false;
     static boolean classesRetrieved = false;
-    private long timeElapsed, previousTime = 0, time;
     static int doneLoading = 0;
     Button mSkipButton;
     ConstraintLayout mSkipLayout;
@@ -68,10 +72,35 @@ public class EdgeSignupActivity extends Fragment {
         }
     }
 
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        inflater.inflate(R.menu.action_bar_buttons, menu);
+        menu.findItem(R.id.action_refresh).setVisible(false);
+        inflater.inflate(R.menu.search, menu);
+        final MenuItem myActionMenuItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) myActionMenuItem.getActionView();
+        searchView.setQueryHint("Search Edge");
+        searchView.setMaxWidth(dpToPx(230));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // Toast like print
+                Log.d(TAG, "User requests search of: " + query);
+                mEdgePage.findAllAsync(query);
+                /*if( ! searchView.isIconified()) {
+                    searchView.setIconified(true);
+                }*/
+                //myActionMenuItem.collapseActionView();
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String s) {
+                Log.d(TAG, "User request changed to: " + s);
+                mEdgePage.findAllAsync(s);
+                return false;
+            }
+        });
     }
 
     @Override
@@ -90,6 +119,11 @@ public class EdgeSignupActivity extends Fragment {
             EdgeSignupActivity.loadingProgress = 0;
             openEdgepage();
         }
+        if (id == R.id.action_next){
+            mEdgePage.findNext(true);
+        } else if (id == R.id.action_last){
+            mEdgePage.findNext(false);
+        }
         return true;
     }
 
@@ -105,7 +139,7 @@ public class EdgeSignupActivity extends Fragment {
         mEdgeLoadingCircle = RootView.findViewById(R.id.LoadingCircleEdge);
         mSkipButton = RootView.findViewById(R.id.skipButton);
         mSkipLayout = RootView.findViewById(R.id.skipLayout);
-
+        setHasOptionsMenu(true);
         MainActivity.calledForeign = true;
         if (showPage){
             mSkipLayout.setVisibility(View.INVISIBLE);
@@ -423,5 +457,10 @@ public class EdgeSignupActivity extends Fragment {
 
             }
         }.start();
+    }
+
+    public static int dpToPx(int dp)
+    {
+        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }
 }

@@ -537,6 +537,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);*/
 
         } else if (id == R.id.nav_signup) {
+
             EdgeSignupActivity.save = false;
             EdgeSignupActivity.loadingProgress = 0;
             EdgeSignupActivity.doneLoading = 0;
