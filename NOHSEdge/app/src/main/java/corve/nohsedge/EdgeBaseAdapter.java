@@ -21,7 +21,7 @@ public class EdgeBaseAdapter extends BaseAdapter {
     private Context context;
 
     EdgeBaseAdapter(Context c, String[] Title, String[] Text, String[] Time, String[] Date){
-        list = new ArrayList<SingleRow>();
+        list = new ArrayList<>();
         context = c;
         for(int i= 0; i< EdgeViewActivity.EdgeTitle.length; i++){
             list.add(new SingleRow(Title[i], Text[i], Time[i], Date[i]));

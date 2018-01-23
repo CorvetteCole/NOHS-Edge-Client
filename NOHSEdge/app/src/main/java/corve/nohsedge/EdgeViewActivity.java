@@ -1,5 +1,7 @@
 package corve.nohsedge;
 
+import android.app.Fragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,8 +11,12 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 
 import java.util.Calendar;
@@ -27,10 +33,11 @@ import static corve.nohsedge.MainActivity.PREF_EDGE3;
 import static corve.nohsedge.MainActivity.PREF_EDGE4;
 import static corve.nohsedge.MainActivity.PREF_EDGE5;
 import static corve.nohsedge.MainActivity.PREF_EDGE5Cur;
+import static corve.nohsedge.MainActivity.mEdgeTimeString;
 
-public class EdgeViewActivity extends AppCompatActivity {
+public class EdgeViewActivity extends android.support.v4.app.Fragment {
     @NonNull
-    private String[] EdgeDay = new String[5];
+    private static String[] EdgeDay = new String[5];
     private ListView mList;
     @NonNull
     public static String[] EdgeTitle = new String[5];
@@ -42,24 +49,26 @@ public class EdgeViewActivity extends AppCompatActivity {
     public static String[] EdgeDate = new String[5];
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setContentView(R.layout.activity_edge_view);
-        mList = findViewById(R.id.listview);
-        loadPreferences();
+        View RootView = inflater.inflate(R.layout.activity_edge_view, container, false);
+        //setContentView(R.layout.activity_edge_view);
+        mList = RootView.findViewById(R.id.listview);
+        loadPreferences(getActivity());
+        setHasOptionsMenu(true);
+        return RootView;
     }
 
-    @Override
+    /*@Override
     protected void onPause() {
         super.onPause();
         finish();
-    }
+    }*/
+
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.clear_all, menu);
-        return true;
+        inflater.inflate(R.menu.clear_all, menu);
     }
 
     @Override
@@ -71,7 +80,7 @@ public class EdgeViewActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_clear) {
-            AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+            AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
             builder1.setMessage("Clear saved Edge schedule? (This will not make you leave any of your classes)");
             builder1.setCancelable(true);
 
@@ -79,7 +88,7 @@ public class EdgeViewActivity extends AppCompatActivity {
                     "Continue",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
                             SharedPreferences.Editor editor = settings.edit();
                             editor.putString(PREF_EDGE1, "");
                             editor.putString(PREF_EDGE2, "");
@@ -89,7 +98,7 @@ public class EdgeViewActivity extends AppCompatActivity {
                             editor.putString(PREF_EDGE5Cur, "");
                             editor.commit();
                             dialog.cancel();
-                            loadPreferences();
+                            loadPreferences(getActivity());
                         }
                     });
 
@@ -105,12 +114,11 @@ public class EdgeViewActivity extends AppCompatActivity {
             alert11.show();
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
-    public void loadPreferences() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+    public void loadPreferences(Context context) {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
 
         // Get value
         EdgeDay[0] = settings.getString(PREF_EDGE1, DefaultEdgeDay1Value);
@@ -119,7 +127,7 @@ public class EdgeViewActivity extends AppCompatActivity {
         EdgeDay[3] = settings.getString(PREF_EDGE4, DefaultEdgeDay4Value);
         EdgeDay[4] = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
         String EdgeDay5Next = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
-        if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY && isAfterEdgeClass(parseEdgeTime(EdgeDay[4]))) {
+        if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY && isAfterEdgeClass()) {
             EdgeDay[4] = EdgeDay5Next;
         }
         int i = 0;
@@ -128,7 +136,7 @@ public class EdgeViewActivity extends AppCompatActivity {
             if (EdgeDay[i] != null) {
                 EdgeTitle[i] = parseEdgeTitle(EdgeDay[i]);
                 EdgeText[i] = parseEdgeText(EdgeDay[i]);
-                EdgeTime[i] = parseEdgeTime(EdgeDay[i]);
+                EdgeTime[i] = mEdgeTimeString;
             }
             else {
                 EdgeTitle[i] = "Not Scheduled";
@@ -137,21 +145,15 @@ public class EdgeViewActivity extends AppCompatActivity {
             }
             i++;
         }
-        setList();
+        setList(context);
     }
 
-    private boolean isAfterEdgeClass(@NonNull String EdgeSession){
+    private static boolean isAfterEdgeClass(){
         boolean after = false;
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        if (EdgeSession.equals("12:43")) {
-            calendar.set(Calendar.HOUR, 0);
-            calendar.set(Calendar.MINUTE, 43);
-        }
-        if (EdgeSession.equals("1:09")) {
-            calendar.set(Calendar.HOUR, 1);
-            calendar.set(Calendar.MINUTE, 9);
-        }
+        calendar.set(Calendar.HOUR, 1);
+        calendar.set(Calendar.MINUTE, 9);
         calendar.set(Calendar.SECOND, 1);
         calendar.set(Calendar.AM_PM, Calendar.PM);
         Log.d("edgeclasstime", (calendar.getTimeInMillis() - System.currentTimeMillis()) + "");
@@ -164,7 +166,7 @@ public class EdgeViewActivity extends AppCompatActivity {
     }
 
     @NonNull
-    public String parseEdgeDate (int i){
+    public static String parseEdgeDate(int i){
         String date = "N/A";
         switch(i){
             case 0:
@@ -186,7 +188,7 @@ public class EdgeViewActivity extends AppCompatActivity {
         return date;
     }
     @NonNull
-    public String parseEdgeTitle(@NonNull String EdgeString) {
+    public static String parseEdgeTitle(@NonNull String EdgeString) {
         if (EdgeString.toLowerCase().contains("h3")) {
             EdgeString = EdgeString.substring(EdgeString.indexOf(">") + 1);
             EdgeString = EdgeString.substring(0, EdgeString.indexOf("</h3>"));
@@ -197,20 +199,9 @@ public class EdgeViewActivity extends AppCompatActivity {
         return EdgeString;
     }
 
-    @NonNull
-    public String parseEdgeTime(@NonNull String EdgeString) {
-        String session = "";
-        if (EdgeString.toLowerCase().contains("12:43")) {
-            session = "12:43";
-        }
-        if (EdgeString.toLowerCase().contains("1:09")) {
-            session = "1:09";
-        }
-        return session;
-    }
 
     @NonNull
-    public String parseEdgeText(@NonNull String EdgeString) {
+    public static String parseEdgeText(@NonNull String EdgeString) {
         if (EdgeString.toLowerCase().contains("g>")) {
             EdgeString = EdgeString.substring(EdgeString.indexOf("g>") + 2);
             EdgeString = EdgeString.substring(0, EdgeString.indexOf("</"));
@@ -220,7 +211,7 @@ public class EdgeViewActivity extends AppCompatActivity {
         return EdgeString;
     }
 
-    public void setList() {
+    public void setList(Context context) {
         int i = 0;
         while (i <= 4) {
             Log.d("EdgeTitle" + i, EdgeTitle[i]);
@@ -228,7 +219,7 @@ public class EdgeViewActivity extends AppCompatActivity {
             i++;
         }
 
-        mList.setAdapter(new EdgeBaseAdapter(this, EdgeTitle, EdgeText, EdgeTime, EdgeDate));
+        mList.setAdapter(new EdgeBaseAdapter(context, EdgeTitle, EdgeText, EdgeTime, EdgeDate));
 
         }
 

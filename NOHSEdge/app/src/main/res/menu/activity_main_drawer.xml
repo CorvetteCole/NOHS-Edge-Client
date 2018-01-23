@@ -36,15 +36,22 @@
             android:title="Gear"/>
     </group>
 
-    <group android:id="@+id/drawer_part1" android:checkableBehavior="none">
+    <group android:id="@+id/drawer_part1">
             <item
                 android:id="@+id/nav_schedule"
+                android:checkable="true"
                 android:icon="@drawable/ic_schedule"
                 android:title="Edge Schedule"/>
             <item
                 android:id="@+id/nav_signup"
-                android:icon="@drawable/ic_update"
+                android:checkable="true"
+                android:icon="@drawable/ic_signin"
                 android:title="Edge Sign up"/>
+            <item
+                android:id="@+id/nav_signin"
+                android:checkable="false"
+                android:icon="@drawable/ic_input"
+                android:title="Edge Check in"/>
 
         <item android:title="Options">
             <menu>
