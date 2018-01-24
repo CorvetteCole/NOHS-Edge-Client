@@ -11,9 +11,9 @@ class EdgeClass {
     private String mTeacher;
     private int mDate;
     private String mTime;
-    private String mDay;
+    private int mDay;
 
-    EdgeClass(String title, String teacher, int date, String day, String time){
+    EdgeClass(String title, String teacher, int date, int day, String time){
         mTitle = title;
         mTeacher = teacher;
         mDate = date;
@@ -37,7 +37,7 @@ class EdgeClass {
         return mTime;
     }
 
-    String getDay(){
+    int getDay(){
         return mDay;
     }
 

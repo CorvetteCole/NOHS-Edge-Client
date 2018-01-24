@@ -13,9 +13,9 @@ class EdgeClass implements Serializable {
     private String mTeacher;
     private int mDate;
     private String mTime;
-    private String mDay;
+    private int mDay;
 
-    EdgeClass(String title, String teacher, int date, String day, String time){
+    EdgeClass(String title, String teacher, int date, int day, String time){
         mTitle = title;
         mTeacher = teacher;
         mDate = date;
@@ -40,7 +40,7 @@ class EdgeClass implements Serializable {
         return mTime;
     }
 
-   public String getDay(){
+   public int getDay(){
         return mDay;
     }
 

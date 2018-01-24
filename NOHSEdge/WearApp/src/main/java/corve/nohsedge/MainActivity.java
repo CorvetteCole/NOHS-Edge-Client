@@ -89,13 +89,13 @@ public class MainActivity extends WearableActivity implements DataClient.OnDataC
 
     private void updateEdgeClasses(ArrayList<DataMap> dataMaps) {
         for (DataMap dataMap : dataMaps) {
-            if (dataMap.getLong("timestamp") != 0) {
+            /*if (dataMap.getLong("timestamp") != 0) {
                 Log.d(TAG, "timestamp: " + dataMap.getLong("timestamp"));
-            } else {
+            } else {*/
                 Log.d(TAG, dataMap.getString("title"));
-                EdgeClass edgeClass = new EdgeClass(dataMap.getString("title"), dataMap.getString("teacher"), dataMap.getInt("date"), dataMap.getString("day"), dataMap.getString("time"));
+                EdgeClass edgeClass = new EdgeClass(dataMap.getString("title"), dataMap.getString("teacher"), dataMap.getInt("date"), dataMap.getInt("day"), dataMap.getString("time"));
                 classes.add(edgeClass);
-            }
+            //}
         }
         updateText();
     }

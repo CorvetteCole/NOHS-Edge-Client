@@ -82,7 +82,7 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
         notifyMinutes = settings.getInt(PREF_MIN, DefaultMinValue);
         unameValue = settings.getString(PREF_UNAME, DefaultUnameValue);
         NotificationEnabled = settings.getBoolean(PREF_NOTIFYEDGE, true);
-        saveEdgeToFirebase(mEdgeDay, edgeDay5Cur, unameValue.toLowerCase());
+        //saveEdgeToFirebase(mEdgeDay, edgeDay5Cur, unameValue.toLowerCase());
         int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         if (dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY){
             if (mEdgeDay[dayOfWeek].toLowerCase().contains(mDay[dayOfWeek].toLowerCase())) {
@@ -148,7 +148,7 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
         return EdgeString;
     }
 
-    private void saveEdgeToFirebase(String[] edge, String friEdge, String userName){
+    /*private void saveEdgeToFirebase(String[] edge, String friEdge, String userName){
         int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         if (userName.contains(".")) {
             userName = userName.replaceAll("\\.", "-");
@@ -185,7 +185,7 @@ public class EdgeClassNotifHelper extends BroadcastReceiver {
         if (putDataTask.isSuccessful()){
             Log.d(TAG, "Classes synced to wearable");
         }
-    }
+    }*/
 
     private static String parseEdgeDay(int i){
         String date = "N/A";

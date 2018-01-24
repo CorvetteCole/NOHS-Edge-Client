@@ -29,6 +29,8 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import static android.view.View.VISIBLE;
@@ -48,10 +50,6 @@ public class EdgeSignupActivity extends Fragment {
     private ProgressBar mEdgeLoadingCircle;
     static boolean save = false;
     static boolean showPage = false;
-    @NonNull
-    private String[] edgeDay = new String[7];
-    private String[] edgeDayFriday = new String[2];
-    private String edgeDay5Cur = "";
     static boolean classSelected = false, edgeLoaded = false, exit = false;
     static boolean classesRetrieved = false;
     static int doneLoading = 0;
@@ -60,6 +58,7 @@ public class EdgeSignupActivity extends Fragment {
     static int loadingProgress = 0;
     private boolean backPressed = false;
     private SharedPreferences settings;
+    private ArrayList<EdgeClass> edgeClasses;
 
 
     @Override

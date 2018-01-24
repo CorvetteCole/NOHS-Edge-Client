@@ -64,8 +64,11 @@ import com.google.android.gms.wearable.Wearable;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.apache.commons.io.FileUtils;
 
@@ -77,8 +80,6 @@ import java.util.Calendar;
 import de.cketti.mailto.EmailIntentBuilder;
 
 import static android.view.View.VISIBLE;
-import static corve.nohsedge.EdgeSignupActivity.classSelected;
-import static corve.nohsedge.EdgeSignupActivity.exit;
 import static corve.nohsedge.EdgeSignupActivity.loadingProgress;
 import static corve.nohsedge.EdgeSignupActivity.showPage;
 
@@ -93,13 +94,7 @@ public class MainActivity extends AppCompatActivity
     static final String PREF_NOTIFYEDGE = "NotifyEdge";
     static final String PREF_NOTIFYWEEKLY = "NotifyWeekly";
     static final String PREF_AUTOLOGIN = "AutoLogin";
-    static final String PREF_EDGE1 = "Edge 1";
-    static final String PREF_EDGE2 = "Edge 2";
-    static final String PREF_EDGE3 = "Edge 3";
-    static final String PREF_EDGE4 = "Edge 4";
-    static final String PREF_EDGE5 = "Edge 5";
     static final String PREF_MIN = "Notify_min";
-    static final String PREF_EDGE5Cur = "Current Friday Edge Class";
     static final String PREF_FIRSTLOAD = "FirstLoad";
     private String webUrl;
     static boolean imageLoadOnWiFiValue;
@@ -122,12 +117,6 @@ public class MainActivity extends AppCompatActivity
     static boolean autoLoginValue;
     static final int DefaultMinValue = 6;
     static int minValue;
-    final static String DefaultEdgeDay1Value = "";
-    final static String DefaultEdgeDay2Value = "";
-    final static String DefaultEdgeDay3Value = "";
-    final static String DefaultEdgeDay4Value = "";
-    final static String DefaultEdgeDay5Value = "";
-    final static String DefaultEdgeDay5CurValue = "";
     static String emailValue;
     ProgressBar mLoadingCircle;
     private static final String TAG = "MainActivity";
@@ -136,18 +125,12 @@ public class MainActivity extends AppCompatActivity
     static int REQUEST_CODE = 0;
     static int REQUEST_CODE_EDGE = 1;
     static int REQUEST_CODE_WEEKLY = 2;
-    static String[] mEdgeDay = new String[7];
-    static String[] mDay = new String[7];
-
-    @Nullable
-    static String mEdgeDay5Cur;
     static int notifyMinutes = 5;
     static int login = 0;
     static int register = 0;
     static boolean calledForeign;
     private TextView mWelcome;
     static String currentPage = "homescreen";
-    @Nullable
     static String uuid;
     private TextView mEdgeTitle;
     private TextView mEdgeText;
@@ -155,11 +138,8 @@ public class MainActivity extends AppCompatActivity
     private TextView mEdgeTitleConst;
     private TextView mEdgeTextConst;
     private TextView mEdgeTimeConst;
-    @Nullable
     private ConnectivityManager cm;
-    @Nullable
     private String fullName = "";
-    @NonNull
     private Context context = this;
     private boolean loggedIn = false;
     private boolean autoEdgeRan = false;
@@ -172,6 +152,7 @@ public class MainActivity extends AppCompatActivity
     static boolean inEdgeView = false, inEdgeShortcut = false;
     private FirebaseAuth mAuth;
     public static final String mEdgeTimeString = "1:09";
+    public static ArrayList<EdgeClass> edgeClasses;
 
 
     @Override
@@ -441,28 +422,7 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh) {
             if (atHome){
-                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-                mEdgeDay[2] = settings.getString(PREF_EDGE1, DefaultEdgeDay1Value);
-                mEdgeDay[3] = settings.getString(PREF_EDGE2, DefaultEdgeDay2Value);
-                mEdgeDay[4] = settings.getString(PREF_EDGE3, DefaultEdgeDay3Value);
-                mEdgeDay[5] = settings.getString(PREF_EDGE4, DefaultEdgeDay4Value);
-                mEdgeDay[6] = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
-                mEdgeDay5Cur = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
-                Log.d(TAG, "Reloading homescreen");
-                //Log.d(TAG, mEdgeDay5Cur);
-                //Calendar.Friday equals 6, thursday equals 5, use this in the future with the edgeday arrays
-                int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-                if (dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY && !mEdgeDay[dayOfWeek].toLowerCase().contains("undefined") && mEdgeDay[dayOfWeek] != null && !mEdgeDay[dayOfWeek].isEmpty()){
-                    Log.d(TAG, "Edge Class for today: " + mEdgeDay[dayOfWeek]);
-                    if (mEdgeDay[dayOfWeek].toLowerCase().contains(mDay[dayOfWeek].toLowerCase())) {
-                        setEdgeMessage(mEdgeDay[dayOfWeek]);
-                        setEdgeNotifications(parseEdgeTitle(mEdgeDay[dayOfWeek]), parseEdgeText(mEdgeDay[dayOfWeek]));
-                        }
-                } else if (dayOfWeek == Calendar.FRIDAY && mEdgeDay5Cur.contains(mDay[dayOfWeek]) && !mEdgeDay5Cur.toLowerCase().contains("undefined")){
-                    Log.d(TAG, "setting edge message for friday");
-                    setEdgeMessage(mEdgeDay5Cur);
-                    setEdgeNotifications(parseEdgeTitle(mEdgeDay5Cur), parseEdgeText(mEdgeDay5Cur));
-                }
+// TODO: 1/23/2018 trigger setEdgeMessage and setEdgeNotifications here
             } else if (!inEdge && !inEdgeView) {
                 refresh = true;
                 loggedIn = false;
@@ -692,14 +652,13 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private boolean edgeRetrieved() {
-        for (int i = 1; i < mEdgeDay.length; i++){
-            Log.d("mEdgeDay[]", i + "  :  " + mEdgeDay[i]);
-            if (mEdgeDay[i] != null && mEdgeDay[i].contains(mDay[i])){
-                return true;
+    private boolean edgeClassesPresent() {
+        for (EdgeClass edgeClass : edgeClasses){
+            if (edgeClass.getTitle().equalsIgnoreCase("unscheduled") || edgeClass.getDate() == 0){
+                return false;
             }
         }
-        return mEdgeDay5Cur != null && mEdgeDay5Cur.contains("Fri");
+        return true;
     }
 
 
@@ -839,7 +798,8 @@ public class MainActivity extends AppCompatActivity
                 }*/
                 if (mLoginPage.getUrl().toLowerCase().contains("#homescreen") && loggedIn && !autoEdgeRan) {
                     autoEdgeRan = true;
-                    if (!edgeRetrieved()){
+                    edgeClasses = retrieveEdgeFromFirebase(unameValue);
+                    if (!edgeClassesPresent()){
                         inEdge = true;
                         EdgeSignupActivity.showPage = false;
                         uuid = getCookie("http://sites.superfanu.com/nohsstampede/6.0.0/#homescreen", "UUID");
@@ -855,7 +815,29 @@ public class MainActivity extends AppCompatActivity
                         transaction.commit();
                         contentMain.setVisibility(View.INVISIBLE);
                         fragmentFrame.setVisibility(View.VISIBLE);
+                    } else {
+                        int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+                            ArrayList<EdgeClass> edgeDay = new ArrayList<>();
+                            for (EdgeClass edgeClass : edgeClasses) {
+                                if (edgeClass.getDay() == dayOfWeek){
+                                    edgeDay.add(edgeClass);
+                                }
+                            }
+                            if (edgeDay.size() > 1){
+                                int indexMin = 0;
+                                int dateMin = Integer.MAX_VALUE;
+                                for (int i = 0; i < edgeDay.size(); i++){
+                                    if (edgeDay.get(i).getDate() < dateMin){
+                                        dateMin = edgeDay.get(i).getDate();
+                                        indexMin = i;
+                                    }
+                                }
+                                EdgeClass curEdgeDay = edgeDay.get(indexMin);
+                                setEdgeNotifications(curEdgeDay.getTitle(), curEdgeDay.getTeacher());
+                                setEdgeMessage(curEdgeDay.getTitle(), curEdgeDay.getTeacher());
+                            }
                     }
+
                 }
             }
 
@@ -924,12 +906,6 @@ public class MainActivity extends AppCompatActivity
         autoLoginValue = settings.getBoolean(PREF_AUTOLOGIN, DefaultAutologinValue);
         Log.d(TAG, "AutoLoginValue " + autoLoginValue);
         weeklyNotificationValue = settings.getBoolean(PREF_NOTIFYWEEKLY, DefaultWeeklyNotificationValue);
-        mEdgeDay[2] = settings.getString(PREF_EDGE1, DefaultEdgeDay1Value);
-        mEdgeDay[3] = settings.getString(PREF_EDGE2, DefaultEdgeDay2Value);
-        mEdgeDay[4] = settings.getString(PREF_EDGE3, DefaultEdgeDay3Value);
-        mEdgeDay[5] = settings.getString(PREF_EDGE4, DefaultEdgeDay4Value);
-        mEdgeDay[6] = settings.getString(PREF_EDGE5, DefaultEdgeDay5Value);
-        mEdgeDay5Cur = settings.getString(PREF_EDGE5Cur, DefaultEdgeDay5CurValue);
         FirstLoadValue = settings.getBoolean(PREF_FIRSTLOAD, DefaultFirstLoadValue);
         minValue = settings.getInt(PREF_MIN, DefaultMinValue);
         LoginActivity.invalid = settings.getBoolean("invalid", false);
@@ -944,22 +920,6 @@ public class MainActivity extends AppCompatActivity
             setWeeklyNotifications();
         }
         notifyMinutes = minValue;
-        if (calledForeign) {
-            Log.d("loadPrefs", "interpreting edge data...");
-            Log.d(TAG, mEdgeDay5Cur);
-            //Calendar.Friday equals 6, thursday equals 5, use this in the future with the edgeday arrays
-            int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-            if (dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY && !mEdgeDay[dayOfWeek].toLowerCase().contains("undefined") && mEdgeDay[dayOfWeek] != null && !mEdgeDay[dayOfWeek].isEmpty()){
-                if (mEdgeDay[dayOfWeek].toLowerCase().contains(mDay[dayOfWeek].toLowerCase())) {
-                    setEdgeMessage(mEdgeDay[dayOfWeek]);
-                    setEdgeNotifications(parseEdgeTitle(mEdgeDay[dayOfWeek]), parseEdgeText(mEdgeDay[dayOfWeek]));
-                }
-            } else if (dayOfWeek == Calendar.FRIDAY && mEdgeDay5Cur.contains(mDay[dayOfWeek]) && !mEdgeDay5Cur.toLowerCase().contains("undefined")){
-                Log.d(TAG, "setting edge message for friday");
-                setEdgeMessage(mEdgeDay5Cur);
-                setEdgeNotifications(parseEdgeTitle(mEdgeDay5Cur), parseEdgeText(mEdgeDay5Cur));
-            }
-        }
         if (FirstLoadValue && calledForeign){
             FirstLoadValue = false;
             SharedPreferences.Editor editor = settings.edit();
@@ -1119,10 +1079,10 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void setEdgeMessage(String consoleMessage){
+    private void setEdgeMessage(String title, String teacher){
         try {
-            mEdgeTitle.setText(parseEdgeTitle(consoleMessage));
-            mEdgeText.setText(parseEdgeText(consoleMessage));
+            mEdgeTitle.setText(parseEdgeTitle(title));
+            mEdgeText.setText(parseEdgeText(teacher));
             mEdgeTime.setText(mEdgeTimeString);
             mWelcome.setText("Hello, " + fullName);
         } catch (NullPointerException e){
@@ -1205,7 +1165,7 @@ public class MainActivity extends AppCompatActivity
                         //Toast.makeText(MainActivity.this, "Firebase login worked!",
                         //        Toast.LENGTH_SHORT).show();
                         FirebaseUser user = mAuth.getCurrentUser();
-                        saveEdgeToFirebase(mEdgeDay, mEdgeDay5Cur, unameValue.toLowerCase());
+                        //saveEdgeToFirebase(mEdgeDay, mEdgeDay5Cur, unameValue.toLowerCase());
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.v(TAG, "signInWithEmail:failure", task.getException());
@@ -1241,6 +1201,30 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private ArrayList<EdgeClass> retrieveEdgeFromFirebase(String userName) {
+        userName = userName.toLowerCase();
+        final ArrayList<EdgeClass> tempList = new ArrayList<>();
+        if (userName.contains(".")) {
+            userName = userName.replaceAll("\\.", "-");
+        }
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users/" + userName + "/Edge");
+        mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                EdgeClass edgeClass = dataSnapshot.getValue(EdgeClass.class);
+                Log.d(TAG, "Edge Class retrieved from Firebase: " + edgeClass.toString());
+                tempList.add(edgeClass);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, "Firebase read failed: " + databaseError);
+            }
+        });
+        // TODO: 1/23/2018 add code to retrieve object arraylist. Consider using data/hashmaps to store and retrieve data
+        return tempList;
+    }
+
     private void syncToWear(ArrayList<EdgeClass> classes){
         DataClient mDataClient = Wearable.getDataClient(this);
         PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/edge");
@@ -1250,13 +1234,13 @@ public class MainActivity extends AppCompatActivity
             dataMap.putString("title", edgeClass.getTitle());
             dataMap.putString("teacher", edgeClass.getTeacher());
             dataMap.putInt("date", edgeClass.getDate());
-            dataMap.putString("day", edgeClass.getDay());
+            dataMap.putInt("day", edgeClass.getDay());
             dataMap.putString("time", edgeClass.getTime());
             dataMaps.add(dataMap);
         }
-        DataMap timeMap = new DataMap();
+        /*DataMap timeMap = new DataMap();
         timeMap.putLong("timestamp", System.currentTimeMillis());
-        dataMaps.add(timeMap);
+        dataMaps.add(timeMap);*/
         putDataMapReq.getDataMap().putDataMapArrayList("corve.nohsedge.edge", dataMaps);
         PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
         putDataReq.setUrgent();
