@@ -52,12 +52,12 @@ public class EdgeBaseAdapter extends BaseAdapter {
         TextView mDate = row.findViewById(R.id.edgedate);
         ImageView mImage = row.findViewById(R.id.edgethumbnail);
 
-        SingleRow contactrow = list.get(i);
+        SingleRow edgeRow = list.get(i);
 
-        mTitle.setText(contactrow.title);
-        mText.setText(contactrow.text);
-        mTime.setText(contactrow.edgetime);
-        mDate.setText(contactrow.edgedate);
+        mTitle.setText(edgeRow.title);
+        mText.setText(edgeRow.text);
+        mTime.setText(edgeRow.edgetime);
+        mDate.setText(edgeRow.edgedate);
         mImage.setImageDrawable(null);
 
         return row;
