@@ -1,3 +1,7 @@
+# ARCHIVED
+This project has been unpublished from the Play Store and further development ceased due to me not attending the school any longer and being unable to support it. I will leave the code here just for archival purposes. This was the first app I ever made.
+
+
 # NOHS-Edge-Client
 This is an alternative to the NOHS Stampede official app.
 Compared to the official Stampede app, this app is:
